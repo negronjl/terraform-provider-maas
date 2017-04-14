@@ -42,7 +42,7 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 	log.Printf("[DEBUG] [resourceMAASInstanceCreate] Waiting for instance (%s) to become active\n", nodeObj.system_id)
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"6:9"},
-		Target:     "6:6",
+		Target:     []string{"6:6"},
 		Refresh:    getNodeStatus(meta.(*Config).MAASObject, nodeObj.system_id),
 		Timeout:    10 * time.Minute,
 		Delay:      10 * time.Second,

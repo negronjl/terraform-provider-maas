@@ -6,7 +6,7 @@ import (
 	"errors"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
-	"launchpad.net/gomaasapi"
+	"github.com/juju/gomaasapi"
 	"log"
 	"net/url"
 	"strconv"
@@ -143,7 +143,7 @@ func toNodeInfo(nodeObject *gomaasapi.MAASObject) (*NodeInfo, error) {
 
 	osystem, err := nodeMap["osystem"].GetString()
 	if err != nil {
-		log.Plnrintf("[ERROR] [toNodeInfo] Unable to get the OS for node: %s\n", system_id)
+		log.Printf("[ERROR] [toNodeInfo] Unable to get the OS for node: %s\n", system_id)
 		return nil, err
 	}
 

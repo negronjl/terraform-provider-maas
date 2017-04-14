@@ -1,7 +1,7 @@
 package main
 
 import (
-	"launchpad.net/gomaasapi"
+	"github.com/juju/gomaasapi"
 	"log"
 )
 
