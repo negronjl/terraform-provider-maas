@@ -51,7 +51,7 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 
 	if _, err := stateConf.WaitForState(); err != nil {
 		return fmt.Errorf(
-			"[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become ready: %s",
+			"[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become deployed: %s",
 			nodeObj.system_id, err)
 	}
 
@@ -81,6 +81,21 @@ func resourceMAASInstanceDelete(d *schema.ResourceData, meta interface{}) error 
 
 	if err := nodeRelease(meta.(*Config).MAASObject, d.Id()); err != nil {
 		return err
+	}
+
+	stateConf := &resource.StateChangeConf{
+		Pending:    []string{"6:"},
+		Target:     []string{"4:"},
+		Refresh:    getNodeStatus(meta.(*Config).MAASObject, d.Id()),
+		Timeout:    10 * time.Minute,
+		Delay:      10 * time.Second,
+		MinTimeout: 3 * time.Second,
+	}
+
+	if _, err := stateConf.WaitForState(); err != nil {
+		return fmt.Errorf(
+			"[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become ready: %s",
+			d.Id(), err)
 	}
 
 	log.Printf("[DEBUG] [resourceMAASInstanceDelete] Node (%s) released", d.Id())
