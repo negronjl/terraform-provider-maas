@@ -44,7 +44,7 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 		Pending:    []string{"9:"},
 		Target:     []string{"6:"},
 		Refresh:    getNodeStatus(meta.(*Config).MAASObject, nodeObj.system_id),
-		Timeout:    10 * time.Minute,
+		Timeout:    25 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 3 * time.Second,
 	}
