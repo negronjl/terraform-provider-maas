@@ -30,7 +30,8 @@ type Config struct {
 
 func (c *Config) Client() (interface{}, error) {
 	log.Println("[DEBUG] [Config.Client] Configuring the MAAS API client")
-	authClient, err := gomaasapi.NewAuthenticatedClient(c.APIURL, c.APIKey, c.APIver)
+	authClient, err := gomaasapi.NewAuthenticatedClient(
+		gomaasapi.AddAPIVersionToURL(c.APIURL, c.APIver), c.APIKey)
 	if err != nil {
 		log.Printf("[ERROR] [Config.Client] Unable to authenticate against the MAAS Server (%s)", c.APIURL)
 		return nil, err

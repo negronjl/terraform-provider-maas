@@ -19,7 +19,7 @@ The function takes a pointer to an already active MAASObject and returns a JSONO
 and an error code.
 */
 func maasListAllNodes(maas *gomaasapi.MAASObject) ([]gomaasapi.JSONObject, error) {
-	nodeListing := maas.GetSubObject("nodes")
+	nodeListing := maas.GetSubObject("machines")
 	log.Println("[DEBUG] [maasListAllNodes] Fetching list of nodes...\n")
 	listNodeObjects, err := nodeListing.CallGet("list", url.Values{})
 	if err != nil {
@@ -43,7 +43,7 @@ and an error code.
 */
 func maasGetSingleNode(maas *gomaasapi.MAASObject, system_id string) (gomaasapi.MAASObject, error) {
 	log.Printf("[DEBUG] [maasGetSingleNode] Getting a node (%s) from MAAS\n", system_id)
-	nodeObject, err := maas.GetSubObject("nodes").GetSubObject(system_id).Get()
+	nodeObject, err := maas.GetSubObject("machines").GetSubObject(system_id).Get()
 	if err != nil {
 		log.Printf("[ERROR] [maasGetSingleNode] Unable to get node (%s) from MAAS\n", system_id)
 		return gomaasapi.MAASObject{}, err
@@ -57,7 +57,7 @@ This is a *low level* function that attempts to acquire a MAAS managed node for 
 func maasAllocateNodes(maas *gomaasapi.MAASObject, params url.Values) (gomaasapi.MAASObject, error) {
 	log.Printf("[DEBUG] [maasAllocateNodes] Allocating one or more nodes with following params: %+v", params)
 
-	nodeObject, err := maas.GetSubObject("nodes").CallPost("acquire", params)
+	nodeObject, err := maas.GetSubObject("machines").CallPost("allocate", params)
 	if err != nil {
 		log.Println("[ERROR] [maasAllocateNodes] Unable to acquire a node ... bailing")
 		return gomaasapi.MAASObject{}, err
@@ -68,7 +68,7 @@ func maasAllocateNodes(maas *gomaasapi.MAASObject, params url.Values) (gomaasapi
 func maasReleaseNode(maas *gomaasapi.MAASObject, system_id string) error {
 	log.Printf("[DEBUG] [maasReleaseNode] Releasing node: %s", system_id)
 
-	_, err := maas.GetSubObject("nodes").GetSubObject(system_id).CallPost("release", url.Values{})
+	_, err := maas.GetSubObject("machines").GetSubObject(system_id).CallPost("release", url.Values{})
 	if err != nil {
 		log.Printf("[DEBUG] [maasReleaseNode] Unable to release node (%s)", system_id)
 		return err
