@@ -16,7 +16,6 @@ type NodeInfo struct {
 	memory        uint64
 	osystem       string
 	status        uint16
-	substatus     uint16
 	tag_names     []string
 	data          map[string]interface{}
 }

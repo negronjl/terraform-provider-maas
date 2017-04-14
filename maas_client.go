@@ -154,13 +154,6 @@ func toNodeInfo(nodeObject *gomaasapi.MAASObject) (*NodeInfo, error) {
 	}
 	status := uint16(status_float)
 
-	substatus_float, err := nodeMap["substatus"].GetFloat64()
-	if err != nil {
-		log.Printf("[ERROR] [toNodeInfo] Unable to get the node (%s) substatus\n", system_id)
-		return nil, err
-	}
-	substatus := uint16(substatus_float)
-
 	tag_names, err := nodeMap["tag_names"].GetArray()
 	if err != nil {
 		log.Printf("[ERROR] [toNodeInfo] Unable to get the tags for node: %s\n", system_id)
@@ -201,7 +194,6 @@ func toNodeInfo(nodeObject *gomaasapi.MAASObject) (*NodeInfo, error) {
 		memory:             memory,
 		osystem:            osystem,
 		status:             uint16(status),
-		substatus:          uint16(substatus),
 		tag_names:          tag_array,
 		data:               raw_data}, nil
 }
@@ -223,12 +215,10 @@ func getNodeStatus(maas *gomaasapi.MAASObject, system_id string) resource.StateR
 		}
 
 		nodeStatus := strconv.FormatUint(uint64(nodeObject.status), 10)
-		nodeSubStatus := strconv.FormatUint(uint64(nodeObject.substatus), 10)
 
 		var statusRetVal bytes.Buffer
 		statusRetVal.WriteString(nodeStatus)
 		statusRetVal.WriteString(":")
-		statusRetVal.WriteString(nodeSubStatus)
 
 		return nodeObject, statusRetVal.String(), nil
 	}

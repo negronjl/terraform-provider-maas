@@ -34,15 +34,15 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 		return err
 	}
 
-	if err := nodeDo(meta.(*Config).MAASObject, nodeObj.system_id, "start", url.Values{}); err != nil {
+	if err := nodeDo(meta.(*Config).MAASObject, nodeObj.system_id, "power_on", url.Values{}); err != nil {
 		log.Printf("[ERROR] [resourceMAASInstanceCreate] Unable to power up node: %s\n", nodeObj.system_id)
 		return err
 	}
 
 	log.Printf("[DEBUG] [resourceMAASInstanceCreate] Waiting for instance (%s) to become active\n", nodeObj.system_id)
 	stateConf := &resource.StateChangeConf{
-		Pending:    []string{"6:9"},
-		Target:     []string{"6:6"},
+		Pending:    []string{"9:"},
+		Target:     []string{"6:"},
 		Refresh:    getNodeStatus(meta.(*Config).MAASObject, nodeObj.system_id),
 		Timeout:    10 * time.Minute,
 		Delay:      10 * time.Second,
@@ -279,11 +279,6 @@ func resourceMAASInstance() *schema.Resource {
 			},
 
 			"storage": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-
-			"substatus": {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
