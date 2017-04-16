@@ -6,7 +6,7 @@ import (
 	"errors"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
-	"launchpad.net/gomaasapi"
+	"github.com/juju/gomaasapi"
 	"log"
 	"net/url"
 	"strconv"
@@ -19,7 +19,7 @@ The function takes a pointer to an already active MAASObject and returns a JSONO
 and an error code.
 */
 func maasListAllNodes(maas *gomaasapi.MAASObject) ([]gomaasapi.JSONObject, error) {
-	nodeListing := maas.GetSubObject("nodes")
+	nodeListing := maas.GetSubObject("machines")
 	log.Println("[DEBUG] [maasListAllNodes] Fetching list of nodes...\n")
 	listNodeObjects, err := nodeListing.CallGet("list", url.Values{})
 	if err != nil {
@@ -43,7 +43,7 @@ and an error code.
 */
 func maasGetSingleNode(maas *gomaasapi.MAASObject, system_id string) (gomaasapi.MAASObject, error) {
 	log.Printf("[DEBUG] [maasGetSingleNode] Getting a node (%s) from MAAS\n", system_id)
-	nodeObject, err := maas.GetSubObject("nodes").GetSubObject(system_id).Get()
+	nodeObject, err := maas.GetSubObject("machines").GetSubObject(system_id).Get()
 	if err != nil {
 		log.Printf("[ERROR] [maasGetSingleNode] Unable to get node (%s) from MAAS\n", system_id)
 		return gomaasapi.MAASObject{}, err
@@ -57,7 +57,7 @@ This is a *low level* function that attempts to acquire a MAAS managed node for 
 func maasAllocateNodes(maas *gomaasapi.MAASObject, params url.Values) (gomaasapi.MAASObject, error) {
 	log.Printf("[DEBUG] [maasAllocateNodes] Allocating one or more nodes with following params: %+v", params)
 
-	nodeObject, err := maas.GetSubObject("nodes").CallPost("acquire", params)
+	nodeObject, err := maas.GetSubObject("machines").CallPost("allocate", params)
 	if err != nil {
 		log.Println("[ERROR] [maasAllocateNodes] Unable to acquire a node ... bailing")
 		return gomaasapi.MAASObject{}, err
@@ -68,7 +68,7 @@ func maasAllocateNodes(maas *gomaasapi.MAASObject, params url.Values) (gomaasapi
 func maasReleaseNode(maas *gomaasapi.MAASObject, system_id string) error {
 	log.Printf("[DEBUG] [maasReleaseNode] Releasing node: %s", system_id)
 
-	_, err := maas.GetSubObject("nodes").GetSubObject(system_id).CallPost("release", url.Values{})
+	_, err := maas.GetSubObject("machines").GetSubObject(system_id).CallPost("release", url.Values{})
 	if err != nil {
 		log.Printf("[DEBUG] [maasReleaseNode] Unable to release node (%s)", system_id)
 		return err
@@ -143,7 +143,7 @@ func toNodeInfo(nodeObject *gomaasapi.MAASObject) (*NodeInfo, error) {
 
 	osystem, err := nodeMap["osystem"].GetString()
 	if err != nil {
-		log.Plnrintf("[ERROR] [toNodeInfo] Unable to get the OS for node: %s\n", system_id)
+		log.Printf("[ERROR] [toNodeInfo] Unable to get the OS for node: %s\n", system_id)
 		return nil, err
 	}
 
@@ -153,13 +153,6 @@ func toNodeInfo(nodeObject *gomaasapi.MAASObject) (*NodeInfo, error) {
 		return nil, err
 	}
 	status := uint16(status_float)
-
-	substatus_float, err := nodeMap["substatus"].GetFloat64()
-	if err != nil {
-		log.Printf("[ERROR] [toNodeInfo] Unable to get the node (%s) substatus\n", system_id)
-		return nil, err
-	}
-	substatus := uint16(substatus_float)
 
 	tag_names, err := nodeMap["tag_names"].GetArray()
 	if err != nil {
@@ -201,7 +194,6 @@ func toNodeInfo(nodeObject *gomaasapi.MAASObject) (*NodeInfo, error) {
 		memory:             memory,
 		osystem:            osystem,
 		status:             uint16(status),
-		substatus:          uint16(substatus),
 		tag_names:          tag_array,
 		data:               raw_data}, nil
 }
@@ -223,12 +215,10 @@ func getNodeStatus(maas *gomaasapi.MAASObject, system_id string) resource.StateR
 		}
 
 		nodeStatus := strconv.FormatUint(uint64(nodeObject.status), 10)
-		nodeSubStatus := strconv.FormatUint(uint64(nodeObject.substatus), 10)
 
 		var statusRetVal bytes.Buffer
 		statusRetVal.WriteString(nodeStatus)
 		statusRetVal.WriteString(":")
-		statusRetVal.WriteString(nodeSubStatus)
 
 		return nodeObject, statusRetVal.String(), nil
 	}

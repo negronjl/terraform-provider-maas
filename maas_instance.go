@@ -34,24 +34,24 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 		return err
 	}
 
-	if err := nodeDo(meta.(*Config).MAASObject, nodeObj.system_id, "start", url.Values{}); err != nil {
+	if err := nodeDo(meta.(*Config).MAASObject, nodeObj.system_id, "power_on", url.Values{}); err != nil {
 		log.Printf("[ERROR] [resourceMAASInstanceCreate] Unable to power up node: %s\n", nodeObj.system_id)
 		return err
 	}
 
 	log.Printf("[DEBUG] [resourceMAASInstanceCreate] Waiting for instance (%s) to become active\n", nodeObj.system_id)
 	stateConf := &resource.StateChangeConf{
-		Pending:    []string{"6:9"},
-		Target:     "6:6",
+		Pending:    []string{"9:"},
+		Target:     []string{"6:"},
 		Refresh:    getNodeStatus(meta.(*Config).MAASObject, nodeObj.system_id),
-		Timeout:    10 * time.Minute,
+		Timeout:    25 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 3 * time.Second,
 	}
 
 	if _, err := stateConf.WaitForState(); err != nil {
 		return fmt.Errorf(
-			"[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become ready: %s",
+			"[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become deployed: %s",
 			nodeObj.system_id, err)
 	}
 
@@ -81,6 +81,21 @@ func resourceMAASInstanceDelete(d *schema.ResourceData, meta interface{}) error 
 
 	if err := nodeRelease(meta.(*Config).MAASObject, d.Id()); err != nil {
 		return err
+	}
+
+	stateConf := &resource.StateChangeConf{
+		Pending:    []string{"6:"},
+		Target:     []string{"4:"},
+		Refresh:    getNodeStatus(meta.(*Config).MAASObject, d.Id()),
+		Timeout:    10 * time.Minute,
+		Delay:      10 * time.Second,
+		MinTimeout: 3 * time.Second,
+	}
+
+	if _, err := stateConf.WaitForState(); err != nil {
+		return fmt.Errorf(
+			"[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become ready: %s",
+			d.Id(), err)
 	}
 
 	log.Printf("[DEBUG] [resourceMAASInstanceDelete] Node (%s) released", d.Id())
@@ -279,11 +294,6 @@ func resourceMAASInstance() *schema.Resource {
 			},
 
 			"storage": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-
-			"substatus": {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},

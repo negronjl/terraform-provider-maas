@@ -5,7 +5,7 @@ import (
 
 	"net/url"
 
-	"launchpad.net/gomaasapi"
+	"github.com/juju/gomaasapi"
 )
 
 func TestMaasListAllNodes(t *testing.T) {
