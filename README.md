@@ -32,7 +32,7 @@ This provider is only able to deploy and release nodes already registered and co
 - **architecture**: Architecture of the requested machine: ie: amd64/generic
 - **cpu_count**: The minimum number of cpu cores needed for consideration
 - **memory**: Minimum amount of RAM neede for consideration
-- **tag_names**: List of tags to use in the selection process ( Experimental )
+- **tags**: List of tags to use in the selection process
 
 The above constraints parameters can be used to acquire a node that possesses certain characteristics. All the constraints are optional and when multiple constraints are provided, they are combined using ‘AND’ semantics.  In the absence of any constraints, a random node will be selected and deployed.  The examples in the next section attempt to explain how to use the resource.
 
@@ -122,6 +122,16 @@ resource "maas_instance" "maas_single_random_node" {
     count = 1
     
     deploy_tags = ["hostwiththemost", "platform"]
+}
+```
+
+### Select distro for a node
+Useful for custom OS builds
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+
+    distro_series = "centos73" 
 }
 ```
 
