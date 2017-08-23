@@ -65,6 +65,148 @@ resource "maas_instance" "maas_three_nodes_8g" {
 	count = 3
 }
 ```
+
+### Specify user data for nodes
+
+User data can be either a cloud-init script or a bash shell
+
+Header for cloud-init:
+```
+#cloud-config
+```
+
+Header for script (shebang):
+```
+#!/bin/bash
+```
+
+Example (read from file):
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+    
+    user_data = "${file("${path.module}/user_data/test_data.txt")}"
+}
+```
+
+### Specify a comment in the event log
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+    
+    comment = "Platform deployment"
+}
+```
+
+### Use tags to restrict deployments to specific nodes
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+    
+    tags = ["DELL_R630", "APP_CLASS"]
+}
+```
+
+### Specify the hostname for the deployed node
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+    
+    deploy_hostname = "freedompants"
+}
+```
+
+### Specify tags for the deployed node
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+    
+    deploy_tags = ["hostwiththemost", "platform"]
+}
+```
+
+## Erasing disks on node release
+
+Maas provides an option to erase the node's disk when releasing the system. By default it will not alter the disk.
+This provides a very quick method do release the system back into the pool of nodes. It isn't ideal to leave data on a disk
+as this may lead to data loss or even booting a system that may cause a service outage. With this in mind the
+Terraform provider is set to erase the disk on release. This ensures that the machine will be released into the pool with a clean state.
+
+There are a few options when releasing a system:
+- erase
+  - The default setting
+  - MAAS will overwrite the whole disk with null bytes. This can be very slow. 
+  - Estimated 20min
+- secure erase
+  - Requires the disk to support a secure erase option.
+  - If the disk does not support secure erase it will default the erase option. MAAS will overwrite the whole disk with null bytes. This can be very slow. 
+  - Estimated 20min
+- quick erase
+  - Wipe 1MiB at the start and at the end of the drive to make data recovery inconvenient and unlikely to happen by accident. This is not secure.
+  - Estimated 3min
+
+### Using the erase feature
+
+### Default erase option
+The default option is to always perform an erase.
+
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+}
+```
+
+This shows what is set by default in Terraform. You are not required to set this option.
+
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+
+    release_erase = true
+}
+```
+
+How to disable the disk erasure.
+
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+    
+    release_erase = false
+}
+```
+
+### Secure erase option
+
+
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+
+    release_erase_secure = true
+}
+```
+
+### Quick erase option
+
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+
+    release_erase_quick = true
+}
+```
+
+If there are conflicting options, such as enabling both secure and quick erase, this is how the Maas API deals with conflicts.
+
+If neither release_secure_erase nor release_quick_erase are specified, MAAS will overwrite the whole disk with null bytes. This can be very slow.
+
+If both release_secure_erase and release_quick_erase are specified and the drive does NOT have a secure erase feature, MAAS will behave as if only quick_erase was specified.
+
+If release_secure_erase is specified and release_quick_erase is NOT specified and the drive does NOT have a secure erase feature, MAAS will behave as if secure_erase was NOT specified, i.e. will overwrite the whole disk with null bytes. This can be very slow.
+
+Source: [Maas API: POST /api/2.0/machines/{system_id}/ op=release](https://docs.ubuntu.com/maas/2.1/en/api)
+
 ### The future
 This is just a basic (proof of concept) provider.  The following are some of the features I would like to see here:
 

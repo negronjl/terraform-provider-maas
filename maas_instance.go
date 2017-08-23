@@ -1,18 +1,17 @@
 package main
 
 import (
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/helper/schema"
 	"log"
 	"net/url"
+	"strconv"
 	"time"
+
+	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
-// This function doesn't really *create* a new node but, power an already registered
-// node.
+// resourceMAASInstanceCreate This function doesn't really *create* a new node but, power an already registered
 func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] [resourceMAASInstanceCreate] Launching new maas_instance")
 
@@ -34,36 +33,88 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 		return err
 	}
 
-	if err := nodeDo(meta.(*Config).MAASObject, nodeObj.system_id, "power_on", url.Values{}); err != nil {
-		log.Printf("[ERROR] [resourceMAASInstanceCreate] Unable to power up node: %s\n", nodeObj.system_id)
+	// set the node id
+	d.SetId(nodeObj.system_id)
+
+	// seperate constraints that are supported for the deploy action
+	// parameters to pass when creating a node
+	node_params := url.Values{}
+
+	// get user data if defined
+	if user_data, ok := d.GetOk("user_data"); ok {
+		node_params.Add("user_data", base64encode(user_data.(string)))
+	}
+
+	// get comment if defined
+	if comment, ok := d.GetOk("comment"); ok {
+		node_params.Add("comment", comment.(string))
+	}
+
+	// get distro_series if defined
+	distro_series, ok := d.GetOk("distro_series")
+	if ok {
+		node_params.Add("distro_series", distro_series.(string))
+	}
+
+	if err := nodeDo(meta.(*Config).MAASObject, d.Id(), "deploy", node_params); err != nil {
+		log.Printf("[ERROR] [resourceMAASInstanceCreate] Unable to power up node: %s\n", d.Id())
+		// unable to perform action, release the node
+		if err := nodeRelease(meta.(*Config).MAASObject, d.Id(), url.Values{}); err != nil {
+			log.Printf("[DEBUG] Unable to release node")
+		}
 		return err
 	}
 
-	log.Printf("[DEBUG] [resourceMAASInstanceCreate] Waiting for instance (%s) to become active\n", nodeObj.system_id)
+	log.Printf("[DEBUG] [resourceMAASInstanceCreate] Waiting for instance (%s) to become active\n", d.Id())
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"9:"},
 		Target:     []string{"6:"},
-		Refresh:    getNodeStatus(meta.(*Config).MAASObject, nodeObj.system_id),
+		Refresh:    getNodeStatus(meta.(*Config).MAASObject, d.Id()),
 		Timeout:    25 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 3 * time.Second,
 	}
 
 	if _, err := stateConf.WaitForState(); err != nil {
-		return fmt.Errorf(
-			"[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become deployed: %s",
-			nodeObj.system_id, err)
+		if err := nodeRelease(meta.(*Config).MAASObject, d.Id(), url.Values{}); err != nil {
+			log.Printf("[DEBUG] Unable to release node")
+		}
+		return fmt.Errorf("[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become deployed: %s", d.Id(), err)
 	}
 
-	d.SetId(nodeObj.system_id)
+	// update node
+	params := url.Values{}
+	if hostname, ok := d.GetOk("deploy_hostname"); ok {
+		params.Add("hostname", hostname.(string))
+	}
+
+	// only updating hostname
+	err = nodeUpdate(meta.(*Config).MAASObject, d.Id(), params)
+	if err != nil {
+		log.Println("[DEBUG] Unable to update node")
+	}
+
+	// update node tags
+	if tags, ok := d.GetOk("deploy_tags"); ok {
+		for i := range tags.([]interface{}) {
+			err := nodeTagsUpdate(meta.(*Config).MAASObject, d.Id(), tags.([]interface{})[i].(string))
+			if err != nil {
+				log.Printf("[ERROR] Unable to update node (%s) with tag (%s)", d.Id(), tags.([]interface{})[i].(string))
+			}
+		}
+	}
+
 	return resourceMAASInstanceUpdate(d, meta)
 }
 
+// resourceMAASInstanceRead read instance information from a maas node
+// TODO: remove or do something
 func resourceMAASInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] Reading instance (%s) information.\n", d.Id())
 	return nil
 }
 
+// resourceMAASInstanceUpdate update an instance in terraform state
 func resourceMAASInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] [resourceMAASInstanceUpdate] Modifying instance %s\n", d.Id())
 
@@ -75,27 +126,61 @@ func resourceMAASInstanceUpdate(d *schema.ResourceData, meta interface{}) error 
 	return resourceMAASInstanceRead(d, meta)
 }
 
-// This function doesn't really *delete* a maas managed instance but releases (read, turns off) the node.
+// resourceMAASInstanceDelete This function doesn't really *delete* a maas managed instance but releases (read, turns off) the node.
 func resourceMAASInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] Deleting instance %s\n", d.Id())
+	release_params := url.Values{}
 
-	if err := nodeRelease(meta.(*Config).MAASObject, d.Id()); err != nil {
+	if release_erase, ok := d.GetOk("release_erase"); ok {
+		release_params.Add("erase", strconv.FormatBool(release_erase.(bool)))
+	}
+
+	if release_erase_secure, ok := d.GetOk("release_erase_secure"); ok {
+		// setting erase to true in the event a user didn't set both options
+		release_params.Add("erase", strconv.FormatBool(true))
+		release_params.Add("secure_erase", strconv.FormatBool(release_erase_secure.(bool)))
+	}
+
+	if release_erase_quick, ok := d.GetOk("release_erase_quick"); ok {
+		// setting erase to true in the event a user didn't set both options
+		release_params.Add("erase", strconv.FormatBool(true))
+		release_params.Add("quick_erase", strconv.FormatBool(release_erase_quick.(bool)))
+	}
+
+	if err := nodeRelease(meta.(*Config).MAASObject, d.Id(), release_params); err != nil {
 		return err
 	}
 
 	stateConf := &resource.StateChangeConf{
-		Pending:    []string{"6:"},
+		Pending:    []string{"6:", "12:", "14:"},
 		Target:     []string{"4:"},
 		Refresh:    getNodeStatus(meta.(*Config).MAASObject, d.Id()),
-		Timeout:    10 * time.Minute,
+		Timeout:    30 * time.Minute,
 		Delay:      10 * time.Second,
 		MinTimeout: 3 * time.Second,
 	}
 
 	if _, err := stateConf.WaitForState(); err != nil {
 		return fmt.Errorf(
-			"[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become ready: %s",
-			d.Id(), err)
+			"[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become ready: %s", d.Id(), err)
+	}
+
+	params := url.Values{}
+	params.Set("hostname", "")
+	// remove custom hostname
+	err := nodeUpdate(meta.(*Config).MAASObject, d.Id(), params)
+	if err != nil {
+		log.Println("[DEBUG] Unable to update node")
+	}
+
+	// remove deployed tags
+	if tags, ok := d.GetOk("deploy_tags"); ok {
+		for i := range tags.([]interface{}) {
+			err := nodeTagsRemove(meta.(*Config).MAASObject, d.Id(), tags.([]interface{})[i].(string))
+			if err != nil {
+				log.Printf("[ERROR] Unable to update node (%s) with tag (%s)", d.Id(), tags.([]interface{})[i].(string))
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] [resourceMAASInstanceDelete] Node (%s) released", d.Id())
@@ -103,264 +188,4 @@ func resourceMAASInstanceDelete(d *schema.ResourceData, meta interface{}) error 
 	d.SetId("")
 
 	return nil
-}
-
-func resourceMAASInstance() *schema.Resource {
-	log.Println("[DEBUG] [resourceMAASInstance] Initializing data structure")
-	return &schema.Resource{
-		Create: resourceMAASInstanceCreate,
-		Read:   resourceMAASInstanceRead,
-		Update: resourceMAASInstanceUpdate,
-		Delete: resourceMAASInstanceDelete,
-
-		SchemaVersion: 1,
-
-		Schema: map[string]*schema.Schema{
-			"architecture": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"boot_type": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"cpu_count": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"disable_ipv4": {
-				Type:     schema.TypeBool,
-				Optional: true,
-			},
-
-			"distro_series": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"hostname": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"ip_addresses": {
-				Type:     schema.TypeList,
-				Optional: true,
-				ForceNew: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
-
-			"macaddress_set": {
-				Type:     schema.TypeList,
-				Optional: true,
-				ForceNew: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"mac_address": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ForceNew: true,
-						},
-						"resource_uri": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ForceNew: true,
-						},
-					},
-				},
-			},
-
-			"memory": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"netboot": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"osystem": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"owner": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"physicalblockdevice_set": {
-				Type:     schema.TypeList,
-				Optional: true,
-				ForceNew: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"block_size": {
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"id": {
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"id_path": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"model": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"name": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"path": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"serial": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"size": {
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"tags": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem:     &schema.Schema{Type: schema.TypeString},
-						},
-					},
-				},
-			},
-
-			"power_state": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-
-			"power_type": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-
-			"pxe_mac": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"mac_address": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"resource_uri": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-
-			"resource_uri": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"routers": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
-
-			"status": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-
-			"storage": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-
-			"swap_size": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-
-			"system_id": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"tag_names": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
-
-			"zone": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"description": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"name": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"resource_uri": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
-			},
-
-			"user_data": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-				StateFunc: func(v interface{}) string {
-					switch v.(type) {
-					case string:
-						hash := sha1.Sum([]byte(v.(string)))
-						return hex.EncodeToString(hash[:])
-					default:
-						return ""
-					}
-				},
-			},
-
-			"hwe_kernel": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-
-			"comment": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-		},
-	}
 }
