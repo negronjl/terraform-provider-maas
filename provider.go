@@ -1,11 +1,13 @@
 package main
 
 import (
+	"log"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
-	"log"
 )
 
+// Provider creates the schema for the provider config
 func Provider() terraform.ResourceProvider {
 	log.Println("[DEBUG] Initializing the MAAS provider")
 	return &schema.Provider{
@@ -22,8 +24,8 @@ func Provider() terraform.ResourceProvider {
 			},
 			"api_version": {
 				Type:        schema.TypeString,
-				Required:    false,
-				Default:     "2.0"
+				Optional:    true,
+				Default:     "2.0",
 				Description: "The MAAS API version. Currently: 1.0",
 			},
 		},
@@ -36,6 +38,7 @@ func Provider() terraform.ResourceProvider {
 	}
 }
 
+// providerConfigure loads in the provider configuration
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	log.Println("[DEBUG] Configuring the MAAS provider")
 	config := Config{
