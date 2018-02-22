@@ -75,12 +75,15 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 		MinTimeout: 3 * time.Second,
 	}
 
-	if _, err := stateConf.WaitForState(); err != nil {
+	nodeObjRaw, err := stateConf.WaitForState()
+	if err != nil {
 		if err := nodeRelease(meta.(*Config).MAASObject, d.Id(), url.Values{}); err != nil {
 			log.Printf("[DEBUG] Unable to release node")
 		}
 		return fmt.Errorf("[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become deployed: %s", d.Id(), err)
 	}
+
+	nodeObj = nodeObjRaw.(*NodeInfo)
 
 	// update node
 	params := url.Values{}
@@ -103,6 +106,13 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 			}
 		}
 	}
+
+	d.Set("hostname", nodeObj.fqdn)
+	d.Set("ip_addresses", nodeObj.ip_addresses)
+	d.SetConnInfo(map[string]string{
+		"type": "ssh",
+		"host": nodeObj.fqdn,
+	})
 
 	return resourceMAASInstanceUpdate(d, meta)
 }
