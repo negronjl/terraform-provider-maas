@@ -107,7 +107,8 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 		}
 	}
 
-	d.Set("hostname", nodeObj.fqdn)
+	d.Set("hostname", nodeObj.hostname)
+	d.Set("fqdn", nodeObj.fqdn)
 	d.Set("ip_addresses", nodeObj.ip_addresses)
 	d.SetConnInfo(map[string]string{
 		"type": "ssh",

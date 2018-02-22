@@ -56,6 +56,13 @@ func resourceMAASInstance() *schema.Resource {
 				Computed: true,
 			},
 
+			"fqdn": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Computed: true,
+			},
+
 			"deploy_hostname": {
 				Type:     schema.TypeString,
 				Optional: true,
