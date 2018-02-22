@@ -53,6 +53,7 @@ func resourceMAASInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
+				Computed: true,
 			},
 
 			"deploy_hostname": {
@@ -93,13 +94,14 @@ func resourceMAASInstance() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: false,
-				Default:  false,
+				Default:  true,
 			},
 
 			"ip_addresses": {
 				Type:     schema.TypeList,
 				Optional: true,
 				ForceNew: true,
+				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 
