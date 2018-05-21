@@ -53,6 +53,14 @@ func resourceMAASInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
+				Computed: true,
+			},
+
+			"fqdn": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Computed: true,
 			},
 
 			"deploy_hostname": {
@@ -93,13 +101,14 @@ func resourceMAASInstance() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: false,
-				Default:  false,
+				Default:  true,
 			},
 
 			"ip_addresses": {
 				Type:     schema.TypeList,
 				Optional: true,
 				ForceNew: true,
+				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 
@@ -261,6 +270,12 @@ func resourceMAASInstance() *schema.Resource {
 			},
 
 			"zone": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+
+			"deploy_zone": {
 				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Resource{

@@ -227,6 +227,12 @@ func parseConstraints(d *schema.ResourceData) (url.Values, error) {
 		retVal["tags"] = tag_strings
 	}
 
+	zone, set := d.GetOk("zone")
+	if set {
+		log.Printf("[DEBUG] [parseConstraints] setting zone to %+v", zone)
+		retVal["zone"] = strings.Fields(zone.(string))
+	}
+
 	//TODO(negronjl): Complete the list based on https://maas.ubuntu.com/docs/api.html
 
 	return retVal, nil

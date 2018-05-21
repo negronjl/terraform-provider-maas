@@ -12,6 +12,8 @@ import (
 type NodeInfo struct {
 	system_id     string
 	hostname      string
+	fqdn          string
+	ip_addresses  []string
 	url           string
 	power_state   string
 	cpu_count     uint16
@@ -40,6 +42,30 @@ func toNodeInfo(nodeObject *gomaasapi.MAASObject) (*NodeInfo, error) {
 	if err != nil {
 		log.Printf("[ERROR] [toNodeInfo] Unable to get the node (%s) hostname\n", system_id)
 		return nil, err
+	}
+
+	fqdn, err := nodeMap["fqdn"].GetString()
+	if err != nil {
+		log.Printf("[ERROR] [toNodeInfo] Unable to get the node (%s) fqdn\n", system_id)
+		return nil, err
+	}
+
+	ip_addresses, err := nodeMap["ip_addresses"].GetArray()
+	if err != nil {
+		log.Printf("[ERROR] [toNodeInfo] Unable to get the IP addresses for node: %s\n", system_id)
+		return nil, err
+	}
+	log.Printf("[ERROR] [toNodeInfo] IP addresses (%v) for node (%s)", ip_addresses, system_id)
+
+	ip_address_array := make([]string, 0, 1)
+	for _, ip_address_object := range ip_addresses {
+		ip_address, err := ip_address_object.GetString()
+		log.Printf("[ERROR] [toNodeInfo] IP address information (%s) for node (%s)", ip_address, system_id)
+		if err != nil {
+			log.Printf("[ERROR] [toNodeInfo] Unable to parse IP address information (%v) for node (%s)", ip_address_object, system_id)
+			return nil, err
+		}
+		ip_address_array = append(ip_address_array, ip_address)
 	}
 
 	node_url := nodeObject.URL().String()
@@ -130,6 +156,8 @@ func toNodeInfo(nodeObject *gomaasapi.MAASObject) (*NodeInfo, error) {
 
 	return &NodeInfo{system_id: system_id,
 		hostname:      hostname,
+		fqdn:          fqdn,
+		ip_addresses:  ip_address_array,
 		url:           node_url,
 		power_state:   power_state,
 		cpu_count:     uint16(cpu_count),
