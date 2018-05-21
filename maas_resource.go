@@ -270,6 +270,12 @@ func resourceMAASInstance() *schema.Resource {
 			},
 
 			"zone": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+
+			"deploy_zone": {
 				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Resource{
