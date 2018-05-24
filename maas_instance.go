@@ -165,12 +165,14 @@ func resourceMAASInstanceDelete(d *schema.ResourceData, meta interface{}) error 
 			"[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become ready: %s", d.Id(), err)
 	}
 
-	params := url.Values{}
-	params.Set("hostname", "")
-	// remove custom hostname
-	err := nodeUpdate(meta.(*Config).MAASObject, d.Id(), params)
-	if err != nil {
-		log.Println("[DEBUG] Unable to update node")
+	// remove deploy hostname if set
+	if _, ok := d.GetOk("deploy_hostname"); ok {
+		params := url.Values{}
+		params.Set("hostname", "")
+		err := nodeUpdate(meta.(*Config).MAASObject, d.Id(), params)
+		if err != nil {
+			log.Println("[DEBUG] Unable to reset hostname: %s", err)
+		}
 	}
 
 	// remove deployed tags
