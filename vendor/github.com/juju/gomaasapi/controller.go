@@ -11,13 +11,14 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"strconv"
 	"strings"
 	"sync/atomic"
 
+	"github.com/juju/collections/set"
 	"github.com/juju/errors"
 	"github.com/juju/loggo"
 	"github.com/juju/schema"
-	"github.com/juju/utils/set"
 	"github.com/juju/version"
 )
 
@@ -217,6 +218,23 @@ func (c *controller) Zones() ([]Zone, error) {
 	var result []Zone
 	for _, z := range zones {
 		result = append(result, z)
+	}
+	return result, nil
+}
+
+// Domains implements Controller
+func (c *controller) Domains() ([]Domain, error) {
+	source, err := c.get("domains")
+	if err != nil {
+		return nil, NewUnexpectedError(err)
+	}
+	domains, err := readDomains(c.apiVersion, source)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	var result []Domain
+	for _, domain := range domains {
+		result = append(result, domain)
 	}
 	return result, nil
 }
@@ -425,6 +443,7 @@ func (a *InterfaceSpec) String() string {
 // AllocateMachineArgs is an argument struct for passing args into Machine.Allocate.
 type AllocateMachineArgs struct {
 	Hostname     string
+	SystemId     string
 	Architecture string
 	MinCPUCount  int
 	// MinMemory represented in MB.
@@ -512,9 +531,9 @@ type ConstraintMatches struct {
 	// that match that constraint.
 	Interfaces map[string][]Interface
 
-	// Storage is a mapping of the constraint label specified to the BlockDevices
+	// Storage is a mapping of the constraint label specified to the StorageDevice
 	// that match that constraint.
-	Storage map[string][]BlockDevice
+	Storage map[string][]StorageDevice
 }
 
 // AllocateMachine implements Controller.
@@ -525,6 +544,7 @@ func (c *controller) AllocateMachine(args AllocateMachineArgs) (Machine, Constra
 	var matches ConstraintMatches
 	params := NewURLParams()
 	params.MaybeAdd("name", args.Hostname)
+	params.MaybeAdd("system_id", args.SystemId)
 	params.MaybeAdd("arch", args.Architecture)
 	params.MaybeAddInt("cpu_count", args.MinCPUCount)
 	params.MaybeAddInt("mem", args.MinMemory)
@@ -893,7 +913,7 @@ func (c *controller) readAPIVersionInfo() (set.Strings, error) {
 func parseAllocateConstraintsResponse(source interface{}, machine *machine) (ConstraintMatches, error) {
 	var empty ConstraintMatches
 	matchFields := schema.Fields{
-		"storage":    schema.StringMap(schema.List(schema.ForceInt())),
+		"storage":    schema.StringMap(schema.List(schema.Any())),
 		"interfaces": schema.StringMap(schema.List(schema.ForceInt())),
 	}
 	matchDefaults := schema.Defaults{
@@ -912,11 +932,11 @@ func parseAllocateConstraintsResponse(source interface{}, machine *machine) (Con
 	constraintsMap := valid["constraints_by_type"].(map[string]interface{})
 	result := ConstraintMatches{
 		Interfaces: make(map[string][]Interface),
-		Storage:    make(map[string][]BlockDevice),
+		Storage:    make(map[string][]StorageDevice),
 	}
 
 	if interfaceMatches, found := constraintsMap["interfaces"]; found {
-		matches := convertConstraintMatches(interfaceMatches)
+		matches := convertConstraintMatchesInt(interfaceMatches)
 		for label, ids := range matches {
 			interfaces := make([]Interface, len(ids))
 			for index, id := range ids {
@@ -931,23 +951,45 @@ func parseAllocateConstraintsResponse(source interface{}, machine *machine) (Con
 	}
 
 	if storageMatches, found := constraintsMap["storage"]; found {
-		matches := convertConstraintMatches(storageMatches)
+		matches := convertConstraintMatchesAny(storageMatches)
 		for label, ids := range matches {
-			blockDevices := make([]BlockDevice, len(ids))
-			for index, id := range ids {
-				blockDevice := machine.PhysicalBlockDevice(id)
-				if blockDevice == nil {
-					return empty, NewDeserializationError("constraint match storage %q: %d does not match a physical block device for the machine", label, id)
+			storageDevices := make([]StorageDevice, len(ids))
+			for index, storageId := range ids {
+				// The key value can be either an `int` which `json.Unmarshal` converts to a `float64` or a
+				// `string` when the key is "partition:{part_id}".
+				if id, ok := storageId.(float64); ok {
+					// Links to a block device.
+					blockDevice := machine.BlockDevice(int(id))
+					if blockDevice == nil {
+						return empty, NewDeserializationError("constraint match storage %q: %d does not match a block device for the machine", label, int(id))
+					}
+					storageDevices[index] = blockDevice
+				} else if id, ok := storageId.(string); ok {
+					// Should link to a partition.
+					const partPrefix = "partition:"
+					if !strings.HasPrefix(id, partPrefix) {
+						return empty, NewDeserializationError("constraint match storage %q: %s is not prefixed with partition", label, id)
+					}
+					partId, err := strconv.Atoi(id[len(partPrefix):])
+					if err != nil {
+						return empty, NewDeserializationError("constraint match storage %q: %s cannot convert to int.", label, id[len(partPrefix):])
+					}
+					partition := machine.Partition(partId)
+					if partition == nil {
+						return empty, NewDeserializationError("constraint match storage %q: %d does not match a partition for the machine", label, partId)
+					}
+					storageDevices[index] = partition
+				} else {
+					return empty, NewDeserializationError("constraint match storage %q: %v is not an int or string", label, storageId)
 				}
-				blockDevices[index] = blockDevice
 			}
-			result.Storage[label] = blockDevices
+			result.Storage[label] = storageDevices
 		}
 	}
 	return result, nil
 }
 
-func convertConstraintMatches(source interface{}) map[string][]int {
+func convertConstraintMatchesInt(source interface{}) map[string][]int {
 	// These casts are all safe because of the schema check.
 	result := make(map[string][]int)
 	matchMap := source.(map[string]interface{})
@@ -956,6 +998,20 @@ func convertConstraintMatches(source interface{}) map[string][]int {
 		result[label] = make([]int, len(items))
 		for index, value := range items {
 			result[label][index] = value.(int)
+		}
+	}
+	return result
+}
+
+func convertConstraintMatchesAny(source interface{}) map[string][]interface{} {
+	// These casts are all safe because of the schema check.
+	result := make(map[string][]interface{})
+	matchMap := source.(map[string]interface{})
+	for label, values := range matchMap {
+		items := values.([]interface{})
+		result[label] = make([]interface{}, len(items))
+		for index, value := range items {
+			result[label][index] = value
 		}
 	}
 	return result

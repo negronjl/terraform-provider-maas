@@ -7,6 +7,8 @@ import (
 	version "github.com/hashicorp/go-version"
 )
 
+const VersionZero = "0.0.0"
+
 // A VersionStr is a string containing a possibly-invalid representation
 // of a semver version number. Call Parse on it to obtain a real Version
 // object, or discover that it is invalid.
@@ -47,6 +49,15 @@ func (v Version) String() string {
 
 func (v Version) NewerThan(other Version) bool {
 	return v.raw.GreaterThan(other.raw)
+}
+
+func (v Version) Equal(other Version) bool {
+	return v.raw.Equal(other.raw)
+}
+
+// IsPrerelease determines if version is a prerelease
+func (v Version) IsPrerelease() bool {
+	return v.raw.Prerelease() != ""
 }
 
 // MinorUpgradeConstraintStr returns a ConstraintStr that would permit

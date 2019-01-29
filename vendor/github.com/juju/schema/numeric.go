@@ -188,10 +188,12 @@ func (c floatC) Coerce(v interface{}, path []string) (interface{}, error) {
 		return nil, error_{"float", v, path}
 	}
 	switch reflect.TypeOf(v).Kind() {
-	case reflect.Float32:
-	case reflect.Float64:
+        case reflect.Float32, reflect.Float64:
+        case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+        case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 	default:
 		return nil, error_{"float", v, path}
 	}
-	return reflect.ValueOf(v).Float(), nil
+	var floatValue float64
+	return reflect.ValueOf(v).Convert( reflect.TypeOf(floatValue) ).Float() , nil
 }

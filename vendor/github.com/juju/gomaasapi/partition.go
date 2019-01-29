@@ -12,14 +12,19 @@ import (
 type partition struct {
 	resourceURI string
 
-	id   int
-	path string
-	uuid string
-
+	id      int
+	path    string
+	uuid    string
 	usedFor string
 	size    uint64
+	tags    []string
 
 	filesystem *filesystem
+}
+
+// Type implements Partition.
+func (p *partition) Type() string {
+	return "partition"
 }
 
 // ID implements Partition.
@@ -53,6 +58,11 @@ func (p *partition) UsedFor() string {
 // Size implements Partition.
 func (p *partition) Size() uint64 {
 	return p.size
+}
+
+// Tags implements Partition.
+func (p *partition) Tags() []string {
+	return p.tags
 }
 
 func readPartitions(controllerVersion version.Number, source interface{}) ([]*partition, error) {
@@ -103,17 +113,17 @@ func partition_2_0(source map[string]interface{}) (*partition, error) {
 	fields := schema.Fields{
 		"resource_uri": schema.String(),
 
-		"id":   schema.ForceInt(),
-		"path": schema.String(),
-		"uuid": schema.OneOf(schema.Nil(""), schema.String()),
-
+		"id":       schema.ForceInt(),
+		"path":     schema.String(),
+		"uuid":     schema.OneOf(schema.Nil(""), schema.String()),
 		"used_for": schema.String(),
 		"size":     schema.ForceUint(),
+		"tags":     schema.List(schema.String()),
 
 		"filesystem": schema.OneOf(schema.Nil(""), schema.StringMap(schema.Any())),
 	}
 	defaults := schema.Defaults{
-		"uuid": "",
+		"tags": []string{},
 	}
 	checker := schema.FieldMap(fields, defaults)
 	coerced, err := checker.Coerce(source, nil)
@@ -125,21 +135,24 @@ func partition_2_0(source map[string]interface{}) (*partition, error) {
 	// contains fields of the right type.
 
 	var filesystem *filesystem
-	if fsSource := valid["filesystem"]; fsSource != nil {
-		filesystem, err = filesystem2_0(fsSource.(map[string]interface{}))
-		if err != nil {
+	if fsSource, ok := valid["filesystem"].(map[string]interface{}); ok {
+		if filesystem, err = filesystem2_0(fsSource); err != nil {
 			return nil, errors.Trace(err)
 		}
 	}
+
 	uuid, _ := valid["uuid"].(string)
 	result := &partition{
 		resourceURI: valid["resource_uri"].(string),
-		id:          valid["id"].(int),
-		path:        valid["path"].(string),
-		uuid:        uuid,
-		usedFor:     valid["used_for"].(string),
-		size:        valid["size"].(uint64),
-		filesystem:  filesystem,
+
+		id:      valid["id"].(int),
+		path:    valid["path"].(string),
+		uuid:    uuid,
+		usedFor: valid["used_for"].(string),
+		size:    valid["size"].(uint64),
+		tags:    convertToStringSlice(valid["tags"]),
+
+		filesystem: filesystem,
 	}
 	return result, nil
 }
