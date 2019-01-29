@@ -178,12 +178,7 @@ func (m *machine) PhysicalBlockDevices() []BlockDevice {
 
 // PhysicalBlockDevice implements Machine.
 func (m *machine) PhysicalBlockDevice(id int) BlockDevice {
-	for _, blockDevice := range m.physicalBlockDevices {
-		if blockDevice.ID() == id {
-			return blockDevice
-		}
-	}
-	return nil
+	return blockDeviceById(id, m.PhysicalBlockDevices())
 }
 
 // BlockDevices implements Machine.
@@ -193,6 +188,36 @@ func (m *machine) BlockDevices() []BlockDevice {
 		result[i] = v
 	}
 	return result
+}
+
+// BlockDevice implements Machine.
+func (m *machine) BlockDevice(id int) BlockDevice {
+	return blockDeviceById(id, m.BlockDevices())
+}
+
+func blockDeviceById(id int, blockDevices []BlockDevice) BlockDevice {
+	for _, blockDevice := range blockDevices {
+		if blockDevice.ID() == id {
+			return blockDevice
+		}
+	}
+	return nil
+}
+
+// Partition implements Machine.
+func (m *machine) Partition(id int) Partition {
+	return partitionById(id, m.BlockDevices())
+}
+
+func partitionById(id int, blockDevices []BlockDevice) Partition {
+	for _, blockDevice := range blockDevices {
+		for _, partition := range blockDevice.Partitions() {
+			if partition.ID() == id {
+				return partition
+			}
+		}
+	}
+	return nil
 }
 
 // Devices implements Machine.

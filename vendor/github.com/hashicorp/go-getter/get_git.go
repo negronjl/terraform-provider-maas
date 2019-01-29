@@ -1,6 +1,7 @@
 package getter
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
@@ -11,18 +12,22 @@ import (
 	"strings"
 
 	urlhelper "github.com/hashicorp/go-getter/helper/url"
-	"github.com/hashicorp/go-version"
+	safetemp "github.com/hashicorp/go-safetemp"
+	version "github.com/hashicorp/go-version"
 )
 
 // GitGetter is a Getter implementation that will download a module from
 // a git repository.
-type GitGetter struct{}
+type GitGetter struct {
+	getter
+}
 
 func (g *GitGetter) ClientMode(_ *url.URL) (ClientMode, error) {
 	return ClientModeDir, nil
 }
 
 func (g *GitGetter) Get(dst string, u *url.URL) error {
+	ctx := g.Context()
 	if _, err := exec.LookPath("git"); err != nil {
 		return fmt.Errorf("git must be available and on the PATH")
 	}
@@ -77,15 +82,35 @@ func (g *GitGetter) Get(dst string, u *url.URL) error {
 		}
 	}
 
+	// For SSH-style URLs, if they use the SCP syntax of host:path, then
+	// the URL will be mangled. We detect that here and correct the path.
+	// Example: host:path/bar will turn into host/path/bar
+	if u.Scheme == "ssh" {
+		if idx := strings.Index(u.Host, ":"); idx > -1 {
+			// Copy the URL so we don't modify the input
+			var newU url.URL = *u
+			u = &newU
+
+			// Path includes the part after the ':'.
+			u.Path = u.Host[idx+1:] + u.Path
+			if u.Path[0] != '/' {
+				u.Path = "/" + u.Path
+			}
+
+			// Host trims up to the :
+			u.Host = u.Host[:idx]
+		}
+	}
+
 	// Clone or update the repository
 	_, err := os.Stat(dst)
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
 	if err == nil {
-		err = g.update(dst, sshKeyFile, ref)
+		err = g.update(ctx, dst, sshKeyFile, ref)
 	} else {
-		err = g.clone(dst, sshKeyFile, u)
+		err = g.clone(ctx, dst, sshKeyFile, u)
 	}
 	if err != nil {
 		return err
@@ -99,19 +124,17 @@ func (g *GitGetter) Get(dst string, u *url.URL) error {
 	}
 
 	// Lastly, download any/all submodules.
-	return g.fetchSubmodules(dst, sshKeyFile)
+	return g.fetchSubmodules(ctx, dst, sshKeyFile)
 }
 
 // GetFile for Git doesn't support updating at this time. It will download
 // the file every time.
 func (g *GitGetter) GetFile(dst string, u *url.URL) error {
-	td, err := ioutil.TempDir("", "getter-git")
+	td, tdcloser, err := safetemp.Dir("", "getter")
 	if err != nil {
 		return err
 	}
-	if err := os.RemoveAll(td); err != nil {
-		return err
-	}
+	defer tdcloser.Close()
 
 	// Get the filename, and strip the filename from the URL so we can
 	// just get the repository directly.
@@ -139,16 +162,16 @@ func (g *GitGetter) checkout(dst string, ref string) error {
 	return getRunCommand(cmd)
 }
 
-func (g *GitGetter) clone(dst, sshKeyFile string, u *url.URL) error {
-	cmd := exec.Command("git", "clone", u.String(), dst)
+func (g *GitGetter) clone(ctx context.Context, dst, sshKeyFile string, u *url.URL) error {
+	cmd := exec.CommandContext(ctx, "git", "clone", u.String(), dst)
 	setupGitEnv(cmd, sshKeyFile)
 	return getRunCommand(cmd)
 }
 
-func (g *GitGetter) update(dst, sshKeyFile, ref string) error {
+func (g *GitGetter) update(ctx context.Context, dst, sshKeyFile, ref string) error {
 	// Determine if we're a branch. If we're NOT a branch, then we just
 	// switch to master prior to checking out
-	cmd := exec.Command("git", "show-ref", "-q", "--verify", "refs/heads/"+ref)
+	cmd := exec.CommandContext(ctx, "git", "show-ref", "-q", "--verify", "refs/heads/"+ref)
 	cmd.Dir = dst
 
 	if getRunCommand(cmd) != nil {
@@ -170,8 +193,8 @@ func (g *GitGetter) update(dst, sshKeyFile, ref string) error {
 }
 
 // fetchSubmodules downloads any configured submodules recursively.
-func (g *GitGetter) fetchSubmodules(dst, sshKeyFile string) error {
-	cmd := exec.Command("git", "submodule", "update", "--init", "--recursive")
+func (g *GitGetter) fetchSubmodules(ctx context.Context, dst, sshKeyFile string) error {
+	cmd := exec.CommandContext(ctx, "git", "submodule", "update", "--init", "--recursive")
 	cmd.Dir = dst
 	setupGitEnv(cmd, sshKeyFile)
 	return getRunCommand(cmd)
@@ -180,17 +203,34 @@ func (g *GitGetter) fetchSubmodules(dst, sshKeyFile string) error {
 // setupGitEnv sets up the environment for the given command. This is used to
 // pass configuration data to git and ssh and enables advanced cloning methods.
 func setupGitEnv(cmd *exec.Cmd, sshKeyFile string) {
-	var sshOpts []string
+	const gitSSHCommand = "GIT_SSH_COMMAND="
+	var sshCmd []string
+
+	// If we have an existing GIT_SSH_COMMAND, we need to append our options.
+	// We will also remove our old entry to make sure the behavior is the same
+	// with versions of Go < 1.9.
+	env := os.Environ()
+	for i, v := range env {
+		if strings.HasPrefix(v, gitSSHCommand) {
+			sshCmd = []string{v}
+
+			env[i], env[len(env)-1] = env[len(env)-1], env[i]
+			env = env[:len(env)-1]
+			break
+		}
+	}
+
+	if len(sshCmd) == 0 {
+		sshCmd = []string{gitSSHCommand + "ssh"}
+	}
 
 	if sshKeyFile != "" {
 		// We have an SSH key temp file configured, tell ssh about this.
-		sshOpts = append(sshOpts, "-i", sshKeyFile)
+		sshCmd = append(sshCmd, "-i", sshKeyFile)
 	}
 
-	cmd.Env = append(os.Environ(),
-		// Set the ssh command to use for clones.
-		"GIT_SSH_COMMAND=ssh "+strings.Join(sshOpts, " "),
-	)
+	env = append(env, strings.Join(sshCmd, " "))
+	cmd.Env = env
 }
 
 // checkGitVersion is used to check the version of git installed on the system
@@ -208,7 +248,7 @@ func checkGitVersion(min string) error {
 	}
 
 	fields := strings.Fields(string(out))
-	if len(fields) != 3 {
+	if len(fields) < 3 {
 		return fmt.Errorf("Unexpected 'git version' output: %q", string(out))
 	}
 

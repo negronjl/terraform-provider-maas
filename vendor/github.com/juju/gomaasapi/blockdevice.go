@@ -13,6 +13,7 @@ type blockdevice struct {
 	resourceURI string
 
 	id      int
+	uuid    string
 	name    string
 	model   string
 	idPath  string
@@ -24,12 +25,23 @@ type blockdevice struct {
 	usedSize  uint64
 	size      uint64
 
+	filesystem *filesystem
 	partitions []*partition
+}
+
+// Type implements BlockDevice
+func (b *blockdevice) Type() string {
+	return "blockdevice"
 }
 
 // ID implements BlockDevice.
 func (b *blockdevice) ID() int {
 	return b.id
+}
+
+// UUID implements BlockDevice.
+func (b *blockdevice) UUID() string {
+	return b.uuid
 }
 
 // Name implements BlockDevice.
@@ -75,6 +87,11 @@ func (b *blockdevice) UsedSize() uint64 {
 // Size implements BlockDevice.
 func (b *blockdevice) Size() uint64 {
 	return b.size
+}
+
+// FileSystem implements BlockDevice.
+func (b *blockdevice) FileSystem() FileSystem {
+	return b.filesystem
 }
 
 // Partitions implements BlockDevice.
@@ -135,6 +152,7 @@ func blockdevice_2_0(source map[string]interface{}) (*blockdevice, error) {
 		"resource_uri": schema.String(),
 
 		"id":       schema.ForceInt(),
+		"uuid":     schema.OneOf(schema.Nil(""), schema.String()),
 		"name":     schema.String(),
 		"model":    schema.OneOf(schema.Nil(""), schema.String()),
 		"id_path":  schema.OneOf(schema.Nil(""), schema.String()),
@@ -146,6 +164,7 @@ func blockdevice_2_0(source map[string]interface{}) (*blockdevice, error) {
 		"used_size":  schema.ForceUint(),
 		"size":       schema.ForceUint(),
 
+		"filesystem": schema.OneOf(schema.Nil(""), schema.StringMap(schema.Any())),
 		"partitions": schema.List(schema.StringMap(schema.Any())),
 	}
 	checker := schema.FieldMap(fields, nil)
@@ -157,17 +176,25 @@ func blockdevice_2_0(source map[string]interface{}) (*blockdevice, error) {
 	// From here we know that the map returned from the schema coercion
 	// contains fields of the right type.
 
+	var filesystem *filesystem
+	if fsSource, ok := valid["filesystem"].(map[string]interface{}); ok {
+		if filesystem, err = filesystem2_0(fsSource); err != nil {
+			return nil, errors.Trace(err)
+		}
+	}
 	partitions, err := readPartitionList(valid["partitions"].([]interface{}), partition_2_0)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
 
+	uuid, _ := valid["uuid"].(string)
 	model, _ := valid["model"].(string)
 	idPath, _ := valid["id_path"].(string)
 	result := &blockdevice{
 		resourceURI: valid["resource_uri"].(string),
 
 		id:      valid["id"].(int),
+		uuid:    uuid,
 		name:    valid["name"].(string),
 		model:   model,
 		idPath:  idPath,
@@ -179,6 +206,7 @@ func blockdevice_2_0(source map[string]interface{}) (*blockdevice, error) {
 		usedSize:  valid["used_size"].(uint64),
 		size:      valid["size"].(uint64),
 
+		filesystem: filesystem,
 		partitions: partitions,
 	}
 	return result, nil
