@@ -25,7 +25,7 @@ provider "maas" {
 }
 ```
 
-### Resource Configuration (maas_instance)
+### Resource Configuration (maas_machine)
 This provider is only able to deploy and release nodes already registered and configured in MAAS.  The selection mechanism for the nodes is a subset of criteria described in the MAAS API (https://maas.ubuntu.com/docs/api.html#nodes).  Currently, this provider supports:
 
 - **hostnames**: Host name to try to allocate.
@@ -36,31 +36,31 @@ This provider is only able to deploy and release nodes already registered and co
 
 The above constraints parameters can be used to acquire a node that possesses certain characteristics. All the constraints are optional and when multiple constraints are provided, they are combined using ‘AND’ semantics.  In the absence of any constraints, a random node will be selected and deployed.  The examples in the next section attempt to explain how to use the resource.
 
-#### `maas_instance`
+#### `maas_machine`
 ##### Deploy a Random node
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
 	count = 1
 }
 ```
 
 ##### Deploy three random nodes
 ```
-resource "maas_instance" "maas_three_random_nodes" {
+resource "maas_machine" "maas_three_random_nodes" {
 	count = 3
 }
 ```
 
 ##### Deploy a node named "node-1"
 ```
-resource "maas_instance" "maas_node_1" {
+resource "maas_machine" "maas_node_1" {
 	hostname = "node-1"
 }
 ```
 
 ##### Deploy three nodes with at least 8G of RAM
 ```
-resource "maas_instance" "maas_three_nodes_8g" {
+resource "maas_machine" "maas_three_nodes_8g" {
 	memory = "8G"
 	count = 3
 }
@@ -82,7 +82,7 @@ Header for script (shebang):
 
 Example (read from file):
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
     count = 1
     
     user_data = "${file("${path.module}/user_data/test_data.txt")}"
@@ -91,7 +91,7 @@ resource "maas_instance" "maas_single_random_node" {
 
 ### Specify a comment in the event log
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
     count = 1
     
     comment = "Platform deployment"
@@ -100,7 +100,7 @@ resource "maas_instance" "maas_single_random_node" {
 
 ### Use tags to restrict deployments to specific nodes
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
     count = 1
     
     tags = ["DELL_R630", "APP_CLASS"]
@@ -109,7 +109,7 @@ resource "maas_instance" "maas_single_random_node" {
 
 ### Specify the hostname for the deployed node
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
     count = 1
     
     deploy_hostname = "freedompants"
@@ -118,7 +118,7 @@ resource "maas_instance" "maas_single_random_node" {
 
 ### Specify tags for the deployed node
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
     count = 1
     
     deploy_tags = ["hostwiththemost", "platform"]
@@ -128,7 +128,7 @@ resource "maas_instance" "maas_single_random_node" {
 ### Select distro for a node
 Useful for custom OS builds
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
     count = 1
 
     distro_series = "centos73" 
@@ -161,7 +161,7 @@ There are a few options when releasing a system:
 The default option is to always perform an erase.
 
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
     count = 1
 }
 ```
@@ -169,7 +169,7 @@ resource "maas_instance" "maas_single_random_node" {
 This shows what is set by default in Terraform. You are not required to set this option.
 
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
     count = 1
 
     release_erase = true
@@ -179,7 +179,7 @@ resource "maas_instance" "maas_single_random_node" {
 How to disable the disk erasure.
 
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
     count = 1
     
     release_erase = false
@@ -190,7 +190,7 @@ resource "maas_instance" "maas_single_random_node" {
 
 
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
     count = 1
 
     release_erase_secure = true
@@ -200,7 +200,7 @@ resource "maas_instance" "maas_single_random_node" {
 ### Quick erase option
 
 ```
-resource "maas_instance" "maas_single_random_node" {
+resource "maas_machine" "maas_single_random_node" {
     count = 1
 
     release_erase_quick = true

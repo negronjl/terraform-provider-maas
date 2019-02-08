@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"log"
 	"net/url"
 	"strconv"
@@ -68,7 +67,7 @@ func maasReleaseNode(maas *gomaasapi.MAASObject, system_id string, params url.Va
 	return nil
 }
 
-// getNodeStatus Convenience function used by resourceMAASInstanceCreate as a refresh function
+// getNodeStatus Convenience function used by resourceMAASMachineCreate as a refresh function
 // to determine the current status of a particular MAAS managed node.
 // The function takes a fully intitialized MAASObject and a system_id.
 // It returns StateRefreshFunc resource ( which itself returns a copy of the
@@ -82,13 +81,31 @@ func getNodeStatus(maas *gomaasapi.MAASObject, system_id string) resource.StateR
 			return nil, "", err
 		}
 
-		nodeStatus := strconv.FormatUint(uint64(nodeObject.status), 10)
+		var statusRetVal string
+		switch nodeStatus := strconv.FormatUint(uint64(nodeObject.status), 10); nodeStatus {
+		case gomaasapi.NodeStatusReady:
+			statusRetVal = "Ready"
+		case gomaasapi.NodeStatusDeployed:
+			statusRetVal = "Deployed"
+		case gomaasapi.NodeStatusAllocated:
+			statusRetVal = "Allocated"
+		case gomaasapi.NodeStatusDeploying:
+			statusRetVal = "Deploying"
+		case gomaasapi.NodeStatusReleasing:
+			statusRetVal = "Releasing"
+		case gomaasapi.NodeStatusFailedDeployment:
+			statusRetVal = "Failed deployment"
+		case gomaasapi.NodeStatusFailedReleasing:
+			statusRetVal = "Releasing failed"
+		case gomaasapi.NodeStatusDiskErasing:
+			statusRetVal = "Disk erasing"
+		case gomaasapi.NodeStatusFailedDiskErasing:
+			statusRetVal = "Failed disk erasing"
+		default:
+			statusRetVal = "unknown"
+		}
 
-		var statusRetVal bytes.Buffer
-		statusRetVal.WriteString(nodeStatus)
-		statusRetVal.WriteString(":")
-
-		return nodeObject, statusRetVal.String(), nil
+		return nodeObject, statusRetVal, nil
 	}
 }
 

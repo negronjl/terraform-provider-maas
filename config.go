@@ -144,21 +144,35 @@ func toNodeInfo(nodeObject *gomaasapi.MAASObject) (*NodeInfo, error) {
 
 // Config provider configuration
 type Config struct {
-	APIKey     string
-	APIURL     string
-	APIver     string
+	APIKey string
+	APIURL string
+	APIver string
+
 	MAASObject *gomaasapi.MAASObject
+	client     gomaasapi.Client
+	controller gomaasapi.Controller
 }
 
 // Client authenticate to MAAS and create a session
 func (c *Config) Client() (interface{}, error) {
 	log.Println("[DEBUG] [Config.Client] Configuring the MAAS API client")
-	authClient, err := gomaasapi.NewAuthenticatedClient(
+	controller, err := gomaasapi.NewController(gomaasapi.ControllerArgs{
+		BaseURL: c.APIURL,
+		APIKey:  c.APIKey,
+	})
+	if err != nil {
+		log.Printf("[ERROR] [Config.Client] Unable to authenticate against the MAAS Server (%s)", c.APIURL)
+		return nil, err
+	}
+
+	client, err := gomaasapi.NewAuthenticatedClient(
 		gomaasapi.AddAPIVersionToURL(c.APIURL, c.APIver), c.APIKey)
 	if err != nil {
 		log.Printf("[ERROR] [Config.Client] Unable to authenticate against the MAAS Server (%s)", c.APIURL)
 		return nil, err
 	}
-	c.MAASObject = gomaasapi.NewMAAS(*authClient)
+	c.MAASObject = gomaasapi.NewMAAS(*client)
+	c.controller = controller
+	c.client = *client
 	return c, nil
 }
