@@ -64,6 +64,12 @@ func resourceMAASMachine() *schema.Resource {
 				ForceNew: true,
 			},
 
+			"deploy": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+			},
+
 			"deploy_hostname": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -344,30 +350,17 @@ func resourceMAASMachine() *schema.Resource {
 			},
 
 			"zone": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"description": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"name": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"resource_uri": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
+				ConflictsWith: []string{"not_in_zones"},
 			},
 
-			"not_zones": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+			"not_in_zones": {
+				Type:          schema.TypeList,
+				Optional:      true,
+				Elem:          &schema.Schema{Type: schema.TypeString},
+				ConflictsWith: []string{"zone"},
 			},
 
 			"user_data": {
@@ -469,38 +462,15 @@ func resourceMAASMachineCreate(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 
-	startArgs := gomaasapi.StartArgs{
-		UserData:     base64encode(d.Get("user_data").(string)),
-		DistroSeries: d.Get("distro_series").(string),
-		Kernel:       d.Get("hwe_kernel").(string),
-		Comment:      d.Get("comment").(string),
-	}
-
-	if err := machine.Start(startArgs); err != nil {
-		log.Printf("[ERROR] [resourceMAASMachineCreate] Unable to power up node: %s\n", d.Id())
-		// unable to perform action, release the node
-		if err := resourceMAASMachineDelete(d, meta); err != nil {
-			log.Printf("[DEBUG] Unable to release node: %s", err.Error())
+	if d.Get("deploy").(bool) {
+		if err := startMachine(d, meta, machine); err != nil {
+			// unable to perform action, release the node
+			if err := resourceMAASMachineDelete(d, meta); err != nil {
+				log.Printf("[DEBUG] Unable to release node: %s", err.Error())
+			}
+			return err
 		}
-		return err
 	}
-
-	stateConf := &resource.StateChangeConf{
-		Pending:    []string{"Deploying", "Ready"},
-		Target:     []string{"Deployed"},
-		Refresh:    getNodeStatus(meta.(*Config).MAASObject, d.Id()),
-		Timeout:    25 * time.Minute,
-		Delay:      10 * time.Second,
-		MinTimeout: 3 * time.Second,
-	}
-
-	if _, err := stateConf.WaitForState(); err != nil {
-		if err := resourceMAASMachineDelete(d, meta); err != nil {
-			log.Printf("[DEBUG] Unable to release node: %s", err.Error())
-		}
-		return fmt.Errorf("[ERROR] [resourceMAASMachineCreate] Error waiting for machine (%s) to become deployed: %s", machine.SystemID(), err)
-	}
-
 	// update node tags
 	if tags, ok := d.GetOk("deploy_tags"); ok {
 		for i := range tags.([]interface{}) {
@@ -526,7 +496,57 @@ func resourceMAASMachineRead(d *schema.ResourceData, meta interface{}) error {
 func resourceMAASMachineUpdate(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] [resourceMAASMachineUpdate] Modifying machine %s\n", d.Id())
 
+	controller := meta.(*Config).controller
+	var ids []string
+	machines, err := controller.Machines(gomaasapi.MachinesArgs{
+		SystemIDs: append(ids, d.Id()),
+	})
+	if err != nil {
+		log.Printf("[ERROR] [resourceMAASMachineUpdate] cannnot list machines")
+		return err
+	}
+	if len(machines) != 1 {
+		return fmt.Errorf("[ERROR] [resourceMAASMachineUpdate] machine no longer exists")
+	}
 	d.Partial(true)
+
+	if d.HasChange("deploy") {
+		oraw, nraw := d.GetChange("deploy")
+		newDeploy := nraw.(bool)
+		oldDeploy := oraw.(bool)
+		if newDeploy {
+			switch machines[0].StatusName() {
+			case "Allocated":
+				// Start Deploy
+				if err := startMachine(d, meta, machines[0]); err != nil {
+					log.Printf("[WARN] Unable to start machine: %s", err.Error())
+					if err := reAllocate(d, meta); err != nil {
+						log.Printf("[ERROR] Unable to reallocate machine")
+						return err
+					}
+					d.Set("deploy", oldDeploy)
+					d.SetPartial("deploy")
+				}
+
+			case "Deployed":
+				// This shouldn't happen
+				log.Printf("[WARN] [resourceMAASMachineUpdate] unexpected Deployed state")
+			}
+		} else {
+			switch machines[0].StatusName() {
+			case "Allocated":
+				// This shouldn't happen
+				log.Printf("[WARN] [resourceMAASMachineUpdate] unexpected Deployed state")
+			case "Deployed":
+				// Release and then re-allocate, there is a tiny window chance where before re-allocating, the machine could have been acquired by someone else
+				if err := reAllocate(d, meta); err != nil {
+					d.Set("deploy", oldDeploy)
+					d.SetPartial("deploy")
+					return err
+				}
+			}
+		}
+	}
 
 	d.Partial(false)
 
@@ -545,11 +565,11 @@ func resourceMAASMachineDelete(d *schema.ResourceData, meta interface{}) error {
 		SystemIDs: append(ids, d.Id()),
 	})
 	if err != nil {
-		log.Printf("[ERROR] [resourceMAASMachineDetele] cannnot list machines")
+		log.Printf("[ERROR] [resourceMAASMachineDelete] cannnot list machines")
 		return err
 	}
 	if len(machines) != 1 {
-		return fmt.Errorf("[ERROR] [resourceMAASMachineDetele] machine no longer exists")
+		return fmt.Errorf("[ERROR] [resourceMAASMachineDelete] machine no longer exists")
 	}
 	release_params := url.Values{}
 
@@ -672,16 +692,12 @@ func convertConstraints(d *schema.ResourceData) gomaasapi.AllocateMachineArgs {
 		args.NotTags = expandStringList(notTags.([]interface{}))
 	}
 
-	zone := d.Get("zone").(*schema.Set).List()
-
-	if len(zone) > 0 {
-		//use first zone only
-		z := zone[0].(map[string]interface{})
-		args.Zone = z["name"].(string)
+	if zone, ok := d.GetOk("zone"); ok {
+		args.Zone = zone.(string)
 	}
 
-	if notZones, ok := d.GetOk("not_zones"); ok {
-		args.NotInZone = expandStringList(notZones.([]interface{}))
+	if notInZones, ok := d.GetOk("not_in_zones"); ok {
+		args.NotInZone = expandStringList(notInZones.([]interface{}))
 	}
 
 	volumes := d.Get("volumes").(*schema.Set).List()
@@ -718,4 +734,67 @@ func getSubnets(controller gomaasapi.Controller) (map[string]gomaasapi.Subnet, e
 	}
 
 	return subnets, nil
+}
+
+func reAllocate(d *schema.ResourceData, meta interface{}) error {
+	controller := meta.(*Config).controller
+
+	// Release
+	if err := controller.ReleaseMachines(gomaasapi.ReleaseMachinesArgs{
+		SystemIDs: []string{d.Id()},
+	}); err != nil {
+		return err
+	}
+
+	stateConf := &resource.StateChangeConf{
+		Pending:    []string{"Deployed", "Releasing"},
+		Target:     []string{"Ready"},
+		Refresh:    getNodeStatus(meta.(*Config).MAASObject, d.Id()),
+		Timeout:    30 * time.Minute,
+		Delay:      10 * time.Second,
+		MinTimeout: 3 * time.Second,
+	}
+
+	if _, err := stateConf.WaitForState(); err != nil {
+		return fmt.Errorf(
+			"[ERROR] [resourceMAASMachineUpdate] Error waiting for machine (%s) to become ready: %s", d.Id(), err)
+	}
+
+	// Acquire (quickly before someone else takes it!!!)
+	_, _, err := controller.AllocateMachine(gomaasapi.AllocateMachineArgs{
+		SystemId: d.Id(),
+	})
+	if err != nil {
+		log.Println("[ERROR] [resourceMAASMachineUpdate] Unable to allocate machine.")
+		return err
+	}
+	return nil
+}
+
+func startMachine(d *schema.ResourceData, meta interface{}, machine gomaasapi.Machine) error {
+	startArgs := gomaasapi.StartArgs{
+		UserData:     base64encode(d.Get("user_data").(string)),
+		DistroSeries: d.Get("distro_series").(string),
+		Kernel:       d.Get("hwe_kernel").(string),
+		Comment:      d.Get("comment").(string),
+	}
+
+	if err := machine.Start(startArgs); err != nil {
+		log.Printf("[ERROR] [resourceMAASMachineUpdate] Unable to power up node: %s\n", d.Id())
+		return err
+	}
+
+	stateConf := &resource.StateChangeConf{
+		Pending:    []string{"Deploying", "Releasing"},
+		Target:     []string{"Deployed"},
+		Refresh:    getNodeStatus(meta.(*Config).MAASObject, d.Id()),
+		Timeout:    25 * time.Minute,
+		Delay:      10 * time.Second,
+		MinTimeout: 3 * time.Second,
+	}
+
+	if _, err := stateConf.WaitForState(); err != nil {
+		return fmt.Errorf("[ERROR] [resourceMAASMachineUpdate] Error waiting for machine (%s) to become deployed: %s", d.Id(), err)
+	}
+	return nil
 }
