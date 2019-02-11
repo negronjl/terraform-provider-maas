@@ -350,30 +350,17 @@ func resourceMAASMachine() *schema.Resource {
 			},
 
 			"zone": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"description": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"name": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"resource_uri": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
+				ConflictsWith: []string{"not_in_zones"},
 			},
 
-			"not_zones": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+			"not_in_zones": {
+				Type:          schema.TypeList,
+				Optional:      true,
+				Elem:          &schema.Schema{Type: schema.TypeString},
+				ConflictsWith: []string{"zone"},
 			},
 
 			"user_data": {
@@ -705,16 +692,12 @@ func convertConstraints(d *schema.ResourceData) gomaasapi.AllocateMachineArgs {
 		args.NotTags = expandStringList(notTags.([]interface{}))
 	}
 
-	zone := d.Get("zone").(*schema.Set).List()
-
-	if len(zone) > 0 {
-		//use first zone only
-		z := zone[0].(map[string]interface{})
-		args.Zone = z["name"].(string)
+	if zone, ok := d.GetOk("zone"); ok {
+		args.Zone = zone.(string)
 	}
 
-	if notZones, ok := d.GetOk("not_zones"); ok {
-		args.NotInZone = expandStringList(notZones.([]interface{}))
+	if notInZones, ok := d.GetOk("not_in_zones"); ok {
+		args.NotInZone = expandStringList(notInZones.([]interface{}))
 	}
 
 	volumes := d.Get("volumes").(*schema.Set).List()
