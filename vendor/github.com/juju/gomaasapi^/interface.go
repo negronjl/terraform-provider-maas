@@ -6,6 +6,8 @@ package gomaasapi
 import (
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/juju/errors"
 	"github.com/juju/schema"
@@ -306,6 +308,72 @@ func (i *interface_) UnlinkSubnet(subnet Subnet) error {
 	i.updateFrom(response)
 
 	return nil
+}
+
+// CreateVLANInterfaceArgs is an argument struct for passing parameters to
+// the Machine.CreateVLANInterface method.
+type CreateVLANInterfaceArgs struct {
+	// VLAN is the untagged VLAN the interface is connected to (required).
+	VLAN VLAN
+	// Tags to attach to the interface (optional).
+	Tags []string
+	// MTU - Maximum transmission unit. (optional)
+	MTU int
+	// AcceptRA - Accept router advertisements. (IPv6 only)
+	AcceptRA bool
+	// Autoconf - Perform stateless autoconfiguration. (IPv6 only)
+	Autoconf bool
+}
+
+// Validate checks the required fields are set for the arg structure.
+func (a *CreateVLANInterfaceArgs) Validate() error {
+	if a.VLAN == nil {
+		return errors.NotValidf("missing VLAN")
+	}
+	return nil
+}
+
+// interfacesURI used to add child interfaces to this interface.  We need to strip the interface ID in URI to make post call
+func (i *interface_) interfacesURI() string {
+	return strings.Replace(i.resourceURI, "/"+strconv.Itoa(i.ID())+"/", "/", 1)
+}
+
+// CreateInterface implements Device.
+func (i *interface_) CreateVLANInterface(args CreateVLANInterfaceArgs) (Interface, error) {
+	if err := args.Validate(); err != nil {
+		return nil, errors.Trace(err)
+	}
+	params := NewURLParams()
+	params.Values.Add("vlan", fmt.Sprint(args.VLAN.ID()))
+	params.MaybeAddInt("parent", i.ID())
+	params.MaybeAdd("tags", strings.Join(args.Tags, ","))
+	params.MaybeAddInt("mtu", args.MTU)
+	params.MaybeAddBool("accept_ra", args.AcceptRA)
+	params.MaybeAddBool("autoconf", args.Autoconf)
+	result, err := i.controller.post(i.interfacesURI(), "create_vlan", params.Values)
+	if err != nil {
+		if svrErr, ok := errors.Cause(err).(ServerError); ok {
+			switch svrErr.StatusCode {
+			case http.StatusNotFound, http.StatusConflict:
+				return nil, errors.Wrap(err, NewBadRequestError(svrErr.BodyMessage))
+			case http.StatusForbidden:
+				return nil, errors.Wrap(err, NewPermissionError(svrErr.BodyMessage))
+			case http.StatusServiceUnavailable:
+				return nil, errors.Wrap(err, NewCannotCompleteError(svrErr.BodyMessage))
+			}
+		}
+		return nil, NewUnexpectedError(err)
+	}
+
+	iface, err := readInterface(i.controller.apiVersion, result)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	iface.controller = i.controller
+
+	// TODO: add to the interfaces for the device when the interfaces are returned.
+	// lp:bug 1567213.
+	return iface, nil
 }
 
 func readInterface(controllerVersion version.Number, source interface{}) (*interface_, error) {

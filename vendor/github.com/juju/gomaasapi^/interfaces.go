@@ -327,6 +327,9 @@ type Interface interface {
 	// UnlinkSubnet will remove the Link to the subnet, and release the IP
 	// address associated if there is one.
 	UnlinkSubnet(Subnet) error
+
+	// CreateVLANInterface will create a logical interface
+	CreateVLANInterface(CreateVLANInterfaceArgs) (Interface, error)
 }
 
 // Link represents a network link between an Interface and a Subnet.

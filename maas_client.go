@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -184,9 +186,27 @@ func nodesAllocate(maas *gomaasapi.MAASObject, params url.Values) (*NodeInfo, er
 	return toNodeInfo(&maasNodesObject)
 }
 
-// nodeRelease release a node back into the ready state
-func nodeRelease(maas *gomaasapi.MAASObject, system_id string, params url.Values) error {
-	return maasReleaseNode(maas, system_id, params)
+// nodeRelease release a node back into the ready state.  It will wait for node to be in Ready state before returning.
+func nodeRelease(d *schema.ResourceData, meta interface{}, params url.Values) error {
+
+	if err := maasReleaseNode(meta.(*Config).MAASObject, d.Id(), params); err != nil {
+		return err
+	}
+
+	stateConf := &resource.StateChangeConf{
+		Pending:    []string{"Deployed", "Releasing", "Disk erasing"},
+		Target:     []string{"Ready"},
+		Refresh:    getNodeStatus(meta.(*Config).MAASObject, d.Id()),
+		Timeout:    30 * time.Minute,
+		Delay:      10 * time.Second,
+		MinTimeout: 3 * time.Second,
+	}
+
+	if _, err := stateConf.WaitForState(); err != nil {
+		return fmt.Errorf(
+			"[ERROR] Error waiting for machine (%s) to become ready: %s", d.Id(), err)
+	}
+	return nil
 }
 
 // nodeUpdate update a node with new information
