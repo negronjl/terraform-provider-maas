@@ -4,14 +4,15 @@
 package gomaasapi
 
 import (
+	"net/http"
+
 	"github.com/juju/errors"
 	"github.com/juju/schema"
 	"github.com/juju/version"
 )
 
 type fabric struct {
-	// Add the controller in when we need to do things with the fabric.
-	// controller Controller
+	controller *controller
 
 	resourceURI string
 
@@ -35,6 +36,43 @@ func (f *fabric) Name() string {
 // ClassType implements Fabric.
 func (f *fabric) ClassType() string {
 	return f.classType
+}
+
+// UpdateInterfaceArgs is an argument struct for calling Interface.Update.
+type CreateVLANArgs struct {
+	Name        string
+	Description string
+	VID         int
+	MTU         int
+	Space       string
+}
+
+// CreateVLAN creates a new VLAN
+func (f *fabric) CreateVLAN(args CreateVLANArgs) (VLAN, error) {
+
+	params := NewURLParams()
+	params.MaybeAdd("name", args.Name)
+	params.MaybeAdd("description", args.Description)
+	params.MaybeAddInt("vid", args.VID)
+	params.MaybeAddInt("mtu", args.MTU)
+	params.MaybeAdd("space", args.Space)
+	result, err := f.controller.post(f.resourceURI, "vlans", params.Values)
+	if err != nil {
+		if svrErr, ok := errors.Cause(err).(ServerError); ok {
+			if svrErr.StatusCode == http.StatusBadRequest {
+				return nil, errors.Wrap(err, NewBadRequestError(svrErr.BodyMessage))
+			}
+		}
+		// Translate http errors.
+		return nil, NewUnexpectedError(err)
+	}
+
+	vlan, err := readVLAN(f.controller.apiVersion, result)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+
+	return vlan, nil
 }
 
 // VLANs implements Fabric.

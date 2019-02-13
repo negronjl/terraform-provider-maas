@@ -67,6 +67,26 @@ func (v *vlan) SecondaryRack() string {
 	return v.secondaryRack
 }
 
+func readVLAN(controllerVersion version.Number, source interface{}) (*vlan, error) {
+	checker := schema.StringMap(schema.Any())
+	coerced, err := checker.Coerce(source, nil)
+	if err != nil {
+		return nil, errors.Annotatef(err, "vlan base schema check failed")
+	}
+	valid := coerced.(map[string]interface{})
+
+	var deserialisationVersion version.Number
+	for v := range vlanDeserializationFuncs {
+		if v.Compare(deserialisationVersion) > 0 && v.Compare(controllerVersion) <= 0 {
+			deserialisationVersion = v
+		}
+	}
+	if deserialisationVersion == version.Zero {
+		return nil, errors.Errorf("no vlan read func for version %s", controllerVersion)
+	}
+	return vlanDeserializationFuncs[deserialisationVersion](valid)
+}
+
 func readVLANs(controllerVersion version.Number, source interface{}) ([]*vlan, error) {
 	checker := schema.List(schema.StringMap(schema.Any()))
 	coerced, err := checker.Coerce(source, nil)
