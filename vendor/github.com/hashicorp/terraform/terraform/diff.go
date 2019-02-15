@@ -546,7 +546,7 @@ func (d *InstanceDiff) applyBlockDiff(path []string, attrs map[string]string, sc
 					}
 
 					// check for empty "count" keys
-					if strings.HasSuffix(attr, ".#") && diff.New == "0" {
+					if (strings.HasSuffix(attr, ".#") || strings.HasSuffix(attr, ".%")) && diff.New == "0" {
 						continue
 					}
 
@@ -624,7 +624,7 @@ func (d *InstanceDiff) applyBlockDiff(path []string, attrs map[string]string, sc
 						if err != nil {
 							// this shouldn't happen since we added these
 							// ourself, but make note of it just in case.
-							log.Printf("[ERROR] bas list index in %q: %s", k, err)
+							log.Printf("[ERROR] bad list index in %q: %s", k, err)
 							continue
 						}
 						if i >= length {
@@ -665,8 +665,9 @@ func (d *InstanceDiff) applySingleAttrDiff(path []string, attrs map[string]strin
 		return result, nil
 	}
 
-	// "id" must exist and not be an empty string, or it must be unknown
-	if attr == "id" {
+	// "id" must exist and not be an empty string, or it must be unknown.
+	// This only applied to top-level "id" fields.
+	if attr == "id" && len(path) == 1 {
 		if old == "" {
 			result[attr] = config.UnknownVariableValue
 		} else {
@@ -810,9 +811,61 @@ func (d *InstanceDiff) applyCollectionDiff(path []string, attrs map[string]strin
 		}
 	}
 
-	// Don't trust helper/schema to return a valid count, or even have one at
-	// all.
-	result[name+"."+idx] = countFlatmapContainerValues(name+"."+idx, result)
+	// Just like in nested list blocks, for simple lists we may need to fill in
+	// missing empty strings.
+	countKey := name + "." + idx
+	count := result[countKey]
+	length, _ := strconv.Atoi(count)
+
+	if count != "" && count != hcl2shim.UnknownVariableValue &&
+		attrSchema.Type.Equals(cty.List(cty.String)) {
+		// insert empty strings into missing indexes
+		for i := 0; i < length; i++ {
+			key := fmt.Sprintf("%s.%d", name, i)
+			if _, ok := result[key]; !ok {
+				result[key] = ""
+			}
+		}
+	}
+
+	// now check for truncation in any type of list
+	if attrSchema.Type.IsListType() {
+		for key := range result {
+			if key == countKey {
+				continue
+			}
+
+			if len(key) <= len(name)+1 {
+				// not sure what this is, but don't panic
+				continue
+			}
+
+			index := key[len(name)+1:]
+
+			// It is possible to have nested sets or maps, so look for another dot
+			dot := strings.Index(index, ".")
+			if dot > 0 {
+				index = index[:dot]
+			}
+
+			// This shouldn't have any more dots, since the element type is only string.
+			num, err := strconv.Atoi(index)
+			if err != nil {
+				log.Printf("[ERROR] bad list index in %q: %s", currentKey, err)
+				continue
+			}
+
+			if num >= length {
+				delete(result, key)
+			}
+		}
+	}
+
+	// Fill in the count value if it was missing for some reason:
+	if result[countKey] == "" {
+		result[countKey] = countFlatmapContainerValues(countKey, result)
+	}
+
 	return result, nil
 }
 

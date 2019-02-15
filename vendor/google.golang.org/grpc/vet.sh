@@ -13,20 +13,18 @@ die() {
   exit 1
 }
 
+fail_on_output() {
+  tee /dev/stderr | (! read)
+}
+
 # Check to make sure it's safe to modify the user's git repo.
-if git status --porcelain | read; then
-  die "Uncommitted or untracked files found; commit changes first"
-fi
+git status --porcelain | fail_on_output
 
 # Undo any edits made by this script.
 cleanup() {
   git reset --hard HEAD
 }
 trap cleanup EXIT
-
-fail_on_output() {
-  tee /dev/stderr | (! read)
-}
 
 PATH="${GOPATH}/bin:${GOROOT}/bin:${PATH}"
 
@@ -114,6 +112,7 @@ google.golang.org/grpc/balancer_test.go:SA1019
 google.golang.org/grpc/clientconn_test.go:SA1019
 google.golang.org/grpc/balancer/roundrobin/roundrobin_test.go:SA1019
 google.golang.org/grpc/benchmark/benchmain/main.go:SA1019
+google.golang.org/grpc/benchmark/worker/benchmark_client.go:SA1019
 google.golang.org/grpc/internal/transport/handler_server.go:SA1019
 google.golang.org/grpc/internal/transport/handler_server_test.go:SA1019
 google.golang.org/grpc/stats/stats_test.go:SA1019

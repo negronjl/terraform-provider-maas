@@ -47,6 +47,7 @@ The selection mechanism for the machines is a subset of criteria described in th
 - **not_in_zones** - (Optional) List of Availability Zones from which the machine must not be acquired.  If multiple zones are specified, the machine must NOT be associated with ANY of them. 
 - **comment** - (Optional) Comment for the machine event log
 - **deploy** - (Optional) Immediately start deploying machine.  If `False` then only Allocate machine, do not Deploy.  Changing from `False` to `True` will cause the machine to Deploy.  Changing from `True` to `False` will Release the machine and immediately attempt to Allocate.  Default: `True`
+- **sticky_hostname** - (Optional) If `True` then the hostname used for Deploy will stick as the machine's name in MAAS dashboard, otherwise the machine's name will revert to the pre-Deploy hostname.  Default: `False`
 
 The above constraints parameters can be used to acquire a machine that possesses certain characteristics. All the constraints are optional and when multiple constraints are provided, they are combined using ‘AND’ semantics.  In the absence of any constraints, a random node will be selected and deployed.  
 

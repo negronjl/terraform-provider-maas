@@ -937,7 +937,6 @@ func (ac *addrConn) updateConnectivityState(s connectivity.State) {
 	}
 
 	updateMsg := fmt.Sprintf("Subchannel Connectivity change to %v", s)
-	grpclog.Infof(updateMsg)
 	ac.state = s
 	if channelz.IsOn() {
 		channelz.AddTraceEvent(ac.channelzID, &channelz.TraceEventDesc{
@@ -972,6 +971,14 @@ func (ac *addrConn) resetTransport() {
 		}
 		addrs := ac.addrs
 		backoffFor := ac.dopts.bs.Backoff(ac.backoffIdx)
+
+		// This will be the duration that dial gets to finish.
+		dialDuration := getMinConnectTimeout()
+		if dialDuration < backoffFor {
+			// Give dial more time as we keep failing to connect.
+			dialDuration = backoffFor
+		}
+		connectDeadline := time.Now().Add(dialDuration)
 		ac.mu.Unlock()
 
 	addrLoop:
@@ -984,17 +991,7 @@ func (ac *addrConn) resetTransport() {
 			}
 			ac.updateConnectivityState(connectivity.Connecting)
 			ac.transport = nil
-			ac.mu.Unlock()
 
-			// This will be the duration that dial gets to finish.
-			dialDuration := getMinConnectTimeout()
-			if dialDuration < backoffFor {
-				// Give dial more time as we keep failing to connect.
-				dialDuration = backoffFor
-			}
-			connectDeadline := time.Now().Add(dialDuration)
-
-			ac.mu.Lock()
 			ac.cc.mu.RLock()
 			ac.dopts.copts.KeepaliveParams = ac.cc.mkp
 			ac.cc.mu.RUnlock()

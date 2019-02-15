@@ -75,6 +75,16 @@ func resourceMAASMachine() *schema.Resource {
 				ForceNew: true,
 			},
 
+			"original_hostname": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"sticky_hostname": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
+
 			"deploy_tags": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -411,16 +421,8 @@ func resourceMAASMachineCreate(d *schema.ResourceData, meta interface{}) error {
 	// set the node id
 	d.SetId(machine.SystemID())
 
-	// update machine attributes during allocated state
-	params := url.Values{}
-	if hostname, ok := d.GetOk("deploy_hostname"); ok {
-		params.Add("hostname", hostname.(string))
-	}
-
-	err = nodeUpdate(meta.(*Config).MAASObject, d.Id(), params)
-	if err != nil {
-		log.Println("[DEBUG] Unable to update node")
-	}
+	// save original hostname
+	d.Set("original_hostname", machine.Hostname())
 
 	// Update networking interfaces, if set
 	if v, ok := d.GetOk("deploy_interface"); ok {
@@ -513,7 +515,7 @@ func resourceMAASMachineCreate(d *schema.ResourceData, meta interface{}) error {
 							IPAddress: i["ip"].(string),
 						})
 						if err != nil {
-							log.Printf("[ERROR] [resourceMAASMachineCreate] Unable to link subnet ID=%d CIDR=%s to nicID=%d", subnet.ID(), cidr, nic.ID())
+							log.Printf("[ERROR] [resourceMAASMachineCreate] Unable to link subnet ID=%d CIDR=%s to nicID=%d IP=%s", subnet.ID(), cidr, nic.ID(), i["ip"].(string))
 							if err := resourceMAASMachineDelete(d, meta); err != nil {
 								log.Printf("[DEBUG] Unable to release node: %s", err.Error())
 							}
@@ -533,12 +535,37 @@ func resourceMAASMachineCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.Get("deploy").(bool) {
+		// update machine attributes during allocated state
+		params := url.Values{}
+		if hostname, ok := d.GetOk("deploy_hostname"); ok {
+			log.Printf("[DEBUG] Setting deploy hostname=%s", hostname.(string))
+			params.Add("hostname", hostname.(string))
+		}
+
+		if len(params) > 0 {
+			err = nodeUpdate(meta.(*Config).MAASObject, d.Id(), params)
+			if err != nil {
+				log.Println("[DEBUG] Unable to update node")
+			}
+		}
 		if err := startMachine(d, meta, machine); err != nil {
 			// unable to perform action, release the node
 			if err := resourceMAASMachineDelete(d, meta); err != nil {
 				log.Printf("[DEBUG] Unable to release node: %s", err.Error())
 			}
 			return err
+		}
+		params = url.Values{}
+		if !d.Get("sticky_hostname").(bool) {
+			log.Printf("[DEBUG] reverting hostname to '%s'", d.Get("original_hostname").(string))
+			params.Add("hostname", d.Get("original_hostname").(string))
+		}
+
+		if len(params) > 0 {
+			err = nodeUpdate(meta.(*Config).MAASObject, d.Id(), params)
+			if err != nil {
+				log.Println("[DEBUG] Unable to update node")
+			}
 		}
 	}
 	// update node tags
@@ -556,9 +583,9 @@ func resourceMAASMachineCreate(d *schema.ResourceData, meta interface{}) error {
 }
 
 // resourceMAASMachineRead read machine information from a maas node
-// TODO: remove or do something
 func resourceMAASMachineRead(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] Reading machine (%s) information.\n", d.Id())
+
 	return nil
 }
 
@@ -663,14 +690,15 @@ func resourceMAASMachineDelete(d *schema.ResourceData, meta interface{}) error {
 
 	// First check status of machine:
 	//  If it's Deployed then Release, Acquire
-	//  If it's Acquire then restore configuration before Release
 
+	alreadyErased := false
 	if machine.StatusName() == "Deployed" {
 
 		// RELEASE
 		if err := nodeRelease(d, meta, release_params); err != nil {
 			return err
 		}
+		alreadyErased = true
 
 		// ACQUIRE - quickly before someone else acquires
 		//       see issue https://bugs.launchpad.net/maas/+bug/1815777
@@ -683,53 +711,52 @@ func resourceMAASMachineDelete(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 	}
-	if machine.StatusName() == "Allocated" {
-		//unlink any subnets
-		if v, ok := d.GetOk("deploy_interface"); ok {
-			subnets, err := getSubnets(controller)
-			if err != nil {
-				log.Println("[WARN] [resourceMAASMachineDelete] Unable to get subnets.")
-			} else {
-				nicMap := make(map[string]gomaasapi.Interface, 0)
-				for _, nic := range machine.InterfaceSet() {
-					nicMap[nic.Name()] = nic
-				}
-				for _, netInterfaces := range v.(*schema.Set).List() {
-					i := netInterfaces.(map[string]interface{})
+	//  proceed to restore config and finally release
+	//
+	//unlink any subnets
+	if v, ok := d.GetOk("deploy_interface"); ok {
+		subnets, err := getSubnets(controller)
+		if err != nil {
+			log.Println("[WARN] [resourceMAASMachineDelete] Unable to get subnets.")
+		} else {
+			nicMap := make(map[string]gomaasapi.Interface, 0)
+			for _, nic := range machine.InterfaceSet() {
+				nicMap[nic.Name()] = nic
+			}
+			for _, netInterfaces := range v.(*schema.Set).List() {
+				i := netInterfaces.(map[string]interface{})
 
-					// if vlan is specified, then we delete interface
-					// otherwise we unlink subnet
-					if vlanNum, ok := i["vlan"].(int); ok && vlanNum != 0 {
-						if nic, ok := nicMap[i["name"].(string)+"."+strconv.Itoa(vlanNum)]; ok {
-							err := nic.Delete()
+				// if vlan is specified, then we delete interface
+				// otherwise we unlink subnet
+				if vlanNum, ok := i["vlan"].(int); ok && vlanNum != 0 {
+					if nic, ok := nicMap[i["name"].(string)+"."+strconv.Itoa(vlanNum)]; ok {
+						err := nic.Delete()
+						if err != nil {
+							log.Printf("[ERROR] [resourceMAASMachineDelete] Unable to delete interface %s", nic.Name())
+							return err
+						}
+					} else {
+						log.Printf("[WARN] expected nic (%s) not found", i["name"].(string)+"."+strconv.Itoa(vlanNum))
+					}
+				} else if cidr, ok := i["subnet"].(string); ok && cidr != "" {
+					if subnet, ok := subnets[cidr]; ok {
+						if nic, ok := nicMap[i["name"].(string)]; ok {
+							err := nic.UnlinkSubnet(subnet)
 							if err != nil {
-								log.Printf("[ERROR] [resourceMAASMachineDelete] Unable to delete interface %s", nic.Name())
+								log.Println("[ERROR] [resourceMAASMachineDelete] Unable to unlink subnet.")
 								return err
 							}
 						} else {
-							log.Printf("[WARN] expected nic (%s) not found", i["name"].(string)+"."+strconv.Itoa(vlanNum))
-						}
-					} else if cidr, ok := i["subnet"].(string); ok && cidr != "" {
-						if subnet, ok := subnets[cidr]; ok {
-							if nic, ok := nicMap[i["name"].(string)]; ok {
-								err := nic.UnlinkSubnet(subnet)
-								if err != nil {
-									log.Println("[ERROR] [resourceMAASMachineDelete] Unable to unlink subnet.")
-									return err
-								}
-							} else {
-								log.Printf("[WARN] attempting to unlink subnet for expected nic (%s) not found", i["name"].(string)+"."+strconv.Itoa(vlanNum))
-							}
+							log.Printf("[WARN] attempting to unlink subnet for expected nic (%s) not found", i["name"].(string)+"."+strconv.Itoa(vlanNum))
 						}
 					}
 				}
 			}
 		}
-
 		// remove deploy hostname if set
 		if _, ok := d.GetOk("deploy_hostname"); ok {
 			params := url.Values{}
-			params.Set("hostname", "")
+			params.Set("hostname", d.Get("original_hostname").(string))
 			err := nodeUpdate(meta.(*Config).MAASObject, d.Id(), params)
 			if err != nil {
 				log.Println("[DEBUG] Unable to reset hostname: %s", err)
@@ -747,6 +774,9 @@ func resourceMAASMachineDelete(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 
+	if alreadyErased {
+		release_params = url.Values{}
+	}
 	if err := nodeRelease(d, meta, release_params); err != nil {
 		return err
 	}

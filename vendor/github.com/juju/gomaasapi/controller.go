@@ -54,8 +54,6 @@ type ControllerArgs struct {
 // If the APIKey is not valid, a NotValid error is returned.
 // If the credentials are incorrect, a PermissionError is returned.
 func NewController(args ControllerArgs) (Controller, error) {
-	writer, _ := loggo.RemoveWriter("default")
-	loggo.RegisterWriter("default", writer)
 	base, apiVersion, includesVersion := SplitVersionedURL(args.BaseURL)
 	if includesVersion {
 		if !supportedVersion(apiVersion) {
