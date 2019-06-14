@@ -36,3 +36,21 @@ res, err := gmaw.NewMachineManager(myMAAS).Deploy('your_sid', maas.MachineDeploy
 ```
 */
 package gmaw
+
+import (
+	"github.com/juju/gomaasapi"
+)
+
+// GetClient is a convenience function to create a new gomaasapi client.
+// It calls the NewAuthenticatedClient function with the provided credentials,
+// and calls NewMAAS() on the returned value to create the resulting MAASObject.
+// A non-nil error will be from GetAuthenticatedClient, and the returned client
+// can be used with the other types in this package.
+func GetClient(apiURL, apiKey, apiVersion string) (*gomaasapi.MAASObject, error) {
+	authClient, err := gomaasapi.NewAuthenticatedClient(
+		gomaasapi.AddAPIVersionToURL(apiURL, apiVersion), apiKey)
+	if err != nil {
+		return nil, err
+	}
+	return gomaasapi.NewMAAS(*authClient), nil
+}
