@@ -1,15 +1,19 @@
 package maas
 
+// Machines represents the Machines endpoint
 type Machines []Machine
 
+// MachinesManager
 type MachinesManager struct {
 	client MachinesFetcher
 }
 
+// NewMachineManager
 func NewMachinesManager(client MachinesFetcher) *MachinesManager {
 	return &MachinesManager{client: client}
 }
 
+// Allocate calls the allocate operation
 func (m *MachinesManager) Allocate(params MachinesAllocateParams) (ma Machine, err error) {
 	var res []byte
 	res, err = m.client.Allocate(params)
@@ -19,14 +23,12 @@ func (m *MachinesManager) Allocate(params MachinesAllocateParams) (ma Machine, e
 	return
 }
 
-func (m *MachinesManager) Release(ms []*MachineManager, comment string) error {
-	var ids []string
-	for _, val := range ms {
-		ids = append(ids, val.SystemID())
-	}
-	return m.client.Release(ids, comment)
+// Release calls the release operation.
+func (m *MachinesManager) Release(systemIDs []string, comment string) error {
+	return m.client.Release(systemIDs, comment)
 }
 
+// MachinesParams enumerates the options for the GET operation
 type MachinesParams struct {
 	Hostname   []string
 	MACAddress []string
@@ -71,6 +73,7 @@ type MachinesAllocateParams struct {
 	Verbose          bool
 }
 
+// MachinesFetcher is the interface that API Clients must implement
 type MachinesFetcher interface {
 	Allocate(params MachinesAllocateParams) ([]byte, error)
 	Release(systemId []string, comment string) error
