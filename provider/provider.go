@@ -3,12 +3,13 @@
 package provider
 
 import (
+	"github.com/hashicorp/terraform/terraform"
 	"github.com/roblox/terraform-provider-maas/gmaw"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func Provider() *schema.Provider {
+func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"api_key": {
@@ -27,6 +28,9 @@ func Provider() *schema.Provider {
 				Default:     "2.0",
 				Description: "The MAAS API version (default 2.0)",
 			},
+		},
+		ResourcesMap: map[string]*schema.Resource{
+			"maas_instance": resourceInstance(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
