@@ -4,7 +4,7 @@ package provider
 
 import (
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/roblox/terraform-provider-maas/gmaw"
+	"github.com/roblox/terraform-provider-maas/pkg/gmaw"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )

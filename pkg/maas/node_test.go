@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	. "github.com/roblox/terraform-provider-maas/maas"
+	. "github.com/roblox/terraform-provider-maas/pkg/maas"
 )
 
 func TestNodeStatus(t *testing.T) {

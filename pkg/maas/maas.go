@@ -85,6 +85,9 @@ import (
 	"strings"
 )
 
+// BUG(onwsk8r) JSON does not use unexported fields, and may not convert field names to lower case
+// BUG(onwsk8r) ToQSP converts bools to string("true") or string("false"), API wants 0 or 1 <- Verify this
+
 // ToQSP represents a struct as query string parameters.
 // Given a struct value as input, it will add each field to a url.Values to be
 // printed in the form field=val. Elements of array values are handled via Add().
@@ -127,4 +130,8 @@ func ToQSP(t interface{}) url.Values {
 		}
 	}
 	return qsp
+}
+
+func ToSnakeCase(s string) string {
+	return s
 }

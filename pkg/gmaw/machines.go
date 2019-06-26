@@ -4,7 +4,7 @@ import (
 	"net/url"
 
 	"github.com/juju/gomaasapi"
-	"github.com/roblox/terraform-provider-maas/maas"
+	"github.com/roblox/terraform-provider-maas/pkg/maas"
 )
 
 // Machines implements the maas.MachinesFetcher interface.

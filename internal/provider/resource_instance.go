@@ -3,8 +3,8 @@ package provider
 import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/juju/gomaasapi"
-	"github.com/roblox/terraform-provider-maas/gmaw"
-	"github.com/roblox/terraform-provider-maas/maas"
+	"github.com/roblox/terraform-provider-maas/pkg/gmaw"
+	"github.com/roblox/terraform-provider-maas/pkg/maas"
 )
 
 func resourceInstance() *schema.Resource {

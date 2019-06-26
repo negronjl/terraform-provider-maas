@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/roblox/terraform-provider-maas/maas"
+	"github.com/roblox/terraform-provider-maas/pkg/maas"
 )
 
 // MACAddress is used by the maas_instance resource
