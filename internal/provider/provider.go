@@ -20,7 +20,7 @@ func Provider() terraform.ResourceProvider {
 			"api_url": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The MAAS server URL (eg http://1.2.3.4:80/MAAS)",
+				Description: "The MAAS server URL (eg http://1.2.3.4:5240/MAAS)",
 			},
 			"api_version": {
 				Type:        schema.TypeString,
