@@ -12,45 +12,45 @@ import (
 
 // MACAddress is used by the Machine endpoint
 type MACAddress struct {
-	MACAddress  string
-	ResourceURI string
+	MACAddress  string `json:"mac_address"`
+	ResourceURI string `json:"resource_uri"`
 }
 
 // Machine represents the Machine endpoint
 type Machine struct {
-	Architecture           string
-	BootType               string
-	CPUCount               int
-	DisableIPv4            bool `json:"disable_ipv4"`
-	DistroSeries           string
-	Hostname               string
-	DeployHostname         string
-	DeployTags             []string
-	Tags                   []string
-	ReleaseErase           bool
-	ReleaseEraseSecure     bool
-	ReleaseEraseQuick      bool
-	IPAddresses            []string
-	MACAddressSet          []MACAddress
-	Memory                 int
-	Netboot                bool
-	OSystem                string
-	Owner                  string
+	Architecture           string        `json:"architecture"`
+	BootType               string        `json:"boot_type"`
+	CPUCount               int           `json:"cpu_count"`
+	DisableIPv4            bool          `json:"disable_ipv4"`
+	DistroSeries           string        `json:"distro_series"`
+	Hostname               string        `json:"hostname"`
+	DeployHostname         string        `json:"deploy_hostname"`
+	DeployTags             []string      `json:"deploy_tags"`
+	Tags                   []string      `json:"tags"`
+	ReleaseErase           bool          `json:"release_erase"`
+	ReleaseEraseSecure     bool          `json:"release_erase_secure"`
+	ReleaseEraseQuick      bool          `json:"release_erase_quick"`
+	IPAddresses            []string      `json:"ip_addresses"`
+	MACAddressSet          []MACAddress  `json:"mac_address_set"`
+	Memory                 int           `json:"memory"`
+	Netboot                bool          `json:"netboot"`
+	OSystem                string        `json:"o_system"`
+	Owner                  string        `json:"owner"`
 	PhysicalBlockDeviceSet []BlockDevice `json:"physicalblockdevice_set"`
-	PowerState             string
-	PowerType              string
-	PXEMac                 []MACAddress
-	ResourceURI            string
-	Routers                []string
-	Status                 int
-	Storage                int
-	SwapSize               int
-	SystemID               string
-	TagNames               []string
-	Zone                   []Zone
-	UserData               string
-	HWEKernel              string
-	Comment                string
+	PowerState             string        `json:"power_state"`
+	PowerType              string        `json:"power_type"`
+	PXEMac                 []MACAddress  `json:"pxe_mac"`
+	ResourceURI            string        `json:"resource_uri"`
+	Routers                []string      `json:"routers"`
+	Status                 int           `json:"status"`
+	Storage                int           `json:"storage"`
+	SwapSize               int           `json:"swap_size"`
+	SystemID               string        `json:"system_id"`
+	TagNames               []string      `json:"tag_names"`
+	Zone                   []Zone        `json:"zone"`
+	UserData               string        `json:"user_data"`
+	HWEKernel              string        `json:"hwe_kernel"`
+	Comment                string        `json:"comment"`
 }
 
 // NewMachine converts a MAAS API JSON response into a Golang representation
