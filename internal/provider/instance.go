@@ -48,6 +48,7 @@ type Instance struct {
 	UserData               string        `optional:"true" forcenew:"true" statefunc:"true"`
 	HWEKernel              string        `optional:"true" forcenew:"true"`
 	Comment                string        `optional:"true"`
+	Lock                   bool          `optional:"true" default:"false"`
 }
 
 // NewInstance creates a new instance from the value of the Terraform resource

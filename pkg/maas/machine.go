@@ -134,6 +134,18 @@ func (m *MachineManager) Deploy(params MachineDeployParams) error {
 	return err
 }
 
+// Lock calls the lock operation on the API.
+func (m *MachineManager) Lock(comment string) error {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	res, err := m.client.Lock(m.SystemID(), comment)
+	if err == nil {
+		err = m.appendBytes(res)
+	}
+	return err
+}
+
 // Update fetches and returns the current state of the machine.
 func (m *MachineManager) Update() (ma Machine, err error) {
 	ma, err = m.update()
@@ -157,6 +169,7 @@ type MachineFetcher interface {
 	Get(string) ([]byte, error)
 	Commission(string, MachineCommissionParams) ([]byte, error)
 	Deploy(string, MachineDeployParams) ([]byte, error)
+	Lock(string, string) ([]byte, error)
 }
 
 // MachineCommissionParams enumerates the parameters for the commission operation
