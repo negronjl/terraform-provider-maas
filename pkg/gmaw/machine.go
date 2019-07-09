@@ -57,3 +57,12 @@ func (m *Machine) Deploy(systemID string, params maas.MachineDeployParams) ([]by
 	qsp := maas.ToQSP(params)
 	return m.callPost(systemID, "deploy", qsp)
 }
+
+// Lock fulfills the maas.MachineFetcher interface
+func (m *Machine) Lock(systemID, comment string) ([]byte, error) {
+	var qsp url.Values
+	if comment != "" {
+		qsp.Set("comment", comment)
+	}
+	return m.callPost(systemID, "lock", qsp)
+}

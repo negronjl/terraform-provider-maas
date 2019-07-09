@@ -49,6 +49,11 @@ func resourceInstanceCreate(d *schema.ResourceData, m interface{}) error {
 	if err := machineManager.Deploy(dp); err != nil {
 		machinesManager.Release([]string{machineManager.SystemID()}, "The deploy has broke")
 	}
+
+	// Lock the machine, if necessary
+	if instance.Lock {
+		machineManager.Lock("Locked by Terraform")
+	}
 	return resourceInstanceRead(d, m)
 }
 
@@ -67,6 +72,16 @@ func resourceInstanceRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceInstanceUpdate(d *schema.ResourceData, m interface{}) error {
+	client := m.(*gomaasapi.MAASObject)
+	machineManager, err := maas.NewMachineManager(d.Id(), gmaw.NewMachine(client))
+	if err != nil {
+		return err
+	}
+
+	// Lock the machine, if necessary
+	if NewInstance(d).Lock {
+		machineManager.Lock("Locked by Terraform")
+	}
 	return resourceInstanceRead(d, m)
 }
 
