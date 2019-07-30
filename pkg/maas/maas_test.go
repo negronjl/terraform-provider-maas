@@ -103,34 +103,11 @@ func TestToQSP(t *testing.T) {
 			got := ToQSP(tc.input)
 			diff := cmp.Diff(tc.want, got)
 			if diff != "" {
-				t.Fatalf(diff)
+				t.Fatal(diff)
 			}
 		})
 	}
 }
-
-// func TestToSnakeCase(t *testing.T) {
-// 	tests := []struct {
-// 		input string
-// 		want  string
-// 	}{
-// 		{input: "BlockSize", want: "block_size"},
-// 		{input: "ID", want: "id"},
-// 		{input: "MACAddress", want: "mac_address"},
-// 		{input: "ResourceURI", want: "resource_uri"},
-// 		{input: "PublicIPAddresses", want: "public_ip_addresses"},
-// 	}
-
-// 	for _, tc := range tests {
-// 		t.Run(tc.input, func(t *testing.T) {
-// 			got := ToSnakeCase(tc.input)
-// 			diff := cmp.Diff(tc.want, got)
-// 			if diff != "" {
-// 				t.Fatalf(diff)
-// 			}
-// 		})
-// 	}
-// }
 
 func ExampleToQSP() {
 	type whatev struct {
