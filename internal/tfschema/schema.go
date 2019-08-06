@@ -9,6 +9,9 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
+// Schema wraps a Terraform Schema with additional functionality for parsing struct fields.
+// Use this type to convert a struct field into a Terraform schema, using struct
+// tags to handle the various schema attributes (eg required, computed).
 type Schema struct {
 	schema.Schema
 	BoolTags   map[string]*bool
@@ -41,6 +44,9 @@ func NewSchema(f reflect.StructField) *Schema {
 	return s
 }
 
+// Parse introspects the struct field to populate the helper.Schema.
+// It will find the Terraform ValueType of the field, search for any
+// struct tags, and set the default value, if there is one.
 func (s *Schema) Parse(f reflect.StructField) (err error) {
 	if err = s.SetValueType(f.Type.Kind()); err != nil {
 		return
@@ -56,10 +62,12 @@ func (s *Schema) Parse(f reflect.StructField) (err error) {
 	return
 }
 
+// TFSchema returns the underlying Terraform schema
 func (s *Schema) TFSchema() *schema.Schema {
 	return &s.Schema
 }
 
+// SetValueType sets the schema's Terraform ValueType
 func (s *Schema) SetValueType(t reflect.Kind) error {
 	switch t {
 	case reflect.String:
@@ -76,6 +84,7 @@ func (s *Schema) SetValueType(t reflect.Kind) error {
 	return nil
 }
 
+// SetDefault sets the schema's Default value.
 func (s *Schema) SetDefault(val string) (err error) {
 	switch s.Type {
 	case schema.TypeString:
@@ -92,6 +101,7 @@ func (s *Schema) SetDefault(val string) (err error) {
 	return err
 }
 
+// ParseTags sets values in the schema based on the values of struct tags.
 func (s *Schema) ParseTags(tags reflect.StructTag) error {
 	for tag, prop := range s.BoolTags {
 		if val, ok := tags.Lookup(tag); ok {

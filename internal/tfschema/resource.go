@@ -8,6 +8,9 @@ import (
 	"github.com/roblox/terraform-provider-maas/internal/provider"
 )
 
+// Resource wraps a Terraform resource's Schema.
+// It provides functionality for parsing a struct{} into
+// a map[string]*Schema for use in Terraform resources and providers.
 type Resource map[string]*Schema
 
 // NewResource transforms a struct{} into a map for a TF schema.Resource.
