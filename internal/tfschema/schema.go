@@ -116,20 +116,20 @@ func (s *Schema) ParseTags(tags reflect.StructTag) error {
 	return nil
 }
 
-// func (s *Schema) AddHelpers() error {
-// 	for tag := range s.FuncTags {
-// 		if _, ok := tags.Lookup(strings.ToLower(tag)); !ok {
-// 			continue
-// 		}
-// 		funcName := fmt.Sprintf("%s%s", f.Name, tag)
-// 		sv := reflect.ValueOf(in)
-// 		fn := sv.MethodByName(funcName)
-// 		if fn.IsValid() {
-// 			fv := reflect.ValueOf(funcTags[tag])
-// 			fv.Set(reflect.Indirect(fn))
-// 		} else {
-// 			return fmt.Errorf("Cannot find method %s", funcName)
-// 		}
-// 	}
-// 	return nil
-// }
+/* func (s *Schema) AddHelpers() error {
+	for tag := range s.FuncTags {
+		if _, ok := tags.Lookup(strings.ToLower(tag)); !ok {
+			continue
+		}
+		funcName := fmt.Sprintf("%s%s", f.Name, tag)
+		sv := reflect.ValueOf(in)
+		fn := sv.MethodByName(funcName)
+		if fn.IsValid() {
+			fv := reflect.ValueOf(funcTags[tag])
+			fv.Set(reflect.Indirect(fn))
+		} else {
+			return fmt.Errorf("Cannot find method %s", funcName)
+		}
+	}
+	return nil
+} */
