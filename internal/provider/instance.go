@@ -83,6 +83,11 @@ func (i Instance) FromMachine(m maas.Machine) Instance {
 	return i
 }
 
+// GetMetadata implements the Endpoint interface
+func (i *Instance) GetMetadata() interface{} {
+	return maas.Machine{}
+}
+
 // UpdateState updates the Terraform state to match the Instance state
 func (i Instance) UpdateState(resource *schema.ResourceData) {
 	st := reflect.TypeOf(i)
