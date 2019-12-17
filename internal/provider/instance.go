@@ -47,6 +47,7 @@ type Instance struct {
 	Zone                   []Zone        `optional:"true" type:"Set"`
 	UserData               string        `optional:"true" forcenew:"true" statefunc:"true"`
 	HWEKernel              string        `optional:"true" forcenew:"true"`
+	InstallKVM             bool          `optional:"true" forcenew:"true" default:"false"`
 	Comment                string        `optional:"true"`
 	Lock                   bool          `optional:"true" default:"false"`
 }
@@ -81,6 +82,11 @@ func NewInstance(resource *schema.ResourceData) Instance {
 // FromMachine updates the instance to reflect the state of a Machine
 func (i Instance) FromMachine(m maas.Machine) Instance {
 	return i
+}
+
+// GetMetadata implements the Endpoint interface
+func (i *Instance) GetMetadata() interface{} {
+	return maas.Machine{}
 }
 
 // UpdateState updates the Terraform state to match the Instance state

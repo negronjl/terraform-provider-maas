@@ -135,6 +135,17 @@ resource "maas_instance" "maas_single_random_node" {
 }
 ```
 
+### Select ubuntu kernel release (HWE kernel version)
+Useful for choosing a particular kernel release train builds
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+    distro_series = "bionic"
+    hwe_kernel = "hwe-18.04" 
+}
+```
+
+
 ## Erasing disks on node release
 
 Maas provides an option to erase the node's disk when releasing the system. By default it will not alter the disk.
@@ -206,6 +217,27 @@ resource "maas_instance" "maas_single_random_node" {
     release_erase_quick = true
 }
 ```
+
+### Build kvm server
+
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+
+    install_kvm = true
+}
+```
+
+### Build rack controller
+
+```
+resource "maas_instance" "maas_single_random_node" {
+    count = 1
+
+    install_rackd = true
+}
+```
+
 
 If there are conflicting options, such as enabling both secure and quick erase, this is how the Maas API deals with conflicts.
 

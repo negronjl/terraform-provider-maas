@@ -17,6 +17,7 @@ type NodeInfo struct {
 	cpu_count     uint16
 	architecture  string
 	distro_series string
+	hwe_kernel    string
 	memory        uint64
 	osystem       string
 	status        uint16

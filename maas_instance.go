@@ -56,6 +56,23 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 		node_params.Add("distro_series", distro_series.(string))
 	}
 
+	// get hwe_kernel if defined
+	if hwe_kernel, ok := d.GetOk("hwe_kernel"); ok {
+		node_params.Add("hwe_kernel", hwe_kernel.(string))
+	}
+
+	// install kvm and register the server as a kvm server if requested
+	if install_kvm, ok := d.GetOk("install_kvm"); ok {
+		log.Printf("[INFO] Adding KVM packages and configuration: %s", install_kvm)
+		node_params.Add("install_kvm", strconv.FormatBool(true))
+	}
+
+	// install rackd if requested
+	if install_rackd, ok := d.GetOk("install_rackd"); ok {
+		log.Printf("[INFO] Adding maas rack controller packages: %s", install_rackd)
+		node_params.Add("install_rackd", strconv.FormatBool(true))
+	}
+
 	if err := nodeDo(meta.(*Config).MAASObject, d.Id(), "deploy", node_params); err != nil {
 		log.Printf("[ERROR] [resourceMAASInstanceCreate] Unable to power up node: %s\n", d.Id())
 		// unable to perform action, release the node

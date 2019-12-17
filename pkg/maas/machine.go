@@ -193,5 +193,5 @@ type MachineDeployParams struct {
 	BridgeFD     int
 	Comment      string
 	InstallRackD bool `json:"install_rackd"`
-	InstallKVM   bool
+	InstallKVM   bool `json:"install_kvm"`
 }
