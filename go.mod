@@ -14,9 +14,10 @@ require (
 	github.com/hashicorp/hil v0.0.0-20190212132231-97b3a9cdfa93 // indirect
 	github.com/hashicorp/logutils v1.0.0 // indirect
 	github.com/hashicorp/terraform v0.11.14
+	github.com/jarcoal/httpmock v1.0.4
 	github.com/juju/clock v0.0.0-20190205081909-9c5c9712527c // indirect
 	github.com/juju/collections v0.0.0-20180717171555-9be91dc79b7c // indirect
-	github.com/juju/errors v0.0.0-20170509134257-8234c829496a // indirect
+	github.com/juju/errors v0.0.0-20170509134257-8234c829496a
 	github.com/juju/gomaasapi v0.0.0-20190617182746-65f2e261f089
 	github.com/juju/loggo v0.0.0-20170605014607-8232ab8918d9 // indirect
 	github.com/juju/retry v0.0.0-20180821225755-9058e192b216 // indirect
