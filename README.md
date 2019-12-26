@@ -6,6 +6,7 @@ A simple Terraform provider for MAAS.  This is a work in progress and by no mean
 ## Requirements
 * [Terraform](https://github.com/hashicorp/terraform)
 * [Go MAAS API Library](https://github.com/juju/gomaasapi)
+** `go get -u github.com/juju/gomaasapi`
 
 ## Usage
 
