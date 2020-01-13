@@ -148,7 +148,7 @@ func nodeDo(maas *gomaasapi.MAASObject, system_id string, action string, params 
 
 	_, err = nodeObject.CallPost(action, params)
 	if err != nil {
-		log.Printf("[ERROR] [nodeDo] Unable to perform action (%s) on node (%s).  Failed withh error (%s)\n", action, system_id, err)
+		log.Printf("[ERROR] [nodeDo] Unable to perform action (%s) on node (%s).  Failed with error (%s)\n", action, system_id, err)
 		return err
 	}
 	return nil
