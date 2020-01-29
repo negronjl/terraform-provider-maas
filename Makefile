@@ -15,20 +15,16 @@ lint: install_lint
 .PHONY: lint
 
 install_lint:
-ifeq (,$(shell command -v $(LINTER_BINARY)))
-    ifdef CI
-		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOBIN) v$(LINTER_VERSION)
-	else
-		$(GOGET) github.com/golangci/golangci-lint/cmd/golangci-lint
-	endif
+ifeq (,$(shell which $(LINTER_BINARY)))
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOBIN) v$(LINTER_VERSION)
 endif
 .PHONY: install_lint
 
 # Test (go test)
 GOTEST ?= $(GO) test
-TEST_OPTS ?= -race -bench .# Perform any benchmarks and enable the race detector
+TEST_OPTS ?= -race# Perform any benchmarks and enable the race detector
 test:
-	$(GOTEST) $(TEST_OPTS)
+	$(GOTEST) $(TEST_OPTS) ./...
 .PHONY: test
 
 # Check everything
