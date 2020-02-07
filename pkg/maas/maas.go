@@ -106,6 +106,10 @@ import (
 func ToQSP(t interface{}) url.Values {
 	st := reflect.TypeOf(t)
 	sv := reflect.ValueOf(t)
+	if st.Kind() == reflect.Ptr {
+		st = st.Elem()
+		sv = sv.Elem()
+	}
 	qsp := url.Values{}
 
 	for i := 0; i < st.NumField(); i++ {

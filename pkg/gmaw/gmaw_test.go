@@ -16,6 +16,7 @@ import (
 // The test cases for the endpoint types use this type in unit tests
 type testCase struct {
 	URL        string
+	Verb       string
 	StatusCode int
 	Response   string
 }
@@ -28,7 +29,7 @@ func runTestCases(t *testing.T, tests []testCase, f func(testCase) ([]byte, erro
 	for _, testCase := range tests {
 		tc := testCase
 		t.Run(tc.URL, func(t *testing.T) {
-			httpmock.RegisterResponder("GET", fmt.Sprintf("%s/api/2.0/%s/", apiURL, tc.URL),
+			httpmock.RegisterResponder(tc.Verb, fmt.Sprintf("%s/api/2.0/%s", apiURL, tc.URL),
 				httpmock.NewStringResponder(tc.StatusCode, tc.Response))
 
 			if err := verifyResponse(tc, f); err != nil {

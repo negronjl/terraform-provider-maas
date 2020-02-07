@@ -22,7 +22,7 @@ endif
 
 # Test (go test)
 GOTEST ?= $(GO) test
-TEST_OPTS ?= -race# Perform any benchmarks and enable the race detector
+TEST_OPTS ?= -race -bench -mod=readonly# Perform any benchmarks and enable the race detector
 test:
 	$(GOTEST) $(TEST_OPTS) ./...
 .PHONY: test

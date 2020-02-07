@@ -60,7 +60,7 @@ func (m *Machine) Deploy(systemID string, params *maas.MachineDeployParams) ([]b
 
 // Lock fulfills the maas.MachineFetcher interface
 func (m *Machine) Lock(systemID, comment string) ([]byte, error) {
-	var qsp url.Values
+	qsp := make(url.Values)
 	if comment != "" {
 		qsp.Set("comment", comment)
 	}
