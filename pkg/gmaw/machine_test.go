@@ -2,6 +2,7 @@ package gmaw_test
 
 import (
 	"log"
+	"net/http"
 	"os"
 	"testing"
 
@@ -30,8 +31,8 @@ func TestNewMachine(t *testing.T) {
 
 func TestMachine_Get(t *testing.T) {
 	tests := []testCase{
-		{URL: "machines/42", StatusCode: 200, Response: "Machines!"}, // TODO Make a sample file
-		{URL: "machines/43", StatusCode: 404, Response: "Not Found"},
+		{URL: "machines/42", StatusCode: http.StatusOK, Response: "Machines!"}, // TODO Make a sample file
+		{URL: "machines/43", StatusCode: http.StatusNotFound, Response: "Not Found"},
 	}
 
 	machine := NewMachine(client)
@@ -42,8 +43,8 @@ func TestMachine_Get(t *testing.T) {
 
 func TestMachine_Commission(t *testing.T) {
 	tests := []testCase{
-		{URL: "machines/42?op=commission", StatusCode: 200, Response: "Machines!"}, // TODO Make a sample file
-		{URL: "machines/43?op=commission", StatusCode: 404, Response: "Not Found"},
+		{URL: "machines/42?op=commission", StatusCode: http.StatusOK, Response: "Machines!"}, // TODO Make a sample file
+		{URL: "machines/43?op=commission", StatusCode: http.StatusNotFound, Response: "Not Found"},
 	}
 
 	machine := NewMachine(client)
@@ -54,23 +55,26 @@ func TestMachine_Commission(t *testing.T) {
 
 func TestMachine_Deploy(t *testing.T) {
 	tests := []testCase{
-		{URL: "machines/42?op=deploy", StatusCode: 200, Response: "Machines!"}, // TODO Make a sample file
-		{URL: "machines/43?op=deploy", StatusCode: 403, Response: "The user does not have permission to deploy this machine."},
-		{URL: "machines/44?op=deploy", StatusCode: 404, Response: "Not Found"},
-		{URL: "machines/45?op=deploy", StatusCode: 503, Response: "MAAS attempted to allocate an IP address, and there were no IP addresses available on the relevant cluster interface."},
+		{URL: "machines/42?op=deploy", StatusCode: http.StatusOK, Response: "Machines!"}, // TODO Make a sample file
+		{URL: "machines/43?op=deploy", StatusCode: http.StatusForbidden,
+			Response: "The user does not have permission to deploy this machine."},
+		{URL: "machines/44?op=deploy", StatusCode: http.StatusNotFound, Response: "Not Found"},
+		{URL: "machines/45?op=deploy", StatusCode: http.StatusServiceUnavailable,
+			Response: "MAAS attempted to allocate an IP address, and there were no IP addresses available on the relevant cluster interface."}, // nolint: lll
 	}
 
 	machine := NewMachine(client)
 	runTestCases(t, tests, func(tc testCase) ([]byte, error) {
-		return machine.Deploy(tc.URL[9:12], maas.MachineDeployParams{})
+		return machine.Deploy(tc.URL[9:12], &maas.MachineDeployParams{})
 	})
 }
 
 func TestMachine_Lock(t *testing.T) {
 	tests := []testCase{
-		{URL: "machines/42?op=lock", StatusCode: 200, Response: "Machines!"}, // TODO Make a sample file
-		{URL: "machines/43?op=lock", StatusCode: 403, Response: "The user does not have permission to lock the machine."},
-		{URL: "machines/44?op=lock", StatusCode: 404, Response: "Not Found"},
+		{URL: "machines/42?op=lock", StatusCode: http.StatusOK, Response: "Machines!"}, // TODO Make a sample file
+		{URL: "machines/43?op=lock", StatusCode: http.StatusForbidden,
+			Response: "The user does not have permission to lock the machine."},
+		{URL: "machines/44?op=lock", StatusCode: http.StatusNotFound, Response: "Not Found"},
 	}
 
 	machine := NewMachine(client)

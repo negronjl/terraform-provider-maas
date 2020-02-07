@@ -98,7 +98,7 @@ import (
 // printed with fmt.Sprint() to create a string representation; this will work
 // properly for simple data types such as int and string.
 //
-// The function will panic if the input is not a struct, inlcuding on a pointer
+// The function will panic if the input is not a struct, including on a pointer
 // to a struct. As this function relies heavily on reflection, it may panic under
 // other circumstances as well. It is only expected to work with simple structs
 // that represent query string parameters as Go types; other use cases are not

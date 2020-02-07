@@ -23,8 +23,8 @@ func NewResource(typ provider.Endpoint) (Resource, error) {
 
 	for i := 0; i < st.NumField(); i++ {
 		f := st.Field(i)
-		sch := NewSchema(f)
-		if err := sch.Parse(f); err != nil {
+		sch := NewSchema(&f)
+		if err := sch.Parse(&f); err != nil {
 			return nil, err
 		}
 		resource[strings.ToLower(f.Name)] = sch
@@ -35,8 +35,8 @@ func NewResource(typ provider.Endpoint) (Resource, error) {
 	st = reflect.TypeOf(mdType)
 	for i := 0; i < st.NumField(); i++ {
 		f := st.Field(i)
-		sch := NewSchema(f)
-		if err := sch.Parse(f); err != nil {
+		sch := NewSchema(&f)
+		if err := sch.Parse(&f); err != nil {
 			return nil, err
 		}
 		// The todo above will eliminate this

@@ -34,13 +34,13 @@ var (
 	empty  = emptyStruct{}
 	simple = simpleStruct{
 		Name:       "Brian",
-		ID:         31,
-		unexported: 638.427,
-		Unsigned:   42,
+		ID:         31,      // nolint: gomnd
+		unexported: 638.427, // nolint: gomnd
+		Unsigned:   42,      // nolint: gomnd
 	}
 	simpleWithEmpties = simpleStruct{
 		Name:       "Frank",
-		unexported: 12,
+		unexported: 12, // nolint: gomnd
 	}
 	tags = structWithTags{
 		PascalCase:  "always",
@@ -98,7 +98,8 @@ func TestToQSP(t *testing.T) {
 		{name: "tricky arrays", input: arraysSortOf, want: arraysSOVals},
 	}
 
-	for _, tc := range tests {
+	for _, testCase := range tests {
+		tc := testCase
 		t.Run(tc.name, func(t *testing.T) {
 			got := ToQSP(tc.input)
 			diff := cmp.Diff(tc.want, got)
@@ -116,9 +117,9 @@ func ExampleToQSP() {
 		bat int
 	}
 	data := whatev{
-		Foo: 42,
+		Foo: 42, // nolint: gomnd
 		Baz: "hello",
-		bat: 10,
+		bat: 10, // nolint: gomnd
 	}
 	res := ToQSP(data)
 	fmt.Println(res.Encode()) // Prints bar=42&bat=10&baz=hello

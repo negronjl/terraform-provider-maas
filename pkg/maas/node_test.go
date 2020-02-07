@@ -15,14 +15,15 @@ func TestNodeStatus(t *testing.T) {
 	}{
 		{name: "new", got: NodeStatusNew, want: 0},
 		{name: "default", got: NodeStatusDefault, want: 0},
-		{name: "commissioning", got: NodeStatusCommissioning, want: 1},
-		{name: "ready", got: NodeStatusReady, want: 4},
-		{name: "deployed", got: NodeStatusDeployed, want: 6},
-		{name: "deploying", got: NodeStatusDeploying, want: 9},
-		{name: "allocated", got: NodeStatusAllocated, want: 10},
+		{name: "commissioning", got: NodeStatusCommissioning, want: 1}, // nolint: gomnd
+		{name: "ready", got: NodeStatusReady, want: 4},                 // nolint: gomnd
+		{name: "deployed", got: NodeStatusDeployed, want: 6},           // nolint: gomnd
+		{name: "deploying", got: NodeStatusDeploying, want: 9},         // nolint: gomnd
+		{name: "allocated", got: NodeStatusAllocated, want: 10},        // nolint: gomnd
 	}
 
-	for _, tc := range tests {
+	for _, testCase := range tests {
+		tc := testCase
 		t.Run(tc.name, func(t *testing.T) {
 			diff := cmp.Diff(tc.want, tc.got)
 			if diff != "" {
