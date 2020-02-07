@@ -86,7 +86,7 @@ func (i Instance) FromMachine(m maas.Machine) Instance {
 
 // GetMetadata implements the Endpoint interface
 func (i *Instance) GetMetadata() interface{} {
-	return maas.Machine
+	return maas.Machine{}
 }
 
 // UpdateState updates the Terraform state to match the Instance state
