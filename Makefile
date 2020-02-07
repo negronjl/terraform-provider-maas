@@ -6,16 +6,16 @@ GOGET ?= $(GO) get -u
 GOBIN ?= $(go env GOPATH)/bin
 
 # Lint (https://github.com/golangci/golangci-lint)
-LINTER_OPTIONS ?= run --enable-all# Arguments to golangci-lint
+LINTER_OPTIONS ?= run# Arguments to golangci-lint
 LINTER_BINARY ?= golangci-lint# Name of the binary of golangci-lint
-LINTER_VERSION ?= 1.17.1# Version of golangci-lint to use in CI
+LINTER_VERSION ?= 1.23.3# Version of golangci-lint to use in CI
 
 lint: install_lint
-	$(LINTER_BINARY) $(LINTER_OPTIONS) ./...
+	$(LINTER_BINARY) $(LINTER_OPTIONS)
 .PHONY: lint
 
 install_lint:
-ifeq (,$(shell which $(LINTER_BINARY)))
+ifneq (1,$(shell $(LINTER_BINARY) version 2>&1 | grep -c $(LINTER_VERSION)))
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOBIN) v$(LINTER_VERSION)
 endif
 .PHONY: install_lint
