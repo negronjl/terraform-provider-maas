@@ -5,6 +5,14 @@ GO ?= go
 GOGET ?= $(GO) get -u
 GOBIN ?= $(go env GOPATH)/bin
 
+# Build (default target)
+GOBUILD ?= $(GO) build
+BUILD_OPTIONS ?= -mod=readonly
+build:
+	$(GOBUILD) $(BUILD_OPTIONS)
+.PHONY: build
+.DEFAULT_GOAL := build
+
 # Lint (https://github.com/golangci/golangci-lint)
 LINTER_OPTIONS ?= run# Arguments to golangci-lint
 LINTER_BINARY ?= golangci-lint# Name of the binary of golangci-lint
