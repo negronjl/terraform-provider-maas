@@ -50,16 +50,16 @@ func toNodeInfo(nodeObject *gomaasapi.MAASObject) (*NodeInfo, error) { // nolint
 
 	powerState, err := nodeMap["power_state"].GetString()
 	if err != nil {
-		log.Printf("[ERROR] [toNodeInfo] Unable to get thepowerState for node: %s\n", systemID)
+		log.Printf("[ERROR] [toNodeInfo] Unable to get the power state for node: %s\n", systemID)
 		return nil, err
 	}
 
 	cpuCountFloat, err := nodeMap["cpu_count"].GetFloat64()
 	if err != nil {
-		log.Printf("[ERROR] [toNodeInfo] Unable to get thecpuCount for node: %s\n", systemID)
+		log.Printf("[ERROR] [toNodeInfo] Unable to get the cpu_count for node: %s\n", systemID)
 		log.Printf("[ERROR] [toNodeInfo] Error: %s\n", err)
-		log.Printf("[ERROR] [toNodeInfo]cpuCount_float: %v\n", cpuCountFloat)
-		log.Println("[ERROR] [toNodeInfo] DefaultingcpuCount to 0")
+		log.Printf("[ERROR] [toNodeInfo] cpuCountFloat: %v\n", cpuCountFloat)
+		log.Println("[ERROR] [toNodeInfo] Defaulting cpuCount to 0")
 		cpuCountFloat = 0
 	}
 	cpuCount := uint16(cpuCountFloat)
@@ -72,7 +72,7 @@ func toNodeInfo(nodeObject *gomaasapi.MAASObject) (*NodeInfo, error) { // nolint
 
 	distroSeries, err := nodeMap["distro_series"].GetString()
 	if err != nil {
-		log.Printf("[ERROR] [toNodeInfo] Unable to get thedistroSeries for node: %s\n", systemID)
+		log.Printf("[ERROR] [toNodeInfo] Unable to get the distro_series for node: %s\n", systemID)
 		return nil, err
 	}
 
