@@ -18,44 +18,45 @@ type MACAddress struct {
 
 // Machine represents the Machine endpoint
 type Machine struct {
+	DeployTags             []string      `json:"deploy_tags"`
+	Tags                   []string      `json:"tags"`
+	IPAddresses            []string      `json:"ip_addresses"`
+	MACAddressSet          []MACAddress  `json:"mac_address_set"`
+	PhysicalBlockDeviceSet []BlockDevice `json:"physicalblockdevice_set"`
+	PXEMac                 []MACAddress  `json:"pxe_mac"`
+	Routers                []string      `json:"routers"`
+	TagNames               []string      `json:"tag_names"`
+	Zone                   []Zone        `json:"zone"`
 	Architecture           string        `json:"architecture"`
 	BootType               string        `json:"boot_type"`
-	CPUCount               int           `json:"cpu_count"`
-	DisableIPv4            bool          `json:"disable_ipv4"`
 	DistroSeries           string        `json:"distro_series"`
 	Hostname               string        `json:"hostname"`
 	DeployHostname         string        `json:"deploy_hostname"`
-	DeployTags             []string      `json:"deploy_tags"`
-	Tags                   []string      `json:"tags"`
-	ReleaseErase           bool          `json:"release_erase"`
-	ReleaseEraseSecure     bool          `json:"release_erase_secure"`
-	ReleaseEraseQuick      bool          `json:"release_erase_quick"`
-	IPAddresses            []string      `json:"ip_addresses"`
-	MACAddressSet          []MACAddress  `json:"mac_address_set"`
-	Memory                 int           `json:"memory"`
-	Netboot                bool          `json:"netboot"`
 	OSystem                string        `json:"o_system"`
 	Owner                  string        `json:"owner"`
-	PhysicalBlockDeviceSet []BlockDevice `json:"physicalblockdevice_set"`
 	PowerState             string        `json:"power_state"`
 	PowerType              string        `json:"power_type"`
-	PXEMac                 []MACAddress  `json:"pxe_mac"`
 	ResourceURI            string        `json:"resource_uri"`
-	Routers                []string      `json:"routers"`
-	Status                 int           `json:"status"`
-	Storage                int           `json:"storage"`
-	SwapSize               int           `json:"swap_size"`
 	SystemID               string        `json:"system_id"`
-	TagNames               []string      `json:"tag_names"`
-	Zone                   []Zone        `json:"zone"`
 	UserData               string        `json:"user_data"`
 	HWEKernel              string        `json:"hwe_kernel"`
 	Comment                string        `json:"comment"`
+	CPUCount               int           `json:"cpu_count"`
+	Memory                 int           `json:"memory"`
+	Status                 int           `json:"status"`
+	Storage                int           `json:"storage"`
+	SwapSize               int           `json:"swap_size"`
+	DisableIPv4            bool          `json:"disable_ipv4"`
+	ReleaseErase           bool          `json:"release_erase"`
+	ReleaseEraseSecure     bool          `json:"release_erase_secure"`
+	ReleaseEraseQuick      bool          `json:"release_erase_quick"`
+	Netboot                bool          `json:"netboot"`
 }
 
 // NewMachine converts a MAAS API JSON response into a Golang representation
-func NewMachine(data []byte) (m Machine, err error) {
-	err = json.Unmarshal(data, &m)
+func NewMachine(data []byte) (m *Machine, err error) {
+	m = &Machine{}
+	err = json.Unmarshal(data, m)
 	return
 }
 
@@ -81,20 +82,19 @@ func NewMachineManager(systemID string, client MachineFetcher) (*MachineManager,
 		return nil, err
 	}
 	return &MachineManager{
-		state:  []Machine{m},
+		state:  []Machine{*m},
 		client: client,
 		mutex:  sync.RWMutex{},
 	}, nil
 }
 
 // Current returns the most current known state of the machine.
-func (m *MachineManager) Current() Machine {
-	return m.state[len(m.state)-1]
+func (m *MachineManager) Current() *Machine {
+	return &m.state[len(m.state)-1]
 }
 
-func (m *MachineManager) append(current Machine) *MachineManager {
-	m.state = append(m.state, current)
-	return m
+func (m *MachineManager) append(current *Machine) {
+	m.state = append(m.state, *current)
 }
 
 func (m *MachineManager) appendBytes(data []byte) error {
@@ -123,7 +123,7 @@ func (m *MachineManager) Commission(params MachineCommissionParams) error {
 }
 
 // Deploy calls the deploy operation on the API.
-func (m *MachineManager) Deploy(params MachineDeployParams) error {
+func (m *MachineManager) Deploy(params *MachineDeployParams) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -147,7 +147,7 @@ func (m *MachineManager) Lock(comment string) error {
 }
 
 // Update fetches and returns the current state of the machine.
-func (m *MachineManager) Update() (ma Machine, err error) {
+func (m *MachineManager) Update() (ma *Machine, err error) {
 	ma, err = m.update()
 	if err == nil {
 		m.append(ma)
@@ -155,7 +155,7 @@ func (m *MachineManager) Update() (ma Machine, err error) {
 	return
 }
 
-func (m *MachineManager) update() (ma Machine, err error) {
+func (m *MachineManager) update() (ma *Machine, err error) {
 	var res []byte
 	res, err = m.client.Get(m.SystemID())
 	if err == nil {
@@ -168,7 +168,7 @@ func (m *MachineManager) update() (ma Machine, err error) {
 type MachineFetcher interface {
 	Get(string) ([]byte, error)
 	Commission(string, MachineCommissionParams) ([]byte, error)
-	Deploy(string, MachineDeployParams) ([]byte, error)
+	Deploy(string, *MachineDeployParams) ([]byte, error)
 	Lock(string, string) ([]byte, error)
 }
 
@@ -188,10 +188,10 @@ type MachineDeployParams struct {
 	DistroSeries string
 	HWEKernel    string
 	AgentName    string
+	Comment      string
+	BridgeFD     int
 	BridgeAll    bool
 	BridgeSTP    bool
-	BridgeFD     int
-	Comment      string
 	InstallRackD bool `json:"install_rackd"`
 	InstallKVM   bool `json:"install_kvm"`
 }

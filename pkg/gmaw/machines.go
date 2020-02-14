@@ -32,7 +32,7 @@ func (m *Machines) callPost(op string, qsp url.Values) ([]byte, error) {
 }
 
 // Allocate fulfills the maas.MachinesFetcher interface
-func (m *Machines) Allocate(params maas.MachinesAllocateParams) ([]byte, error) {
+func (m *Machines) Allocate(params *maas.MachinesAllocateParams) ([]byte, error) {
 	qsp := maas.ToQSP(params)
 	return m.callPost("allocate", qsp)
 }

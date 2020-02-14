@@ -11,10 +11,10 @@ import (
 )
 
 type simpleStruct struct {
-	ID       int    `computed:"true"`
 	Name     string `required:"true" forcenew:"true"`
-	Tries    uint8  `default:"3" optional:"true"`
 	Password string `sensitive:"true"`
+	ID       int    `computed:"true"`
+	Tries    uint8  `default:"3" optional:"true"`
 	DoStuff  bool   `default:"true" description:"Whether or not to do stuff"`
 }
 
@@ -34,7 +34,7 @@ var simpleSchema = map[string]*schema.Schema{
 	},
 	"tries": &schema.Schema{
 		Type:     schema.TypeInt,
-		Default:  3,
+		Default:  3, // nolint: gomnd
 		Optional: true,
 	},
 	"password": &schema.Schema{
@@ -57,7 +57,8 @@ func TestNewSchemas(t *testing.T) {
 		{"simple", simpleStruct{}, simpleSchema},
 	}
 
-	for _, tc := range tests {
+	for _, testCase := range tests {
+		tc := testCase
 		t.Run(tc.name, func(t *testing.T) {
 			got, err := NewResource(tc.got)
 			if err != nil {

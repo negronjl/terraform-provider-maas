@@ -5,8 +5,8 @@ import (
 )
 
 func TestNodeInfo(t *testing.T) {
-	nodeInfoTest := NodeInfo{system_id: "system_id"}
-	if nodeInfoTest.system_id != "system_id" {
+	nodeInfoTest := NodeInfo{systemID: "system_id"}
+	if nodeInfoTest.systemID != "system_id" {
 		t.Fail()
 	}
 }

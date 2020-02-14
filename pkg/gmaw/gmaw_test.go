@@ -2,6 +2,7 @@ package gmaw_test
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/jarcoal/httpmock"
@@ -15,6 +16,7 @@ import (
 // The test cases for the endpoint types use this type in unit tests
 type testCase struct {
 	URL        string
+	Verb       string
 	StatusCode int
 	Response   string
 }
@@ -24,37 +26,45 @@ func runTestCases(t *testing.T, tests []testCase, f func(testCase) ([]byte, erro
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
-	for _, tc := range tests {
+	for _, testCase := range tests {
+		tc := testCase
 		t.Run(tc.URL, func(t *testing.T) {
-			httpmock.RegisterResponder("GET", fmt.Sprintf("%s/api/2.0/%s/", apiURL, tc.URL),
+			httpmock.RegisterResponder(tc.Verb, fmt.Sprintf("%s/api/2.0/%s", apiURL, tc.URL),
 				httpmock.NewStringResponder(tc.StatusCode, tc.Response))
 
-			res, err := f(tc)
-
-			if tc.StatusCode == 200 {
-				if err != nil {
-					t.Fatalf("Unexpected server error: %s", err)
-				}
-
-				// Verify the response from the server is unchanged
-				if diff := cmp.Diff(tc.Response, string(res)); diff != "" {
-					t.Fatalf(diff)
-				}
-			} else {
-				// Verify the error is unchanged
-				expected := fmt.Sprintf("ServerError: %d (%s)", tc.StatusCode, tc.Response)
-				if diff := cmp.Diff(expected, err.Error()); diff != "" {
-					t.Fatalf(diff)
-				}
-
-				// And that the response is empty
-				// TODO: Is this right?
-				if string(res) != "" {
-					t.Fatalf("Unexpected response: %s", res)
-				}
+			if err := verifyResponse(tc, f); err != nil {
+				t.Error(err)
 			}
 		})
 	}
+}
+
+func verifyResponse(tc testCase, f func(testCase) ([]byte, error)) error {
+	res, err := f(tc)
+
+	if tc.StatusCode == http.StatusOK {
+		if err != nil {
+			return fmt.Errorf("Unexpected server error: %s", err)
+		}
+
+		// Verify the response from the server is unchanged
+		if diff := cmp.Diff(tc.Response, string(res)); diff != "" {
+			return fmt.Errorf(diff)
+		}
+	} else {
+		// Verify the error is unchanged
+		expected := fmt.Sprintf("ServerError: %d (%s)", tc.StatusCode, tc.Response)
+		if diff := cmp.Diff(expected, err.Error()); diff != "" {
+			return fmt.Errorf(diff)
+		}
+
+		// And that the response is empty
+		// TODO: Is this right?
+		if string(res) != "" {
+			return fmt.Errorf("Unexpected response: %s", res)
+		}
+	}
+	return nil
 }
 
 func TestGetClient(t *testing.T) {

@@ -1,0 +1,71 @@
+# https://github.com/golangci/golangci-lint/blob/master/.golangci.example.yml
+run:
+  modules-download-mode: readonly
+  timeout: 5m
+
+output:
+  format: line-number
+
+linters-settings:
+  gocognit:
+    min-complexity: 20
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - whyNoLint
+  gocyclo:
+    min-complexity: 20
+  govet:
+    enable-all: true
+  maligned:
+    suggest-new: true
+  prealloc:
+    simple: false
+    for-loops: true
+
+linters:
+  enable:
+    - deadcode
+    - dogsled
+    - errcheck
+    - funlen
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    - bodyclose
+    - dupl
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - goimports
+    - gomnd
+    - gosec
+    - interfacer
+    - lll
+    - maligned
+    - misspell
+    - nakedret
+    - prealloc
+    - rowserrcheck
+    - scopelint
+    - stylecheck
+    - unconvert
+    - unparam
+    - whitespace
+  disable:
+    - depguard
+    - gochecknoglobals
+    - gochecknoinits
+    - gofmt # Use goimports instead
+    - golint # Use stylecheck instead

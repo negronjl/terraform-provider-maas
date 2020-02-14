@@ -12,7 +12,7 @@ import (
 )
 
 // resourceMAASInstanceCreate This function doesn't really *create* a new node but, power an already registered
-func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error { // nolint: funlen, gocognit
 	log.Println("[DEBUG] [resourceMAASInstanceCreate] Launching new maas_instance")
 
 	/*
@@ -34,49 +34,49 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 	}
 
 	// set the node id
-	d.SetId(nodeObj.system_id)
+	d.SetId(nodeObj.systemID)
 
-	// seperate constraints that are supported for the deploy action
+	// separate constraints that are supported for the deploy action
 	// parameters to pass when creating a node
-	node_params := url.Values{}
+	nodeParams := url.Values{}
 
 	// get user data if defined
-	if user_data, ok := d.GetOk("user_data"); ok {
-		node_params.Add("user_data", base64encode(user_data.(string)))
+	if userData, ok := d.GetOk("user_data"); ok {
+		nodeParams.Add("user_data", base64encode(userData.(string)))
 	}
 
 	// get comment if defined
 	if comment, ok := d.GetOk("comment"); ok {
-		node_params.Add("comment", comment.(string))
+		nodeParams.Add("comment", comment.(string))
 	}
 
 	// get distro_series if defined
-	distro_series, ok := d.GetOk("distro_series")
+	distroSeries, ok := d.GetOk("distro_series")
 	if ok {
-		node_params.Add("distro_series", distro_series.(string))
+		nodeParams.Add("distro_series", distroSeries.(string))
 	}
 
 	// get hwe_kernel if defined
-	if hwe_kernel, ok := d.GetOk("hwe_kernel"); ok {
-		node_params.Add("hwe_kernel", hwe_kernel.(string))
+	if HWEKernel, ok := d.GetOk("hwe_kernel"); ok {
+		nodeParams.Add("hwe_kernel", HWEKernel.(string))
 	}
 
 	// install kvm and register the server as a kvm server if requested
-	if install_kvm, ok := d.GetOk("install_kvm"); ok {
-		log.Printf("[INFO] Adding KVM packages and configuration: %s", install_kvm)
-		node_params.Add("install_kvm", strconv.FormatBool(true))
+	if installKVM, ok := d.GetOk("install_kvm"); ok {
+		log.Printf("[INFO] Adding KVM packages and configuration: %s", installKVM)
+		nodeParams.Add("install_kvm", strconv.FormatBool(true))
 	}
 
 	// install rackd if requested
-	if install_rackd, ok := d.GetOk("install_rackd"); ok {
-		log.Printf("[INFO] Adding maas rack controller packages: %s", install_rackd)
-		node_params.Add("install_rackd", strconv.FormatBool(true))
+	if installRackD, ok := d.GetOk("install_rackd"); ok {
+		log.Printf("[INFO] Adding maas rack controller packages: %s", installRackD)
+		nodeParams.Add("install_rackd", strconv.FormatBool(true))
 	}
 
-	if err := nodeDo(meta.(*Config).MAASObject, d.Id(), "deploy", node_params); err != nil {
+	if err = nodeDo(meta.(*Config).MAASObject, d.Id(), "deploy", nodeParams); err != nil {
 		log.Printf("[ERROR] [resourceMAASInstanceCreate] Unable to power up node: %s\n", d.Id())
 		// unable to perform action, release the node
-		if err := nodeRelease(meta.(*Config).MAASObject, d.Id(), url.Values{}); err != nil {
+		if err = nodeRelease(meta.(*Config).MAASObject, d.Id(), url.Values{}); err != nil {
 			log.Printf("[DEBUG] Unable to release node")
 		}
 		return err
@@ -87,16 +87,17 @@ func resourceMAASInstanceCreate(d *schema.ResourceData, meta interface{}) error 
 		Pending:    []string{"9:"},
 		Target:     []string{"6:"},
 		Refresh:    getNodeStatus(meta.(*Config).MAASObject, d.Id()),
-		Timeout:    25 * time.Minute,
-		Delay:      10 * time.Second,
-		MinTimeout: 3 * time.Second,
+		Timeout:    25 * time.Minute, // nolint: gomnd
+		Delay:      10 * time.Second, // nolint: gomnd
+		MinTimeout: 3 * time.Second,  // nolint: gomnd
 	}
 
-	if _, err := stateConf.WaitForState(); err != nil {
-		if err := nodeRelease(meta.(*Config).MAASObject, d.Id(), url.Values{}); err != nil {
+	if _, err = stateConf.WaitForState(); err != nil {
+		if err = nodeRelease(meta.(*Config).MAASObject, d.Id(), url.Values{}); err != nil {
 			log.Printf("[DEBUG] Unable to release node")
 		}
-		return fmt.Errorf("[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become deployed: %s", d.Id(), err)
+		return fmt.Errorf("[ERROR] [resourceMAASInstanceCreate] Error waiting for instance (%s) to become deployed: %s",
+			d.Id(), err)
 	}
 
 	// update node
@@ -143,28 +144,29 @@ func resourceMAASInstanceUpdate(d *schema.ResourceData, meta interface{}) error 
 	return resourceMAASInstanceRead(d, meta)
 }
 
-// resourceMAASInstanceDelete This function doesn't really *delete* a maas managed instance but releases (read, turns off) the node.
-func resourceMAASInstanceDelete(d *schema.ResourceData, meta interface{}) error {
+// resourceMAASInstanceDelete
+// This function doesn't really *delete* a maas managed instance but releases (read, turns off) the node.
+func resourceMAASInstanceDelete(d *schema.ResourceData, meta interface{}) error { // nolint: funlen
 	log.Printf("[DEBUG] Deleting instance %s\n", d.Id())
-	release_params := url.Values{}
+	releaseParams := url.Values{}
 
-	if release_erase, ok := d.GetOk("release_erase"); ok {
-		release_params.Add("erase", strconv.FormatBool(release_erase.(bool)))
+	if releaseErase, ok := d.GetOk("release_erase"); ok {
+		releaseParams.Add("erase", strconv.FormatBool(releaseErase.(bool)))
 	}
 
-	if release_erase_secure, ok := d.GetOk("release_erase_secure"); ok {
+	if releaseEraseSecure, ok := d.GetOk("release_erase_secure"); ok {
 		// setting erase to true in the event a user didn't set both options
-		release_params.Add("erase", strconv.FormatBool(true))
-		release_params.Add("secure_erase", strconv.FormatBool(release_erase_secure.(bool)))
+		releaseParams.Add("erase", strconv.FormatBool(true))
+		releaseParams.Add("secure_erase", strconv.FormatBool(releaseEraseSecure.(bool)))
 	}
 
-	if release_erase_quick, ok := d.GetOk("release_erase_quick"); ok {
+	if releaseEraseQuick, ok := d.GetOk("release_erase_quick"); ok {
 		// setting erase to true in the event a user didn't set both options
-		release_params.Add("erase", strconv.FormatBool(true))
-		release_params.Add("quick_erase", strconv.FormatBool(release_erase_quick.(bool)))
+		releaseParams.Add("erase", strconv.FormatBool(true))
+		releaseParams.Add("quick_erase", strconv.FormatBool(releaseEraseQuick.(bool)))
 	}
 
-	if err := nodeRelease(meta.(*Config).MAASObject, d.Id(), release_params); err != nil {
+	if err := nodeRelease(meta.(*Config).MAASObject, d.Id(), releaseParams); err != nil {
 		return err
 	}
 
@@ -172,9 +174,9 @@ func resourceMAASInstanceDelete(d *schema.ResourceData, meta interface{}) error 
 		Pending:    []string{"6:", "12:", "14:"},
 		Target:     []string{"4:"},
 		Refresh:    getNodeStatus(meta.(*Config).MAASObject, d.Id()),
-		Timeout:    30 * time.Minute,
-		Delay:      10 * time.Second,
-		MinTimeout: 3 * time.Second,
+		Timeout:    30 * time.Minute, // nolint: gomnd
+		Delay:      10 * time.Second, // nolint: gomnd
+		MinTimeout: 3 * time.Second,  // nolint: gomnd
 	}
 
 	if _, err := stateConf.WaitForState(); err != nil {
@@ -188,7 +190,7 @@ func resourceMAASInstanceDelete(d *schema.ResourceData, meta interface{}) error 
 		params.Set("hostname", "")
 		err := nodeUpdate(meta.(*Config).MAASObject, d.Id(), params)
 		if err != nil {
-			log.Println("[DEBUG] Unable to reset hostname: %s", err)
+			log.Printf("[DEBUG] Unable to reset hostname: %s", err)
 		}
 	}
 

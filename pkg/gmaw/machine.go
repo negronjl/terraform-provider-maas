@@ -53,14 +53,14 @@ func (m *Machine) Commission(systemID string, params maas.MachineCommissionParam
 }
 
 // Deploy fulfills the maas.MachineFetcher interface
-func (m *Machine) Deploy(systemID string, params maas.MachineDeployParams) ([]byte, error) {
+func (m *Machine) Deploy(systemID string, params *maas.MachineDeployParams) ([]byte, error) {
 	qsp := maas.ToQSP(params)
 	return m.callPost(systemID, "deploy", qsp)
 }
 
 // Lock fulfills the maas.MachineFetcher interface
 func (m *Machine) Lock(systemID, comment string) ([]byte, error) {
-	var qsp url.Values
+	qsp := make(url.Values)
 	if comment != "" {
 		qsp.Set("comment", comment)
 	}

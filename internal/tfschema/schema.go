@@ -19,7 +19,7 @@ type Schema struct {
 	FuncTags   map[string]interface{}
 }
 
-func NewSchema(f reflect.StructField) *Schema {
+func NewSchema(f *reflect.StructField) *Schema {
 	s := &Schema{
 		Schema: schema.Schema{},
 	}
@@ -47,7 +47,7 @@ func NewSchema(f reflect.StructField) *Schema {
 // Parse introspects the struct field to populate the helper.Schema.
 // It will find the Terraform ValueType of the field, search for any
 // struct tags, and set the default value, if there is one.
-func (s *Schema) Parse(f reflect.StructField) (err error) {
+func (s *Schema) Parse(f *reflect.StructField) (err error) {
 	if err = s.SetValueType(f.Type.Kind()); err != nil {
 		return
 	}
@@ -72,7 +72,9 @@ func (s *Schema) SetValueType(t reflect.Kind) error {
 	switch t {
 	case reflect.String:
 		s.Type = schema.TypeString
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		s.Type = schema.TypeInt
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		s.Type = schema.TypeInt
 	case reflect.Bool:
 		s.Type = schema.TypeBool

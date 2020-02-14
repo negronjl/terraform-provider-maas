@@ -47,12 +47,12 @@ func resourceInstanceCreate(d *schema.ResourceData, m interface{}) error {
 	// Get node params and set them along with the deploy
 	dp := instance.FromMachine(machineManager.Current()).DeployParams()
 	if err := machineManager.Deploy(dp); err != nil {
-		machinesManager.Release([]string{machineManager.SystemID()}, "The deploy has broke")
+		machinesManager.Release([]string{machineManager.SystemID()}, "The deploy has broke") // nolint
 	}
 
 	// Lock the machine, if necessary
 	if instance.Lock {
-		machineManager.Lock("Locked by Terraform")
+		machineManager.Lock("Locked by Terraform") // nolint
 	}
 	return resourceInstanceRead(d, m)
 }
@@ -80,7 +80,7 @@ func resourceInstanceUpdate(d *schema.ResourceData, m interface{}) error {
 
 	// Lock the machine, if necessary
 	if NewInstance(d).Lock {
-		machineManager.Lock("Locked by Terraform")
+		machineManager.Lock("Locked by Terraform") // nolint
 	}
 	return resourceInstanceRead(d, m)
 }
