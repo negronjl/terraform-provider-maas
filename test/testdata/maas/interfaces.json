@@ -1,0 +1,469 @@
+[
+    {
+        "name": "eth-lKRYAa",
+        "parents": [],
+        "product": null,
+        "vlan": {
+            "vid": 0,
+            "mtu": 1500,
+            "dhcp_on": false,
+            "external_dhcp": null,
+            "relay_vlan": null,
+            "name": "untagged",
+            "space": "management",
+            "secondary_rack": "76y7pg",
+            "primary_rack": "7xtf67",
+            "fabric": "fabric-1",
+            "fabric_id": 1,
+            "id": 5003,
+            "resource_uri": "/MAAS/api/2.0/vlans/5003/"
+        },
+        "type": "physical",
+        "enabled": true,
+        "params": "",
+        "mac_address": "cb:93:ac:d1:ed:65",
+        "effective_mtu": 1500,
+        "system_id": "thr3am",
+        "firmware_version": null,
+        "tags": [
+            "tag-oplxjR",
+            "tag-QAxfJH",
+            "tag-VOqx2b"
+        ],
+        "discovered": null,
+        "id": 37,
+        "links": [
+            {
+                "id": 14,
+                "mode": "auto",
+                "subnet": {
+                    "name": "name-v5djzQ",
+                    "vlan": {
+                        "vid": 0,
+                        "mtu": 1500,
+                        "dhcp_on": false,
+                        "external_dhcp": null,
+                        "relay_vlan": null,
+                        "name": "untagged",
+                        "space": "management",
+                        "secondary_rack": "76y7pg",
+                        "primary_rack": "7xtf67",
+                        "fabric": "fabric-1",
+                        "fabric_id": 1,
+                        "id": 5003,
+                        "resource_uri": "/MAAS/api/2.0/vlans/5003/"
+                    },
+                    "cidr": "172.16.2.0/24",
+                    "rdns_mode": 2,
+                    "gateway_ip": "172.16.2.1",
+                    "dns_servers": [
+                        "fcb0:c682:8c15:817d:7d80:2713:e225:5624",
+                        "fd66:86c9:6a50:27cd:de13:3f1c:40d1:8aac",
+                        "120.129.237.29"
+                    ],
+                    "allow_dns": true,
+                    "allow_proxy": true,
+                    "active_discovery": false,
+                    "managed": true,
+                    "space": "management",
+                    "id": 2,
+                    "resource_uri": "/MAAS/api/2.0/subnets/2/"
+                }
+            }
+        ],
+        "vendor": null,
+        "children": [
+            "eth-lKRYAa.42"
+        ],
+        "resource_uri": "/MAAS/api/2.0/nodes/thr3am/interfaces/37/"
+    },
+    {
+        "name": "eth-3ookc5",
+        "parents": [],
+        "product": null,
+        "vlan": {
+            "vid": 0,
+            "mtu": 1500,
+            "dhcp_on": false,
+            "external_dhcp": null,
+            "relay_vlan": null,
+            "name": "untagged",
+            "space": "management",
+            "secondary_rack": "76y7pg",
+            "primary_rack": "7xtf67",
+            "fabric": "fabric-1",
+            "fabric_id": 1,
+            "id": 5003,
+            "resource_uri": "/MAAS/api/2.0/vlans/5003/"
+        },
+        "type": "physical",
+        "enabled": true,
+        "params": "",
+        "mac_address": "bc:d3:d5:28:88:dc",
+        "effective_mtu": 1500,
+        "system_id": "thr3am",
+        "firmware_version": null,
+        "tags": [
+            "tag-LddZkA",
+            "tag-EDi2sp",
+            "tag-RwynT2"
+        ],
+        "discovered": null,
+        "id": 38,
+        "links": [
+            {
+                "id": 15,
+                "mode": "auto",
+                "subnet": {
+                    "name": "name-v5djzQ",
+                    "vlan": {
+                        "vid": 0,
+                        "mtu": 1500,
+                        "dhcp_on": false,
+                        "external_dhcp": null,
+                        "relay_vlan": null,
+                        "name": "untagged",
+                        "space": "management",
+                        "secondary_rack": "76y7pg",
+                        "primary_rack": "7xtf67",
+                        "fabric": "fabric-1",
+                        "fabric_id": 1,
+                        "id": 5003,
+                        "resource_uri": "/MAAS/api/2.0/vlans/5003/"
+                    },
+                    "cidr": "172.16.2.0/24",
+                    "rdns_mode": 2,
+                    "gateway_ip": "172.16.2.1",
+                    "dns_servers": [
+                        "fcb0:c682:8c15:817d:7d80:2713:e225:5624",
+                        "fd66:86c9:6a50:27cd:de13:3f1c:40d1:8aac",
+                        "120.129.237.29"
+                    ],
+                    "allow_dns": true,
+                    "allow_proxy": true,
+                    "active_discovery": false,
+                    "managed": true,
+                    "space": "management",
+                    "id": 2,
+                    "resource_uri": "/MAAS/api/2.0/subnets/2/"
+                }
+            }
+        ],
+        "vendor": null,
+        "children": [
+            "eth-3ookc5.42"
+        ],
+        "resource_uri": "/MAAS/api/2.0/nodes/thr3am/interfaces/38/"
+    },
+    {
+        "name": "eth-W8E8f0",
+        "parents": [],
+        "product": null,
+        "vlan": {
+            "vid": 0,
+            "mtu": 1500,
+            "dhcp_on": false,
+            "external_dhcp": null,
+            "relay_vlan": null,
+            "name": "untagged",
+            "space": "management",
+            "secondary_rack": "76y7pg",
+            "primary_rack": "7xtf67",
+            "fabric": "fabric-1",
+            "fabric_id": 1,
+            "id": 5003,
+            "resource_uri": "/MAAS/api/2.0/vlans/5003/"
+        },
+        "type": "physical",
+        "enabled": true,
+        "params": "",
+        "mac_address": "ad:5a:3e:a3:68:13",
+        "effective_mtu": 1500,
+        "system_id": "thr3am",
+        "firmware_version": null,
+        "tags": [
+            "tag-dc12B9",
+            "tag-D71Hh0",
+            "tag-PnEfvN"
+        ],
+        "discovered": null,
+        "id": 39,
+        "links": [
+            {
+                "id": 16,
+                "mode": "auto",
+                "subnet": {
+                    "name": "name-v5djzQ",
+                    "vlan": {
+                        "vid": 0,
+                        "mtu": 1500,
+                        "dhcp_on": false,
+                        "external_dhcp": null,
+                        "relay_vlan": null,
+                        "name": "untagged",
+                        "space": "management",
+                        "secondary_rack": "76y7pg",
+                        "primary_rack": "7xtf67",
+                        "fabric": "fabric-1",
+                        "fabric_id": 1,
+                        "id": 5003,
+                        "resource_uri": "/MAAS/api/2.0/vlans/5003/"
+                    },
+                    "cidr": "172.16.2.0/24",
+                    "rdns_mode": 2,
+                    "gateway_ip": "172.16.2.1",
+                    "dns_servers": [
+                        "fcb0:c682:8c15:817d:7d80:2713:e225:5624",
+                        "fd66:86c9:6a50:27cd:de13:3f1c:40d1:8aac",
+                        "120.129.237.29"
+                    ],
+                    "allow_dns": true,
+                    "allow_proxy": true,
+                    "active_discovery": false,
+                    "managed": true,
+                    "space": "management",
+                    "id": 2,
+                    "resource_uri": "/MAAS/api/2.0/subnets/2/"
+                }
+            }
+        ],
+        "vendor": null,
+        "children": [
+            "eth-W8E8f0.42"
+        ],
+        "resource_uri": "/MAAS/api/2.0/nodes/thr3am/interfaces/39/"
+    },
+    {
+        "name": "eth-lKRYAa.42",
+        "parents": [
+            "eth-lKRYAa"
+        ],
+        "product": null,
+        "vlan": {
+            "vid": 42,
+            "mtu": 1500,
+            "dhcp_on": false,
+            "external_dhcp": null,
+            "relay_vlan": null,
+            "name": "42",
+            "space": "ipv6-testbed",
+            "secondary_rack": null,
+            "primary_rack": null,
+            "fabric": "fabric-1",
+            "fabric_id": 1,
+            "id": 5004,
+            "resource_uri": "/MAAS/api/2.0/vlans/5004/"
+        },
+        "type": "vlan",
+        "enabled": true,
+        "params": "",
+        "mac_address": "cb:93:ac:d1:ed:65",
+        "effective_mtu": 1500,
+        "system_id": "thr3am",
+        "firmware_version": null,
+        "tags": [
+            "tag-u0TLLj",
+            "tag-C09Efp",
+            "tag-QK7j09"
+        ],
+        "discovered": null,
+        "id": 40,
+        "links": [
+            {
+                "id": 17,
+                "mode": "auto",
+                "subnet": {
+                    "name": "name-m3vYqT",
+                    "vlan": {
+                        "vid": 42,
+                        "mtu": 1500,
+                        "dhcp_on": false,
+                        "external_dhcp": null,
+                        "relay_vlan": null,
+                        "name": "42",
+                        "space": "ipv6-testbed",
+                        "secondary_rack": null,
+                        "primary_rack": null,
+                        "fabric": "fabric-1",
+                        "fabric_id": 1,
+                        "id": 5004,
+                        "resource_uri": "/MAAS/api/2.0/vlans/5004/"
+                    },
+                    "cidr": "2001:db8:42::/64",
+                    "rdns_mode": 2,
+                    "gateway_ip": null,
+                    "dns_servers": [
+                        "fd15:6cb0:a55c:235f:e78f:ba4f:2eb4:6b3",
+                        "fcc5:8b5e:c55b:90e0:8be:6b87:eb5:f4c7"
+                    ],
+                    "allow_dns": true,
+                    "allow_proxy": true,
+                    "active_discovery": false,
+                    "managed": true,
+                    "space": "ipv6-testbed",
+                    "id": 5,
+                    "resource_uri": "/MAAS/api/2.0/subnets/5/"
+                }
+            }
+        ],
+        "vendor": null,
+        "children": [],
+        "resource_uri": "/MAAS/api/2.0/nodes/thr3am/interfaces/40/"
+    },
+    {
+        "name": "eth-3ookc5.42",
+        "parents": [
+            "eth-3ookc5"
+        ],
+        "product": null,
+        "vlan": {
+            "vid": 42,
+            "mtu": 1500,
+            "dhcp_on": false,
+            "external_dhcp": null,
+            "relay_vlan": null,
+            "name": "42",
+            "space": "ipv6-testbed",
+            "secondary_rack": null,
+            "primary_rack": null,
+            "fabric": "fabric-1",
+            "fabric_id": 1,
+            "id": 5004,
+            "resource_uri": "/MAAS/api/2.0/vlans/5004/"
+        },
+        "type": "vlan",
+        "enabled": true,
+        "params": "",
+        "mac_address": "bc:d3:d5:28:88:dc",
+        "effective_mtu": 1500,
+        "system_id": "thr3am",
+        "firmware_version": null,
+        "tags": [
+            "tag-EFzacM",
+            "tag-dxAebl",
+            "tag-GsPX3m"
+        ],
+        "discovered": null,
+        "id": 41,
+        "links": [
+            {
+                "id": 18,
+                "mode": "static",
+                "ip_address": "2001:db8:42:0:6556:13fa:7452:70da",
+                "subnet": {
+                    "name": "name-m3vYqT",
+                    "vlan": {
+                        "vid": 42,
+                        "mtu": 1500,
+                        "dhcp_on": false,
+                        "external_dhcp": null,
+                        "relay_vlan": null,
+                        "name": "42",
+                        "space": "ipv6-testbed",
+                        "secondary_rack": null,
+                        "primary_rack": null,
+                        "fabric": "fabric-1",
+                        "fabric_id": 1,
+                        "id": 5004,
+                        "resource_uri": "/MAAS/api/2.0/vlans/5004/"
+                    },
+                    "cidr": "2001:db8:42::/64",
+                    "rdns_mode": 2,
+                    "gateway_ip": null,
+                    "dns_servers": [
+                        "fd15:6cb0:a55c:235f:e78f:ba4f:2eb4:6b3",
+                        "fcc5:8b5e:c55b:90e0:8be:6b87:eb5:f4c7"
+                    ],
+                    "allow_dns": true,
+                    "allow_proxy": true,
+                    "active_discovery": false,
+                    "managed": true,
+                    "space": "ipv6-testbed",
+                    "id": 5,
+                    "resource_uri": "/MAAS/api/2.0/subnets/5/"
+                }
+            }
+        ],
+        "vendor": null,
+        "children": [],
+        "resource_uri": "/MAAS/api/2.0/nodes/thr3am/interfaces/41/"
+    },
+    {
+        "name": "eth-W8E8f0.42",
+        "parents": [
+            "eth-W8E8f0"
+        ],
+        "product": null,
+        "vlan": {
+            "vid": 42,
+            "mtu": 1500,
+            "dhcp_on": false,
+            "external_dhcp": null,
+            "relay_vlan": null,
+            "name": "42",
+            "space": "ipv6-testbed",
+            "secondary_rack": null,
+            "primary_rack": null,
+            "fabric": "fabric-1",
+            "fabric_id": 1,
+            "id": 5004,
+            "resource_uri": "/MAAS/api/2.0/vlans/5004/"
+        },
+        "type": "vlan",
+        "enabled": true,
+        "params": "",
+        "mac_address": "ad:5a:3e:a3:68:13",
+        "effective_mtu": 1500,
+        "system_id": "thr3am",
+        "firmware_version": null,
+        "tags": [
+            "tag-cyexYi",
+            "tag-nnoi80",
+            "tag-xhApes"
+        ],
+        "discovered": null,
+        "id": 42,
+        "links": [
+            {
+                "id": 19,
+                "mode": "static",
+                "ip_address": "2001:db8:42:0:cf29:e368:ba5b:9977",
+                "subnet": {
+                    "name": "name-m3vYqT",
+                    "vlan": {
+                        "vid": 42,
+                        "mtu": 1500,
+                        "dhcp_on": false,
+                        "external_dhcp": null,
+                        "relay_vlan": null,
+                        "name": "42",
+                        "space": "ipv6-testbed",
+                        "secondary_rack": null,
+                        "primary_rack": null,
+                        "fabric": "fabric-1",
+                        "fabric_id": 1,
+                        "id": 5004,
+                        "resource_uri": "/MAAS/api/2.0/vlans/5004/"
+                    },
+                    "cidr": "2001:db8:42::/64",
+                    "rdns_mode": 2,
+                    "gateway_ip": null,
+                    "dns_servers": [
+                        "fd15:6cb0:a55c:235f:e78f:ba4f:2eb4:6b3",
+                        "fcc5:8b5e:c55b:90e0:8be:6b87:eb5:f4c7"
+                    ],
+                    "allow_dns": true,
+                    "allow_proxy": true,
+                    "active_discovery": false,
+                    "managed": true,
+                    "space": "ipv6-testbed",
+                    "id": 5,
+                    "resource_uri": "/MAAS/api/2.0/subnets/5/"
+                }
+            }
+        ],
+        "vendor": null,
+        "children": [],
+        "resource_uri": "/MAAS/api/2.0/nodes/thr3am/interfaces/42/"
+    }
+]
