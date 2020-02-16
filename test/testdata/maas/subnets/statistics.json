@@ -1,0 +1,12 @@
+{
+    "num_available": 232,
+    "largest_available": 41,
+    "num_unavailable": 22,
+    "total_addresses": 254,
+    "usage": 0.08661417322834646,
+    "usage_string": "9%",
+    "available_string": "91%",
+    "first_address": "172.16.1.1",
+    "last_address": "172.16.1.254",
+    "ip_version": 4
+}

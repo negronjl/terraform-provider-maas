@@ -1,0 +1,194 @@
+[
+    {
+        "ip": "172.16.2.3",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:06:19",
+        "updated": "Tue, 27 Nov. 2018 18:06:19",
+        "node_summary": {
+            "system_id": "76y7pg",
+            "node_type": 2,
+            "fqdn": "happy-rack.maas",
+            "hostname": "happy-rack",
+            "is_container": false,
+            "via": "eth2"
+        }
+    },
+    {
+        "ip": "172.16.2.4",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:06:19",
+        "updated": "Tue, 27 Nov. 2018 18:06:19",
+        "node_summary": {
+            "system_id": "nfkend",
+            "node_type": 3,
+            "fqdn": "happy-region.maas",
+            "hostname": "happy-region",
+            "is_container": false,
+            "via": "eth2"
+        }
+    },
+    {
+        "ip": "172.16.2.11",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:07:25",
+        "updated": "Tue, 27 Nov. 2018 18:07:25",
+        "node_summary": {
+            "system_id": "dq3sda",
+            "node_type": 0,
+            "fqdn": "kind-dory.maas",
+            "hostname": "kind-dory",
+            "is_container": false,
+            "via": "eth-xnY2lB"
+        },
+        "user": "user2"
+    },
+    {
+        "ip": "172.16.2.26",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:07:09",
+        "updated": "Tue, 27 Nov. 2018 18:07:09",
+        "node_summary": {
+            "system_id": "seebkg",
+            "node_type": 0,
+            "fqdn": "grown-cougar.maas",
+            "hostname": "grown-cougar",
+            "is_container": false,
+            "via": "eth-GZF5ig"
+        },
+        "user": "user2"
+    },
+    {
+        "ip": "172.16.2.62",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:07:24",
+        "updated": "Tue, 27 Nov. 2018 18:07:24",
+        "node_summary": {
+            "system_id": "r7enqt",
+            "node_type": 0,
+            "fqdn": "nice-gannet.maas",
+            "hostname": "nice-gannet",
+            "is_container": false,
+            "via": "eth-nlvMd2"
+        },
+        "user": "user1"
+    },
+    {
+        "ip": "172.16.2.63",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:06:29",
+        "updated": "Tue, 27 Nov. 2018 18:06:29",
+        "node_summary": {
+            "system_id": "pme7wb",
+            "node_type": 0,
+            "fqdn": "solid-liger.sample",
+            "hostname": "solid-liger",
+            "is_container": false,
+            "via": "eth-2VCthm"
+        }
+    },
+    {
+        "ip": "172.16.2.109",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:07:25",
+        "updated": "Tue, 27 Nov. 2018 18:07:25",
+        "node_summary": {
+            "system_id": "dq3sda",
+            "node_type": 0,
+            "fqdn": "kind-dory.maas",
+            "hostname": "kind-dory",
+            "is_container": false,
+            "via": "eth-fS18k5"
+        },
+        "user": "user2"
+    },
+    {
+        "ip": "172.16.2.111",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:07:07",
+        "updated": "Tue, 27 Nov. 2018 18:07:07",
+        "node_summary": {
+            "system_id": "ydpcwh",
+            "node_type": 0,
+            "fqdn": "game-owl.ubnt",
+            "hostname": "game-owl",
+            "is_container": false,
+            "via": "eth-Cyk2jC"
+        },
+        "user": "user2"
+    },
+    {
+        "ip": "172.16.2.116",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:07:10",
+        "updated": "Tue, 27 Nov. 2018 18:07:10",
+        "node_summary": {
+            "system_id": "seebkg",
+            "node_type": 0,
+            "fqdn": "grown-cougar.maas",
+            "hostname": "grown-cougar",
+            "is_container": false,
+            "via": "eth-0nEEnB"
+        },
+        "user": "user2"
+    },
+    {
+        "ip": "172.16.2.134",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:07:24",
+        "updated": "Tue, 27 Nov. 2018 18:07:24",
+        "node_summary": {
+            "system_id": "r7enqt",
+            "node_type": 0,
+            "fqdn": "nice-gannet.maas",
+            "hostname": "nice-gannet",
+            "is_container": false,
+            "via": "eth-dMPw46"
+        },
+        "user": "user1"
+    },
+    {
+        "ip": "172.16.2.206",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:07:24",
+        "updated": "Tue, 27 Nov. 2018 18:07:24",
+        "node_summary": {
+            "system_id": "r7enqt",
+            "node_type": 0,
+            "fqdn": "nice-gannet.maas",
+            "hostname": "nice-gannet",
+            "is_container": false,
+            "via": "eth-6Wz9hw"
+        },
+        "user": "user1"
+    },
+    {
+        "ip": "172.16.2.235",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:07:29",
+        "updated": "Tue, 27 Nov. 2018 18:07:29",
+        "node_summary": {
+            "system_id": "7ghwxs",
+            "node_type": 0,
+            "fqdn": "alert-lion.sample",
+            "hostname": "alert-lion",
+            "is_container": false,
+            "via": "bond-wnZNKS"
+        },
+        "user": "user2"
+    },
+    {
+        "ip": "172.16.2.252",
+        "alloc_type": 1,
+        "created": "Tue, 27 Nov. 2018 18:07:32",
+        "updated": "Tue, 27 Nov. 2018 18:07:32",
+        "node_summary": {
+            "system_id": "dnq43f",
+            "node_type": 0,
+            "fqdn": "square-hornet.maas",
+            "hostname": "square-hornet",
+            "is_container": false,
+            "via": "eth-3GCPHI"
+        },
+        "user": "user2"
+    }
+]
