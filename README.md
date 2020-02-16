@@ -76,6 +76,46 @@ resource "maas_instance" "maas_three_nodes_8g" {
 }
 ```
 
+#### maas_interface_physical
+
+Configures a physical interface on a system, where a system is anything with a system ID.
+
+```hcl
+resource "maas_interface_physical" "myserver_eth0" {
+  system_id   = maas_instance.myserver.system_id
+  name        = "eth0"
+  mac_address = "01:23:45:67:89:0A"
+  tags        = ["foo", "bar"]
+  vlan        = "my_vlan"
+  mtu         = 1500
+  accept_ra   = true
+  autoconf    = true
+}
+```
+
+##### Available Parameters
+
+| Name | Type | Description
+| ---- | ---- | -----------
+| `system_id` | `string` | The system ID of the system to which this interface belongs
+| `name` | `string` | Name of the interface (such as `eth0`)
+| `mac_address` | `string` | MAC Address of the interface. This can be changed.
+| `tags` | `list(string)` | Tags to apply to the interface
+| `vlan` | `string` | Name of the VLAN to which this interface is connected. If empty or `undefined`, the interface is assumed to be disconnected.
+| `mtu` | `int` | MTU of the interface
+| `accept_ra` | `bool` | Accept router advertisements (IPv6 only). Default false.
+| `autoconf` | `bool` | Use autoconf (IPv6 only). Default false.
+
+The `system_id` and `mac_address` parameters are required.
+
+##### Importing
+
+An interface can be uniquely identified by its system ID and interface id (which is an integer).
+
+```bash
+terraform import maas_interface_physical.my_eth 3xtkyg:23
+```
+
 ### Specify user data for nodes
 
 User data can be either a cloud-init script or a bash shell

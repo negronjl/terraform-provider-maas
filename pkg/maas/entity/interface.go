@@ -22,8 +22,6 @@ type Interface struct {
 	BondXMitHashPolicy string          `json:"bond_x_mit_hash_policy,omitempty"`
 	BondMode           string          `json:"bond_mode,omitempty"`
 	MTU                string          `json:"mtu,omitempty"`
-	AcceptRA           string          `json:"accept_ra,omitempty"`
-	Autoconf           string          `json:"autoconf,omitempty"`
 	EffectiveMTU       int             `json:"effective_mtu,omitempty"`
 	ID                 int             `json:"id,omitempty"`
 	BridgeFD           int             `json:"bridge_fd,omitempty"`
@@ -31,6 +29,8 @@ type Interface struct {
 	BondDownDelay      int             `json:"bond_down_delay,omitempty"`
 	BondUpDelay        int             `json:"bond_up_delay,omitempty"`
 	BondLACPRate       int             `json:"bond_lacp_rate,omitempty"`
+	AcceptRA           bool            `json:"accept_ra,omitempty"`
+	Autoconf           bool            `json:"autoconf,omitempty"`
 	Enabled            bool            `json:"enabled,omitempty"`
 	BridgeSTP          bool            `json:"bridge_stp,omitempty"`
 }
