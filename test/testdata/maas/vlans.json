@@ -1,0 +1,17 @@
+[
+    {
+        "vid": 0,
+        "mtu": 1500,
+        "dhcp_on": false,
+        "external_dhcp": null,
+        "relay_vlan": null,
+        "space": "undefined",
+        "fabric_id": 10,
+        "secondary_rack": null,
+        "fabric": "fabric-10",
+        "id": 5014,
+        "primary_rack": null,
+        "name": "untagged",
+        "resource_uri": "/MAAS/api/2.0/vlans/5014/"
+    }
+]
