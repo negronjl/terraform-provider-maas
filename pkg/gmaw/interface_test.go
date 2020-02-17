@@ -165,7 +165,7 @@ func TestInterface(t *testing.T) {
 	t.Run("LinkSubnet", func(t *testing.T) {
 		t.Run("200", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfaceClient.LinkSubnet(sid, ifc200, &params.InterfaceLinkSubnet{})
+			got, err := interfaceClient.LinkSubnet(sid, ifc200, &params.InterfaceLink{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -175,7 +175,7 @@ func TestInterface(t *testing.T) {
 		})
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfaceClient.LinkSubnet(sid, ifc404, &params.InterfaceLinkSubnet{})
+			got, err := interfaceClient.LinkSubnet(sid, ifc404, &params.InterfaceLink{})
 			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}

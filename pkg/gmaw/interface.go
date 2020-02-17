@@ -76,7 +76,7 @@ func (i *Interface) Disconnect(systemID string, id int) (ifc *entity.Interface, 
 // This function returns an error if the gomaasapi returns an error or if
 // the response cannot be decoded.
 func (i *Interface) LinkSubnet(systemID string, id int,
-	p *params.InterfaceLinkSubnet) (ifc *entity.Interface, err error) {
+	p *params.InterfaceLink) (ifc *entity.Interface, err error) {
 	ifc = new(entity.Interface)
 	qsp := maas.ToQSP(p)
 	err = i.client(systemID, id).Post("link_subnet", qsp, func(data []byte) error {

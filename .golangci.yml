@@ -72,6 +72,9 @@ linters:
 
 issues:
   exclude-rules:
+    - path: internal/provider/
+      linters:
+        - funlen
     - path: pkg/gmaw/.*_test\.go
       linters:
         - gocyclo

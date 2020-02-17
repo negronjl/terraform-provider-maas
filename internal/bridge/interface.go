@@ -1,6 +1,7 @@
 package bridge
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/juju/gomaasapi"
@@ -95,4 +96,37 @@ func (i *Interface) Delete(sch interface{}) (err error) {
 		err = gmaw.NewInterface(i.mo).Delete(tmpl.SystemID, tmpl.InterfaceID)
 	}
 	return
+}
+
+// LinkSubnet creates a link between an interface and a subnet.
+// This function will return an error if the MaaS API client returns an error.
+func (i *Interface) LinkSubnet(sch *tfschema.InterfaceLink) (err error) {
+	_, err = gmaw.NewInterface(i.mo).LinkSubnet(sch.SystemID, sch.InterfaceID, sch.Params())
+	return
+}
+
+// UnlinkSubnet removes the link between an interface and a subnet.
+// This function will return an error if the MaaS API client returns an error.
+func (i *Interface) UnlinkSubnet(sch *tfschema.InterfaceLink) (err error) {
+	_, err = gmaw.NewInterface(i.mo).UnlinkSubnet(sch.SystemID, sch.InterfaceID, sch.SubnetID)
+	return
+}
+
+// ReadLink synchronizes the InterfaceLink with the current MaaS state.
+// This function will return an error if the MaaS API client returns an error, or
+// if the link cannot be found in MaaS.
+func (i *Interface) ReadLink(sch *tfschema.InterfaceLink) error {
+	res, err := gmaw.NewInterface(i.mo).Get(sch.SystemID, sch.InterfaceID)
+	if err != nil {
+		return err
+	}
+	for idx := range res.Links {
+		if res.Links[idx].Subnet.ID != sch.SubnetID {
+			continue
+		}
+		sch.Mode = res.Links[idx].Mode
+		sch.IPAddress = res.Links[idx].IPAddress
+	}
+	return fmt.Errorf("could not locate link between interface %s.%d and subnet %d",
+		sch.SystemID, sch.InterfaceID, sch.SubnetID)
 }

@@ -116,6 +116,50 @@ An interface can be uniquely identified by its system ID and interface id (which
 terraform import maas_interface_physical.my_eth 3xtkyg:23
 ```
 
+#### maas_interface_link
+
+Configures a link between physical interface on a system and a subnet.
+
+```hcl
+resource "maas_interface_link" "eth0_sn123" {
+  system_id    = maas_interface_physical.myserver.system_id
+  interface_id = maas_interface_physical.myserver.interface_id
+  subnet_id    = 123
+  mode         = "STATIC"
+  ip_address   = "::1"
+  force        = true
+}
+```
+
+##### Available Parameters
+
+| Name | Type | Description
+| ---- | ---- | -----------
+| `system_id` | `string` | The system ID of the system to which this interface belongs
+| `interface_id` | `int` | ID of the interface being linked
+| `subnet_id` | `int` | ID of the subnet being linked
+| `mode` | `string` | One of AUTO, DHCP, STATIC or LINK_UP connection to subnet.
+| `ip_address` | `string` | Optional IP address for the interface in subnet. Only used when mode is STATIC. If not provided an IP address from subnet will be auto selected.
+| `force` | `bool` | If True, allows LINK_UP to be set on the interface even if other links already exist. Also allows the selection of any VLAN, even a VLAN MAAS does not believe the interface to currently be on. Using this option will cause all other links on the interface to be deleted. (Defaults to False.)
+| `default_gateway` | `string` | True sets the gateway IP address for the subnet as the default gateway for the node this interface belongs to. Option can only be used with the AUTO and STATIC modes.
+
+Mode definitions:
+
+- **AUTO**: Assign this interface a static IP address from the provided subnet. The subnet must be a managed subnet. The IP address will not be assigned until the node goes to be deployed.
+- **DHCP**: Bring this interface up with DHCP on the given subnet. Only one subnet can be set to DHCP. If the subnet is managed this interface will pull from the dynamic IP range.
+- **STATIC**: Bring this interface up with a static IP address on the given subnet. Any number of static links can exist on an interface.
+- **LINK_UP**: Bring this interface up only on the given subnet. No IP address will be assigned to this interface. The interface cannot have any current AUTO, DHCP or STATIC links.
+
+The `system_id`, `interface_id`, and `subnet_id` parameters are required.
+
+##### Importing
+
+A link can be uniquely identified by a combination of its system ID, interface ID, and the ID of the subnet connected by the link.
+
+```bash
+terraform import maas_interface_link.my_link 3xtkyg:23:42
+```
+
 ### Specify user data for nodes
 
 User data can be either a cloud-init script or a bash shell
