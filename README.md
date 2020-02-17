@@ -160,6 +160,45 @@ A link can be uniquely identified by a combination of its system ID, interface I
 terraform import maas_interface_link.my_link 3xtkyg:23:42
 ```
 
+#### data.maas_subnet
+
+Search the MaaS API for a subnet. If there are multiple matches, the first one will be returned.
+
+```hcl
+data "maas_subnet" "mynet" {
+  name = "the_subnet"
+  vlan = 123
+  cidr = "192.168.0.0/24"
+}
+```
+
+##### Available Parameters
+
+| Name | Type | Description
+| ---- | ---- | -----------
+| `name` | `string` | Name of the subnet
+| `vlan` | `int` | ID of a VLAN
+| `cidr` | `int` | Subnet of the subnet in CIDR notation
+
+All parameters are optional. The first subnet that matches all specified parameters will be returned.
+
+##### Additional Properties
+
+Besides the properties defined above, the following properties are also available:
+
+| Name | Type | Description
+| ---- | ---- | -----------
+| `id` | `int` | The ID of the subnet
+| `rdns_mode` | `int` | How reverse DNS is handled for this subnet
+| `gateway_ip` | `string` | The gateway IP address for this subnet.
+| `dns_servers` | `list(string` | List of DNS servers for this subnet.
+
+rdns_mode values:
+
+- `0` Disabled: No reverse zone is created.
+- `1` Enabled: Generate reverse zone.
+- `2` RFC2317: Extends '1' to create the necessary parent zone with the appropriate CNAME resource records for the network, if the the network is small enough to require the support described in RFC2317.
+
 ### Specify user data for nodes
 
 User data can be either a cloud-init script or a bash shell
