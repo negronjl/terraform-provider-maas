@@ -1,0 +1,29 @@
+[
+    {
+        "authoritative": true,
+        "ttl": null,
+        "id": 0,
+        "name": "maas",
+        "is_default": true,
+        "resource_record_count": 0,
+        "resource_uri": "/MAAS/api/2.0/domains/0/"
+    },
+    {
+        "authoritative": true,
+        "ttl": null,
+        "id": 1,
+        "name": "sample",
+        "is_default": false,
+        "resource_record_count": 0,
+        "resource_uri": "/MAAS/api/2.0/domains/1/"
+    },
+    {
+        "authoritative": true,
+        "ttl": null,
+        "id": 2,
+        "name": "ubnt",
+        "is_default": false,
+        "resource_record_count": 0,
+        "resource_uri": "/MAAS/api/2.0/domains/2/"
+    }
+]
