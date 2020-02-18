@@ -1,0 +1,8 @@
+[
+    {
+        "name": "default",
+        "description": "Default pool",
+        "id": 0,
+        "resource_uri": "/MAAS/api/2.0/resourcepool/0/"
+    }
+]
