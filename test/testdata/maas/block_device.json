@@ -1,0 +1,23 @@
+{
+    "firmware_version": null,
+    "system_id": "y7388k",
+    "block_size": 1024000,
+    "available_size": 1000000000,
+    "model": "fakemodel",
+    "serial": "123",
+    "used_size": 0,
+    "tags": [],
+    "partition_table_type": null,
+    "partitions": [],
+    "path": "/dev/disk/by-dname/newblockdevice",
+    "size": 1000000000,
+    "id_path": "",
+    "filesystem": null,
+    "storage_pool": null,
+    "name": "newblockdevice",
+    "used_for": "Unused",
+    "id": 73,
+    "type": "physical",
+    "uuid": null,
+    "resource_uri": "/MAAS/api/2.0/nodes/y7388k/blockdevices/73/"
+}
