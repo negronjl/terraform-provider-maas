@@ -160,6 +160,16 @@ A link can be uniquely identified by a combination of its system ID, interface I
 terraform import maas_interface_link.my_link 3xtkyg:23:42
 ```
 
+#### maas_server
+
+Configure MaaS server parameters.
+
+| Name | Type | Description
+| ---- | ---- | -----------
+| `ntp_servers` | `list(string)` | Addresses of NTP servers. NTP servers, specified as IP addresses or hostnames delimited by commas and/or spaces, to be used as time references for MAAS itself, the machines MAAS deploys, and devices that make use of MAAS's DHCP services.
+
+This resource currently only supports configuring NTP servers.
+
 #### data.maas_subnet
 
 Search the MaaS API for a subnet. If there are multiple matches, the first one will be returned.
