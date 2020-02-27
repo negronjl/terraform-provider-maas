@@ -44,14 +44,14 @@ type InterfaceVLAN struct {
 	Autoconf bool     `json:"autoconf,omitempty"`
 }
 
-// InterfaceLinkSubnet is used with Interface.LinkSubnet().
+// InterfaceLink is used with Interface.LinkSubnet().
 // Mode must be one of (AUTO, DHCP, STATIC, LINK_UP). IPAddress is ignored
 // unless mode is STATIC, and will be set automatically if empty. Force
 // allows LINK_UP to be set when other links exist, allows links between
 // different VLANs, and deletes all other links on the interface.
 // DefaultGateway is ignored unless Mode is AUTO or STATIC.
 // Note: You can parse an IP address into a net.IP via net.ParseIP(string).
-type InterfaceLinkSubnet struct {
+type InterfaceLink struct {
 	Mode           string `json:"mode,omitempty"`
 	Subnet         int    `json:"subnet,omitempty"`
 	IPAddress      net.IP `json:"ip_address,omitempty"`
