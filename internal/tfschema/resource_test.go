@@ -6,7 +6,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/hashicorp/terraform/helper/schema"
 
-	"github.com/roblox/terraform-provider-maas/internal/provider"
 	. "github.com/roblox/terraform-provider-maas/internal/tfschema"
 )
 
@@ -51,7 +50,7 @@ var simpleSchema = map[string]*schema.Schema{
 func TestNewSchemas(t *testing.T) {
 	tests := []struct {
 		name string
-		got  provider.Endpoint
+		got  Endpoint
 		want map[string]*schema.Schema
 	}{
 		{"simple", simpleStruct{}, simpleSchema},

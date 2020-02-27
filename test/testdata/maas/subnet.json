@@ -1,0 +1,29 @@
+{
+    "name": "172.16.5.0/24",
+    "vlan": {
+        "vid": 0,
+        "mtu": 1500,
+        "dhcp_on": false,
+        "external_dhcp": null,
+        "relay_vlan": null,
+        "fabric_id": 0,
+        "secondary_rack": "76y7pg",
+        "id": 5001,
+        "fabric": "fabric-0",
+        "name": "untagged",
+        "space": "management",
+        "primary_rack": "7xtf67",
+        "resource_uri": "/MAAS/api/2.0/vlans/5001/"
+    },
+    "cidr": "172.16.5.0/24",
+    "rdns_mode": 2,
+    "gateway_ip": null,
+    "dns_servers": [],
+    "allow_dns": true,
+    "allow_proxy": true,
+    "active_discovery": false,
+    "managed": true,
+    "id": 9,
+    "space": "management",
+    "resource_uri": "/MAAS/api/2.0/subnets/9/"
+}

@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/jarcoal/httpmock"
 	"github.com/juju/gomaasapi"
 	. "github.com/roblox/terraform-provider-maas/pkg/gmaw"
 	"github.com/roblox/terraform-provider-maas/pkg/maas"
@@ -16,12 +17,14 @@ const apiURL string = "http://localhost:5240/MAAS"
 var client *gomaasapi.MAASObject
 
 func TestMain(m *testing.M) {
+	httpmock.Activate()
 	var err error
 	client, err = GetClient(apiURL, "some:secret:key", "2.0")
 	if err != nil {
 		log.Fatal(err)
 	}
 	res := m.Run()
+	httpmock.DeactivateAndReset()
 	os.Exit(res)
 }
 

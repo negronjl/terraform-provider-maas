@@ -69,3 +69,18 @@ linters:
     - gochecknoinits
     - gofmt # Use goimports instead
     - golint # Use stylecheck instead
+
+issues:
+  exclude-rules:
+    - path: pkg/gmaw/.*_test\.go
+      linters:
+        - gocyclo
+        - gocognit
+        - gomnd
+        - goconst
+        - dupl
+        - funlen
+    - path: pkg/maas/entity/.*_test\.go
+      linters:
+        - gomnd
+        - dupl

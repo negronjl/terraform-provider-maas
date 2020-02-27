@@ -5,6 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/roblox/terraform-provider-maas/internal/provider"
 )
 
 // Provider creates the schema for the provider config
@@ -31,7 +32,8 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"maas_instance": resourceMAASInstance(),
+			"maas_instance":           resourceMAASInstance(),
+			"maas_interface_physical": provider.ResourceInterfacePhysical(),
 		},
 
 		ConfigureFunc: providerConfigure,

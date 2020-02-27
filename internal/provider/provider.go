@@ -30,7 +30,8 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"maas_instance": resourceInstance(),
+			"maas_instance":           resourceInstance(),
+			"maas_interface_physical": ResourceInterfacePhysical(),
 		},
 		ConfigureFunc: providerConfigure,
 	}

@@ -38,6 +38,8 @@ res, err := gmaw.NewMachineManager(myMAAS).Deploy('your_sid', maas.MachineDeploy
 package gmaw
 
 import (
+	"net/url"
+
 	"github.com/juju/gomaasapi"
 )
 
@@ -53,4 +55,49 @@ func GetClient(apiURL, apiKey, apiVersion string) (*gomaasapi.MAASObject, error)
 		return nil, err
 	}
 	return gomaasapi.NewMAAS(*authClient), nil
+}
+
+type Client struct {
+	*gomaasapi.MAASObject
+}
+
+func (c Client) Get(op string, params url.Values, f func([]byte) error) error {
+	res, err := c.CallGet(op, params)
+	if err != nil {
+		return err
+	}
+	data, err := res.GetBytes()
+	if err != nil {
+		return err
+	}
+	return f(data)
+}
+
+func (c Client) GetSubObject(name string) Client {
+	mc := c.MAASObject.GetSubObject(name)
+	return Client{&mc}
+}
+
+func (c Client) Post(op string, params url.Values, f func([]byte) error) error {
+	res, err := c.CallPost(op, params)
+	if err != nil {
+		return err
+	}
+	data, err := res.GetBytes()
+	if err != nil {
+		return err
+	}
+	return f(data)
+}
+
+func (c Client) Put(params url.Values, f func([]byte) error) error {
+	res, err := c.Update(params)
+	if err != nil {
+		return err
+	}
+	data, err := res.MarshalJSON()
+	if err != nil {
+		return err
+	}
+	return f(data)
 }

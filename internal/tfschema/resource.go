@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/roblox/terraform-provider-maas/internal/provider"
 )
 
 // Resource wraps a Terraform resource's Schema.
@@ -17,7 +16,7 @@ type Resource map[string]*Schema
 // The first return value of this function is the Schema property of the
 // resource, and the function can handle recursion (ie nested structs).
 // TODO: Make this type handle recursion so it can handle a struct within a struct
-func NewResource(typ provider.Endpoint) (Resource, error) {
+func NewResource(typ Endpoint) (Resource, error) {
 	st := reflect.TypeOf(typ)
 	resource := make(Resource)
 

@@ -1,32 +1,37 @@
 # terraform-provider-maas
 
 ## Description
+
 A simple Terraform provider for MAAS.  This is a work in progress and by no means should be considered production quality work.  The current version supports the allocation, power up, power down and release of nodes already registered with MAAS.  I think this is the main usage for MAAS and will cover the majority of use cases out there.  I'll look into adding more functionality in the future.
 
 ## Requirements
-* [Terraform](https://github.com/hashicorp/terraform)
-* [Go MAAS API Library](https://github.com/juju/gomaasapi)
+
+- [Terraform](https://github.com/hashicorp/terraform)
+- [Go MAAS API Library](https://github.com/juju/gomaasapi)
 
 ## Usage
 
 ### Provider Configuration
+
 The provider requires some variables to be configured in order to gain access to the MAAS server:
 
-* **api_version**:  This is optional and probably only works with 2.0. The defaults to 2.0.
-* **api_key**: MAAS API Key (Details: https://maas.ubuntu.com/docs/maascli.html#logging-in)
-* **api_url**: URI for your MAAS API server.  ie: http://127.0.0.1:80/MAAS
+- **api_version**:  This is optional and probably only works with 2.0. The defaults to 2.0.
+- **api_key**: [MAAS API Key](https://maas.ubuntu.com/docs/maascli.html#logging-in)
+- **api_url**: URI for your MAAS API server (eg <http://127.0.0.1:80/MAAS>)
 
 #### `maas`
-```
+
+```hcl
 provider "maas" {
-    api_version = "2.0"
-    api_key = "YOUR MAAS API KEY"
-    api_url = "http://<MAAS_SERVER>[:MAAS_PORT]/MAAS"
+  api_version = "2.0"
+  api_key = "YOUR MAAS API KEY"
+  api_url = "http://<MAAS_SERVER>[:MAAS_PORT]/MAAS"
 }
 ```
 
 ### Resource Configuration (maas_instance)
-This provider is only able to deploy and release nodes already registered and configured in MAAS.  The selection mechanism for the nodes is a subset of criteria described in the MAAS API (https://maas.ubuntu.com/docs/api.html#nodes).  Currently, this provider supports:
+
+This provider is only able to deploy and release nodes already registered and configured in MAAS.  The selection mechanism for the nodes is a subset of criteria described in the [MAAS API]<https://maas.ubuntu.com/docs/api.html#nodes>.  Currently, this provider supports:
 
 - **hostnames**: Host name to try to allocate.
 - **architecture**: Architecture of the requested machine: ie: amd64/generic
@@ -37,33 +42,78 @@ This provider is only able to deploy and release nodes already registered and co
 The above constraints parameters can be used to acquire a node that possesses certain characteristics. All the constraints are optional and when multiple constraints are provided, they are combined using ‘AND’ semantics.  In the absence of any constraints, a random node will be selected and deployed.  The examples in the next section attempt to explain how to use the resource.
 
 #### `maas_instance`
+
 ##### Deploy a Random node
-```
+
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-	count = 1
+  count = 1
 }
 ```
 
 ##### Deploy three random nodes
-```
+
+```hcl
 resource "maas_instance" "maas_three_random_nodes" {
-	count = 3
+  count = 3
 }
 ```
 
 ##### Deploy a node named "node-1"
-```
+
+```hcl
 resource "maas_instance" "maas_node_1" {
-	hostname = "node-1"
+  hostname = "node-1"
 }
 ```
 
 ##### Deploy three nodes with at least 8G of RAM
-```
+
+```hcl
 resource "maas_instance" "maas_three_nodes_8g" {
-	memory = "8G"
-	count = 3
+  memory = "8G"
+  count = 3
 }
+```
+
+#### maas_interface_physical
+
+Configures a physical interface on a system, where a system is anything with a system ID.
+
+```hcl
+resource "maas_interface_physical" "myserver_eth0" {
+  system_id   = maas_instance.myserver.system_id
+  name        = "eth0"
+  mac_address = "01:23:45:67:89:0A"
+  tags        = ["foo", "bar"]
+  vlan        = "my_vlan"
+  mtu         = 1500
+  accept_ra   = true
+  autoconf    = true
+}
+```
+
+##### Available Parameters
+
+| Name | Type | Description
+| ---- | ---- | -----------
+| `system_id` | `string` | The system ID of the system to which this interface belongs
+| `name` | `string` | Name of the interface (such as `eth0`)
+| `mac_address` | `string` | MAC Address of the interface. This can be changed.
+| `tags` | `list(string)` | Tags to apply to the interface
+| `vlan` | `string` | Name of the VLAN to which this interface is connected. If empty or `undefined`, the interface is assumed to be disconnected.
+| `mtu` | `int` | MTU of the interface
+| `accept_ra` | `bool` | Accept router advertisements (IPv6 only). Default false.
+| `autoconf` | `bool` | Use autoconf (IPv6 only). Default false.
+
+The `system_id` and `mac_address` parameters are required.
+
+##### Importing
+
+An interface can be uniquely identified by its system ID and interface id (which is an integer).
+
+```bash
+terraform import maas_interface_physical.my_eth 3xtkyg:23
 ```
 
 ### Specify user data for nodes
@@ -71,80 +121,84 @@ resource "maas_instance" "maas_three_nodes_8g" {
 User data can be either a cloud-init script or a bash shell
 
 Header for cloud-init:
-```
+
+```plain
 #cloud-config
 ```
 
 Header for script (shebang):
-```
+
+```plain
 #!/bin/bash
 ```
 
 Example (read from file):
-```
+
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-    
-    user_data = "${file("${path.module}/user_data/test_data.txt")}"
+  count = 1
+  user_data = "${file("${path.module}/user_data/test_data.txt")}"
 }
 ```
 
 ### Specify a comment in the event log
-```
+
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-    
-    comment = "Platform deployment"
+  count = 1
+  comment = "Platform deployment"
 }
 ```
 
 ### Use tags to restrict deployments to specific nodes
-```
+
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-    
-    tags = ["DELL_R630", "APP_CLASS"]
+  count = 1
+  tags = ["DELL_R630", "APP_CLASS"]
 }
 ```
 
 ### Specify the hostname for the deployed node
-```
+
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-    
-    deploy_hostname = "freedompants"
+  count = 1
+  deploy_hostname = "freedompants"
 }
 ```
 
 ### Specify tags for the deployed node
-```
+
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-    
-    deploy_tags = ["hostwiththemost", "platform"]
+  count = 1
+  deploy_tags = ["hostwiththemost", "platform"]
 }
 ```
 
 ### Select distro for a node
-Useful for custom OS builds
-```
-resource "maas_instance" "maas_single_random_node" {
-    count = 1
 
-    distro_series = "centos73" 
+Useful for custom OS builds
+
+```hcl
+resource "maas_instance" "maas_single_random_node" {
+  count = 1
+  distro_series = "centos73"
 }
 ```
 
 ### Select ubuntu kernel release (HWE kernel version)
+
 Useful for choosing a particular kernel release train builds
-```
+
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-    distro_series = "bionic"
-    hwe_kernel = "hwe-18.04" 
+  count = 1
+  distro_series = "bionic"
+  hwe_kernel = "hwe-18.04"
 }
 ```
-
 
 ## Erasing disks on node release
 
@@ -154,13 +208,14 @@ as this may lead to data loss or even booting a system that may cause a service 
 Terraform provider is set to erase the disk on release. This ensures that the machine will be released into the pool with a clean state.
 
 There are a few options when releasing a system:
+
 - erase
   - The default setting
-  - MAAS will overwrite the whole disk with null bytes. This can be very slow. 
+  - MAAS will overwrite the whole disk with null bytes. This can be very slow.
   - Estimated 20min
 - secure erase
   - Requires the disk to support a secure erase option.
-  - If the disk does not support secure erase it will default the erase option. MAAS will overwrite the whole disk with null bytes. This can be very slow. 
+  - If the disk does not support secure erase it will default the erase option. MAAS will overwrite the whole disk with null bytes. This can be very slow.
   - Estimated 20min
 - quick erase
   - Wipe 1MiB at the start and at the end of the drive to make data recovery inconvenient and unlikely to happen by accident. This is not secure.
@@ -169,75 +224,68 @@ There are a few options when releasing a system:
 ### Using the erase feature
 
 ### Default erase option
+
 The default option is to always perform an erase.
 
-```
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
+  count = 1
 }
 ```
 
 This shows what is set by default in Terraform. You are not required to set this option.
 
-```
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-
-    release_erase = true
+  count = 1
+  release_erase = true
 }
 ```
 
 How to disable the disk erasure.
 
-```
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-    
-    release_erase = false
+  count = 1
+  release_erase = false
 }
 ```
 
 ### Secure erase option
 
-
-```
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-
-    release_erase_secure = true
+  count = 1
+  release_erase_secure = true
 }
 ```
 
 ### Quick erase option
 
-```
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-
-    release_erase_quick = true
+  count = 1
+  release_erase_quick = true
 }
 ```
 
 ### Build kvm server
 
-```
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-
-    install_kvm = true
+  count = 1
+  install_kvm = true
 }
 ```
 
 ### Build rack controller
 
-```
+```hcl
 resource "maas_instance" "maas_single_random_node" {
-    count = 1
-
-    install_rackd = true
+  count = 1
+  install_rackd = true
 }
 ```
-
 
 If there are conflicting options, such as enabling both secure and quick erase, this is how the Maas API deals with conflicts.
 
@@ -250,9 +298,10 @@ If release_secure_erase is specified and release_quick_erase is NOT specified an
 Source: [Maas API: POST /api/2.0/machines/{system_id}/ op=release](https://docs.ubuntu.com/maas/2.1/en/api)
 
 ### The future
+
 This is just a basic (proof of concept) provider.  The following are some of the features I would like to see here:
 
-* All of the supported constratins for allocating and deploying a node
-* Discover nodes
-* Create new nodes
-* Accept and commission nodes
+- All of the supported constratins for allocating and deploying a node
+- Discover nodes
+- Create new nodes
+- Accept and commission nodes

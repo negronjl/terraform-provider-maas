@@ -23,9 +23,7 @@ type testCase struct {
 
 // The endpoint types' methods use this function to verify functionality in unit tests
 func runTestCases(t *testing.T, tests []testCase, f func(testCase) ([]byte, error)) {
-	httpmock.Activate()
-	defer httpmock.DeactivateAndReset()
-
+	defer httpmock.Reset()
 	for _, testCase := range tests {
 		tc := testCase
 		t.Run(tc.URL, func(t *testing.T) {
