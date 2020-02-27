@@ -1,0 +1,54 @@
+[
+    {
+        "id_path": null,
+        "size": 3698265088,
+        "block_size": 512,
+        "tags": [
+            "tag-BGt1BR",
+            "tag-1Fm39m",
+            "tag-Hqbbak"
+        ],
+        "uuid": null,
+        "id": 1,
+        "available_size": 3698265088,
+        "filesystem": null,
+        "partitions": [],
+        "storage_pool": "pool_id-nHmvMI",
+        "used_size": 0,
+        "path": "/dev/disk/by-dname/name-86Ezga",
+        "partition_table_type": null,
+        "used_for": "Unused",
+        "type": "physical",
+        "name": "name-86Ezga",
+        "system_id": "y7388k",
+        "model": "model-sCuLNN",
+        "serial": "serial-ZKjZxn",
+        "resource_uri": "/MAAS/api/2.0/nodes/y7388k/blockdevices/1/"
+    },
+    {
+        "id_path": null,
+        "size": 1392376320,
+        "block_size": 512,
+        "tags": [
+            "tag-hZPKgU",
+            "tag-ImIubs",
+            "tag-yRv0Vm"
+        ],
+        "uuid": null,
+        "id": 2,
+        "available_size": 1392376320,
+        "filesystem": null,
+        "partitions": [],
+        "storage_pool": "pool_id-nHmvMI",
+        "used_size": 0,
+        "path": "/dev/disk/by-dname/name-EIcGBl",
+        "partition_table_type": null,
+        "used_for": "Unused",
+        "type": "physical",
+        "name": "name-EIcGBl",
+        "system_id": "y7388k",
+        "model": "model-QhVkKT",
+        "serial": "serial-3TaTIG",
+        "resource_uri": "/MAAS/api/2.0/nodes/y7388k/blockdevices/2/"
+    }
+]

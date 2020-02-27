@@ -38,7 +38,8 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"maas_subnet": provider.DataSubnet(),
+			"maas_subnet":          provider.DataSubnet(),
+			"maas_rack_controller": provider.DataRackController(),
 		},
 
 		ConfigureFunc: providerConfigure,

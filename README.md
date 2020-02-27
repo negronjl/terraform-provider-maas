@@ -199,6 +199,32 @@ rdns_mode values:
 - `1` Enabled: Generate reverse zone.
 - `2` RFC2317: Extends '1' to create the necessary parent zone with the appropriate CNAME resource records for the network, if the the network is small enough to require the support described in RFC2317.
 
+#### data.maas_rack_controller
+
+Search the MaaS API for a rack controller. If there are multiple matches, the first one will be returned.
+
+```hcl
+data "maas_rack_controller" "ctrl" {
+  domain = ".example.com"
+  zone = "the_zone"
+  pool = "foo"
+}
+```
+
+##### Available Parameters
+
+| Name | Type | Description
+| ---- | ---- | -----------
+| `hostname` | `string` | Only nodes relating to the node with the matching hostname will be returned.
+| `mac_address` | `string` | Only nodes relating to the node owning the specified MAC address will be returned.
+| `system_id` | `string` | Only nodes relating to the nodes with matching system ids will be returned.
+| `domain` | `string` | Only nodes relating to the nodes in the domain will be returned.
+| `zone` | `string` | Only nodes relating to the nodes in the zone will be returned.
+| `pool` | `string` | Only nodes belonging to the pool will be returned.
+| `agent_name` | `string` | Only nodes relating to the nodes with matching agent names will be returned.
+
+All parameters are optional. The first subnet that matches all specified parameters will be returned.
+
 ### Specify user data for nodes
 
 User data can be either a cloud-init script or a bash shell

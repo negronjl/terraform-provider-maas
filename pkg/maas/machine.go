@@ -3,6 +3,8 @@ package maas
 import (
 	"encoding/json"
 	"sync"
+
+	"github.com/roblox/terraform-provider-maas/pkg/maas/entity"
 )
 
 // - A proper Caretaker might be necessary here to ease the hackery in Machines.Allocate()
@@ -18,39 +20,39 @@ type MACAddress struct {
 
 // Machine represents the Machine endpoint
 type Machine struct {
-	DeployTags             []string      `json:"deploy_tags"`
-	Tags                   []string      `json:"tags"`
-	IPAddresses            []string      `json:"ip_addresses"`
-	MACAddressSet          []MACAddress  `json:"mac_address_set"`
-	PhysicalBlockDeviceSet []BlockDevice `json:"physicalblockdevice_set"`
-	PXEMac                 []MACAddress  `json:"pxe_mac"`
-	Routers                []string      `json:"routers"`
-	TagNames               []string      `json:"tag_names"`
-	Zone                   []Zone        `json:"zone"`
-	Architecture           string        `json:"architecture"`
-	BootType               string        `json:"boot_type"`
-	DistroSeries           string        `json:"distro_series"`
-	Hostname               string        `json:"hostname"`
-	DeployHostname         string        `json:"deploy_hostname"`
-	OSystem                string        `json:"o_system"`
-	Owner                  string        `json:"owner"`
-	PowerState             string        `json:"power_state"`
-	PowerType              string        `json:"power_type"`
-	ResourceURI            string        `json:"resource_uri"`
-	SystemID               string        `json:"system_id"`
-	UserData               string        `json:"user_data"`
-	HWEKernel              string        `json:"hwe_kernel"`
-	Comment                string        `json:"comment"`
-	CPUCount               int           `json:"cpu_count"`
-	Memory                 int           `json:"memory"`
-	Status                 int           `json:"status"`
-	Storage                int           `json:"storage"`
-	SwapSize               int           `json:"swap_size"`
-	DisableIPv4            bool          `json:"disable_ipv4"`
-	ReleaseErase           bool          `json:"release_erase"`
-	ReleaseEraseSecure     bool          `json:"release_erase_secure"`
-	ReleaseEraseQuick      bool          `json:"release_erase_quick"`
-	Netboot                bool          `json:"netboot"`
+	DeployTags             []string             `json:"deploy_tags"`
+	Tags                   []string             `json:"tags"`
+	IPAddresses            []string             `json:"ip_addresses"`
+	MACAddressSet          []MACAddress         `json:"mac_address_set"`
+	PhysicalBlockDeviceSet []entity.BlockDevice `json:"physicalblockdevice_set"`
+	PXEMac                 []MACAddress         `json:"pxe_mac"`
+	Routers                []string             `json:"routers"`
+	TagNames               []string             `json:"tag_names"`
+	Zone                   []entity.Zone        `json:"zone"`
+	Architecture           string               `json:"architecture"`
+	BootType               string               `json:"boot_type"`
+	DistroSeries           string               `json:"distro_series"`
+	Hostname               string               `json:"hostname"`
+	DeployHostname         string               `json:"deploy_hostname"`
+	OSystem                string               `json:"o_system"`
+	Owner                  string               `json:"owner"`
+	PowerState             string               `json:"power_state"`
+	PowerType              string               `json:"power_type"`
+	ResourceURI            string               `json:"resource_uri"`
+	SystemID               string               `json:"system_id"`
+	UserData               string               `json:"user_data"`
+	HWEKernel              string               `json:"hwe_kernel"`
+	Comment                string               `json:"comment"`
+	CPUCount               int                  `json:"cpu_count"`
+	Memory                 int                  `json:"memory"`
+	Status                 int                  `json:"status"`
+	Storage                int                  `json:"storage"`
+	SwapSize               int                  `json:"swap_size"`
+	DisableIPv4            bool                 `json:"disable_ipv4"`
+	ReleaseErase           bool                 `json:"release_erase"`
+	ReleaseEraseSecure     bool                 `json:"release_erase_secure"`
+	ReleaseEraseQuick      bool                 `json:"release_erase_quick"`
+	Netboot                bool                 `json:"netboot"`
 }
 
 // NewMachine converts a MAAS API JSON response into a Golang representation
