@@ -23,6 +23,27 @@ jobs:
     <<: *make_run
     environment:
       MAKE_COMMAND: ""
+  tagging:
+    docker:
+      - image: alpine/git:latest
+    steps:
+      - run:
+          name: Update Tag
+          command: |
+            set -eu
+            VERSION=$(git describe --abbrev=0 --tags)
+            VERSION_BITS=(${VERSION//./ })
+
+            VNUM1=${VERSION_BITS[0]}
+            VNUM2=${VERSION_BITS[1]}
+            VNUM3=${VERSION_BITS[2]}
+            VNUM3=$((VNUM3+1))
+
+            NEW_TAG="$VNUM1.$VNUM2.$VNUM3"
+
+            git tag $NEW_TAG
+            git push --tags
+
 workflows:
   version: 2
   build_and_test:
@@ -33,3 +54,8 @@ workflows:
           requires:
             - lint
             - test
+      - tagging:
+          filters:
+            branches:
+              only:
+                - master
