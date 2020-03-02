@@ -31,6 +31,7 @@ jobs:
       - run:
           name: Update Tag
           command: |
+            #!/bin/bash
             set -eu
             VERSION=$(git describe --abbrev=0 --tags)
             VERSION_BITS=(${VERSION//./ })
