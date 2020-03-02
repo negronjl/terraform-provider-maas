@@ -25,7 +25,7 @@ jobs:
       MAKE_COMMAND: ""
   tagging:
     docker:
-      - image: ubuntu/git:latest
+      - image: ubuntu:latest
     steps:
       - checkout
       - run:
