@@ -25,13 +25,12 @@ jobs:
       MAKE_COMMAND: ""
   tagging:
     docker:
-      - image: alpine/git:latest
+      - image: ubuntu/git:latest
     steps:
       - checkout
       - run:
           name: Update Tag
           command: |
-            #!/bin/ash
             set -eu
             VERSION=$(git describe --abbrev=0 --tags)
             VERSION_BITS=(${VERSION//./ })
