@@ -32,6 +32,7 @@ jobs:
           name: Update Tag
           command: |
             set -eu
+            apt update -y && apt install git -y
             VERSION=$(git describe --abbrev=0 --tags)
             VERSION_BITS=(${VERSION//./ })
             VNUM1=${VERSION_BITS[0]}
