@@ -60,4 +60,8 @@ workflows:
           requires:
             - lint
             - test
-      - tagging
+      - tagging:
+          filters:
+            branches:
+              only:
+                - master
