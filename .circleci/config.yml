@@ -30,7 +30,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - "1d:f0:a7:94:c0:5a:1d:91:08:d0:f6:a5:e0:e0:72:c3"
+            - "81:40:b2:e4:a9:f6:c6:73:fd:b0:39:95:c3:77:42:c8"
       - run:
           name: Update Tag
           command: |
