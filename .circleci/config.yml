@@ -28,6 +28,9 @@ jobs:
       - image: ubuntu:latest
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "1d:f0:a7:94:c0:5a:1d:91:08:d0:f6:a5:e0:e0:72:c3"
       - run:
           name: Update Tag
           command: |
