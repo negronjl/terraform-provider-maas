@@ -9,6 +9,7 @@ import (
 	"github.com/roblox/terraform-provider-maas/pkg/gmaw"
 )
 
+// ResourceServer manages global MaaS configuration options ala the MaaS Server endpoint
 func ResourceServer() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceServerCreate,

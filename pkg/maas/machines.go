@@ -3,12 +3,12 @@ package maas
 // Machines represents the Machines endpoint
 type Machines []Machine
 
-// MachinesManager
+// MachinesManager provides locking and management capabilities for Machines
 type MachinesManager struct {
 	client MachinesFetcher
 }
 
-// NewMachineManager
+// NewMachineManager creates a new MachinesManager
 func NewMachinesManager(client MachinesFetcher) *MachinesManager {
 	return &MachinesManager{client: client}
 }
