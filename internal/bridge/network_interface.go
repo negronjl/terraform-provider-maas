@@ -10,36 +10,36 @@ import (
 	"github.com/roblox/terraform-provider-maas/pkg/maas/entity"
 )
 
-// Interface contains methods for connecting maas_interfaces to MaaS Interfaces.
-type Interface struct {
+// NetworkInterface contains methods for connecting maas_interfaces to MaaS Interfaces.
+type NetworkInterface struct {
 	mo *gomaasapi.MAASObject
 }
 
-// NewInterface creates a new Interface.
+// NewNetworkInterface creates a new NetworkInterface.
 // The parameter should be the metadata passed to the Terraform CRUD functions,
 // which should be a *gomaasapi.MAASObject. This function will cast the interface
 // received by the Terraform functions to the correct type and store it in the
-// Interface. If the type does not convert, a nil pointer will be stored.
-func NewInterface(m interface{}) *Interface {
+// NetworkInterface. If the type does not convert, a nil pointer will be stored.
+func NewNetworkInterface(m interface{}) *NetworkInterface {
 	mo := m.(*gomaasapi.MAASObject)
-	return &Interface{
+	return &NetworkInterface{
 		mo: mo,
 	}
 }
 
-// Create a new Interface in MaaS.
+// Create a new NetworkInterface in MaaS.
 // The sch parameter should be a tfschema type that can be used to create an
-// Interface in MaaS. The only compatible type at this time is InterfacePhysical.
+// Interface in MaaS. The only compatible type at this time is NetworkInterfacePhysical.
 // This method will set the InterfaceID of the type, and expects any attributes
 // required to create the Interface to be preset.
 // This function will return an error if the MaaS API client returns an error.
-func (i *Interface) Create(sch interface{}) error {
-	var res *entity.Interface
+func (i *NetworkInterface) Create(sch interface{}) error {
+	var res *entity.NetworkInterface
 	var err error
 	switch tmpl := sch.(type) { // nolint: gocritic
-	case *tfschema.InterfacePhysical:
+	case *tfschema.NetworkInterfacePhysical:
 		params := tmpl.Params()
-		res, err = gmaw.NewInterfaces(i.mo).CreatePhysical(tmpl.SystemID, params)
+		res, err = gmaw.NewNetworkInterfaces(i.mo).CreatePhysical(tmpl.SystemID, params)
 		if err != nil {
 			tmpl.InterfaceID = res.ID
 		}
@@ -47,15 +47,15 @@ func (i *Interface) Create(sch interface{}) error {
 	return err
 }
 
-// ReadTo updates a tfschema representation of an Interface to the current state in MaaS.
+// ReadTo updates a tfschema representation of an NetworkInterface to the current state in MaaS.
 // The sch parameter should be a tfschema type that represents an Interface in MaaS. This
 // function will return an error if the MaaS API client returns an error.
-func (i *Interface) ReadTo(sch interface{}) error {
-	var res *entity.Interface
+func (i *NetworkInterface) ReadTo(sch interface{}) error {
+	var res *entity.NetworkInterface
 	var err error
 	switch tmpl := sch.(type) { // nolint: gocritic
-	case *tfschema.InterfacePhysical:
-		if res, err = gmaw.NewInterface(i.mo).Get(tmpl.SystemID, tmpl.InterfaceID); err != nil {
+	case *tfschema.NetworkInterfacePhysical:
+		if res, err = gmaw.NewNetworkInterface(i.mo).Get(tmpl.SystemID, tmpl.InterfaceID); err != nil {
 			return err
 		}
 		tmpl.Name = res.Name
@@ -71,12 +71,12 @@ func (i *Interface) ReadTo(sch interface{}) error {
 // UpdateFrom updates the MaaS resource represented by sch.
 // The sch parameter should be a tfschema type that represents an Interface in MaaS. This
 // function will return an error if the MaaS API client returns an error.
-func (i *Interface) UpdateFrom(sch interface{}) error {
-	var res *entity.Interface
-	ifc := gmaw.NewInterface(i.mo)
+func (i *NetworkInterface) UpdateFrom(sch interface{}) error {
+	var res *entity.NetworkInterface
+	ifc := gmaw.NewNetworkInterface(i.mo)
 	var err error
 	switch tmpl := sch.(type) { // nolint: gocritic
-	case *tfschema.InterfacePhysical:
+	case *tfschema.NetworkInterfacePhysical:
 		res, err = ifc.Get(tmpl.SystemID, tmpl.InterfaceID)
 		if err == nil && !(tmpl.Name == res.Name && tmpl.MACAddress == res.MACAddress &&
 			reflect.DeepEqual(tmpl.Tags, res.Tags) && tmpl.VLAN == res.VLAN.Name &&
@@ -90,33 +90,33 @@ func (i *Interface) UpdateFrom(sch interface{}) error {
 // Delete an Interface in MaaS.
 // The sch parameter should be a tfschema type that represents an Interface in MaaS. This
 // function will return an error if the MaaS API client returns an error.
-func (i *Interface) Delete(sch interface{}) (err error) {
+func (i *NetworkInterface) Delete(sch interface{}) (err error) {
 	switch tmpl := sch.(type) { // nolint: gocritic
-	case *tfschema.InterfacePhysical:
-		err = gmaw.NewInterface(i.mo).Delete(tmpl.SystemID, tmpl.InterfaceID)
+	case *tfschema.NetworkInterfacePhysical:
+		err = gmaw.NewNetworkInterface(i.mo).Delete(tmpl.SystemID, tmpl.InterfaceID)
 	}
 	return
 }
 
 // LinkSubnet creates a link between an interface and a subnet.
 // This function will return an error if the MaaS API client returns an error.
-func (i *Interface) LinkSubnet(sch *tfschema.InterfaceLink) (err error) {
-	_, err = gmaw.NewInterface(i.mo).LinkSubnet(sch.SystemID, sch.InterfaceID, sch.Params())
+func (i *NetworkInterface) LinkSubnet(sch *tfschema.NetworkInterfaceLink) (err error) {
+	_, err = gmaw.NewNetworkInterface(i.mo).LinkSubnet(sch.SystemID, sch.InterfaceID, sch.Params())
 	return
 }
 
 // UnlinkSubnet removes the link between an interface and a subnet.
 // This function will return an error if the MaaS API client returns an error.
-func (i *Interface) UnlinkSubnet(sch *tfschema.InterfaceLink) (err error) {
-	_, err = gmaw.NewInterface(i.mo).UnlinkSubnet(sch.SystemID, sch.InterfaceID, sch.SubnetID)
+func (i *NetworkInterface) UnlinkSubnet(sch *tfschema.NetworkInterfaceLink) (err error) {
+	_, err = gmaw.NewNetworkInterface(i.mo).UnlinkSubnet(sch.SystemID, sch.InterfaceID, sch.SubnetID)
 	return
 }
 
-// ReadLink synchronizes the InterfaceLink with the current MaaS state.
+// ReadLink synchronizes the NetworkInterfaceLink with the current MaaS state.
 // This function will return an error if the MaaS API client returns an error, or
 // if the link cannot be found in MaaS.
-func (i *Interface) ReadLink(sch *tfschema.InterfaceLink) error {
-	res, err := gmaw.NewInterface(i.mo).Get(sch.SystemID, sch.InterfaceID)
+func (i *NetworkInterface) ReadLink(sch *tfschema.NetworkInterfaceLink) error {
+	res, err := gmaw.NewNetworkInterface(i.mo).Get(sch.SystemID, sch.InterfaceID)
 	if err != nil {
 		return err
 	}

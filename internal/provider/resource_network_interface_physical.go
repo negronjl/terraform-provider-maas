@@ -6,12 +6,12 @@ import (
 	"github.com/roblox/terraform-provider-maas/internal/tfschema"
 )
 
-func ResourceInterfacePhysical() *schema.Resource {
+func ResourceNetworkInterfacePhysical() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceInterfacePhysicalCreate,
-		Read:   resourceInterfacePhysicalRead,
-		Update: resourceInterfacePhysicalUpdate,
-		Delete: resourceInterfacePhysicalDelete,
+		Create: resourceNetworkInterfacePhysicalCreate,
+		Read:   resourceNetworkInterfacePhysicalRead,
+		Update: resourceNetworkInterfacePhysicalUpdate,
+		Delete: resourceNetworkInterfacePhysicalDelete,
 
 		Schema: map[string]*schema.Schema{
 			"system_id": &schema.Schema{
@@ -63,39 +63,39 @@ func ResourceInterfacePhysical() *schema.Resource {
 	}
 }
 
-func resourceInterfacePhysicalCreate(d *schema.ResourceData, m interface{}) error {
-	ifc := bridge.NewInterface(m)
-	sch := tfschema.NewInterfacePhysical(d)
+func resourceNetworkInterfacePhysicalCreate(d *schema.ResourceData, m interface{}) error {
+	ifc := bridge.NewNetworkInterface(m)
+	sch := tfschema.NewNetworkInterfacePhysical(d)
 	if err := ifc.Create(sch); err != nil {
 		return err
 	}
 	if id, err := sch.GetID(); err == nil {
 		d.SetId(id)
 	}
-	return resourceInterfacePhysicalRead(d, m)
+	return resourceNetworkInterfacePhysicalRead(d, m)
 }
 
-func resourceInterfacePhysicalRead(d *schema.ResourceData, m interface{}) (err error) {
-	ifc := bridge.NewInterface(m)
-	sch := tfschema.NewInterfacePhysical(d)
+func resourceNetworkInterfacePhysicalRead(d *schema.ResourceData, m interface{}) (err error) {
+	ifc := bridge.NewNetworkInterface(m)
+	sch := tfschema.NewNetworkInterfacePhysical(d)
 	if err = ifc.ReadTo(sch); err == nil {
 		err = sch.UpdateResource(d)
 	}
 	return err
 }
 
-func resourceInterfacePhysicalUpdate(d *schema.ResourceData, m interface{}) error {
-	ifc := bridge.NewInterface(m)
-	sch := tfschema.NewInterfacePhysical(d)
+func resourceNetworkInterfacePhysicalUpdate(d *schema.ResourceData, m interface{}) error {
+	ifc := bridge.NewNetworkInterface(m)
+	sch := tfschema.NewNetworkInterfacePhysical(d)
 	if err := ifc.UpdateFrom(sch); err != nil {
 		return err
 	}
-	return resourceInterfacePhysicalRead(d, m)
+	return resourceNetworkInterfacePhysicalRead(d, m)
 }
 
-func resourceInterfacePhysicalDelete(d *schema.ResourceData, m interface{}) (err error) {
-	ifc := bridge.NewInterface(m)
-	sch := tfschema.NewInterfacePhysical(d)
+func resourceNetworkInterfacePhysicalDelete(d *schema.ResourceData, m interface{}) (err error) {
+	ifc := bridge.NewNetworkInterface(m)
+	sch := tfschema.NewNetworkInterfacePhysical(d)
 	if err = ifc.Delete(sch); err == nil {
 		d.SetId("")
 	}

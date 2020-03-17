@@ -2,9 +2,9 @@ package params
 
 import "net"
 
-// InterfaceBond is the parameters for the Interfaces create_bond POST operation.
-type InterfaceBond struct {
-	InterfacePhysical
+// NetworkInterfaceBond is the parameters for the NetworkInterfaces create_bond POST operation.
+type NetworkInterfaceBond struct {
+	NetworkInterfacePhysical
 	Parents            []int  `json:"parents,omitempty"`
 	BondMode           string `json:"bond_mode,omitempty"`
 	BondMiimon         int    `json:"bond_miimon,omitempty"`
@@ -15,16 +15,16 @@ type InterfaceBond struct {
 	BondNumberGratARP  int    `json:"bond_number_grat_arp,omitempty"`
 }
 
-// InterfaceBridge is the parameters for the Interfaces create_bridge POST operation.
-type InterfaceBridge struct {
-	InterfacePhysical
+// NetworkInterfaceBridge is the parameters for the NetworkInterfaces create_bridge POST operation.
+type NetworkInterfaceBridge struct {
+	NetworkInterfacePhysical
 	Parent    int  `json:"parent,omitempty"`
 	BridgeSTP bool `json:"bridge_stp,omitempty"`
 	BridgeFD  int  `json:"bridge_fd,omitempty"`
 }
 
-// InterfacePhysical is the parameters for the Interfaces create_physical POST operation.
-type InterfacePhysical struct {
+// NetworkInterfacePhysical is the parameters for the NetworkInterfaces create_physical POST operation.
+type NetworkInterfacePhysical struct {
 	Name       string   `json:"name,omitempty"`
 	MACAddress string   `json:"mac_address,omitempty"`
 	Tags       []string `json:"tags,omitempty"`
@@ -34,8 +34,8 @@ type InterfacePhysical struct {
 	Autoconf   bool     `json:"autoconf,omitempty"`
 }
 
-// InterfaceVLAN is the parameters for the Interfaces create_vlan POST operation.
-type InterfaceVLAN struct {
+// NetworkInterfaceVLAN is the parameters for the NetworkInterfaces create_vlan POST operation.
+type NetworkInterfaceVLAN struct {
 	Tags     []string `json:"tags,omitempty"`
 	VLAN     string   `json:"vlan,omitempty"`
 	Parent   int      `json:"parent,omitempty"`
@@ -44,14 +44,14 @@ type InterfaceVLAN struct {
 	Autoconf bool     `json:"autoconf,omitempty"`
 }
 
-// InterfaceLink is used with Interface.LinkSubnet().
+// NetworkInterfaceLink is used with NetworkInterface.LinkSubnet().
 // Mode must be one of (AUTO, DHCP, STATIC, LINK_UP). IPAddress is ignored
 // unless mode is STATIC, and will be set automatically if empty. Force
 // allows LINK_UP to be set when other links exist, allows links between
 // different VLANs, and deletes all other links on the interface.
 // DefaultGateway is ignored unless Mode is AUTO or STATIC.
 // Note: You can parse an IP address into a net.IP via net.ParseIP(string).
-type InterfaceLink struct {
+type NetworkInterfaceLink struct {
 	Mode           string `json:"mode,omitempty"`
 	Subnet         int    `json:"subnet,omitempty"`
 	IPAddress      net.IP `json:"ip_address,omitempty"`
