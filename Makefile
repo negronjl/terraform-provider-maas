@@ -6,12 +6,16 @@ GOGET ?= $(GO) get -u
 GOBIN ?= $(go env GOPATH)/bin
 
 # Build (default target)
-GOBUILD ?= $(GO) build
-BUILD_OPTIONS ?= -mod=readonly
-build:
+GOBUILD ?= gox
+BUILD_OPTIONS ?= -mod=readonly -output="build/terraform-provider-maas_v${CIRCLE_TAG:=}_{{.OS}}_{{.Arch}}"
+build: install_gox
 	$(GOBUILD) $(BUILD_OPTIONS)
 .PHONY: build
 .DEFAULT_GOAL := build
+
+install_gox:
+	command -v gox || go get github.com/mitchellh/gox
+.PHONY: install_gox
 
 # Lint (https://github.com/golangci/golangci-lint)
 LINTER_OPTIONS ?= run# Arguments to golangci-lint
