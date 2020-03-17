@@ -23,6 +23,13 @@ jobs:
     <<: *make_run
     environment:
       MAKE_COMMAND: ""
+    steps:
+      - store_artifacts:
+          path: ./build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build/
   tagging:
     docker:
       - image: ubuntu:latest
@@ -50,6 +57,16 @@ jobs:
             NEW_TAG="$VNUM1.$VNUM2.$VNUM3"
             git tag $NEW_TAG
             git push --tags
+  release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: ./build
+      - run:
+          name: "Publish Release on GitHub"
+          command: ghr -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./build/
+
 workflows:
   version: 2
   build_and_test:
