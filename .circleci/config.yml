@@ -8,7 +8,6 @@ make_run: &make_run
         name: Packer Run
         command: |
           set -e
-          go build
           make $MAKE_COMMAND
 jobs:
   lint:
@@ -24,6 +23,10 @@ jobs:
     environment:
       MAKE_COMMAND: ""
     steps:
+      - checkout
+      - run:
+          name: Run default Make target
+          command: make
       - store_artifacts:
           path: ./build
       - persist_to_workspace:
