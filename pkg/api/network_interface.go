@@ -5,6 +5,7 @@ import (
 	"github.com/roblox/terraform-provider-maas/pkg/maas/entity"
 )
 
+// NetworkInterface represents the MaaS Server Interface endpoint
 type NetworkInterface interface {
 	Delete(systemID string, id int) error
 	Get(systemID string, id int) (*entity.NetworkInterface, error)

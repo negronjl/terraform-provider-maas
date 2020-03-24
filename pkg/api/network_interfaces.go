@@ -5,6 +5,7 @@ import (
 	"github.com/roblox/terraform-provider-maas/pkg/maas/entity"
 )
 
+// NetworkInterfaces represents the MaaS Server Interfaces endpoint
 type NetworkInterfaces interface {
 	Get(systemID string) ([]entity.NetworkInterface, error)
 	CreateBond(systemID string, params *params.NetworkInterfaceBond) (*entity.NetworkInterface, error)
