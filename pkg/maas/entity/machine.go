@@ -8,10 +8,10 @@ import (
 
 // Machine represents the MaaS Machine endpoint.
 type Machine struct {
-	BootInterface   Interface   `json:"boot_interface,omitempty"`
-	Pod             Pod         `json:"pod,omitempty"`
-	BootDisk        BlockDevice `json:"boot_disk,omitempty"`
-	Domain          Domain      `json:"domain,omitempty"`
+	BootInterface   NetworkInterface `json:"boot_interface,omitempty"`
+	Pod             Pod              `json:"pod,omitempty"`
+	BootDisk        BlockDevice      `json:"boot_disk,omitempty"`
+	Domain          Domain           `json:"domain,omitempty"`
 	DefaultGateways struct {
 		IPv4 struct {
 			GatewayIP net.IP `json:"gateway_ip,omitempty"`
@@ -29,7 +29,7 @@ type Machine struct {
 	BlockDeviceSet               []BlockDevice       `json:"blockdevice_set,omitempty"`
 	CacheSets                    []string            `json:"cache_sets,omitempty"`
 	VolumeGroups                 []string            `json:"volume_groups,omitempty"`
-	InterfaceSet                 []Interface         `json:"interface_set,omitempty"`
+	InterfaceSet                 []NetworkInterface  `json:"interface_set,omitempty"`
 	BCaches                      []string            `json:"bcaches,omitempty"`
 	RAIDs                        []string            `json:"raids,omitempty"`
 	SpecialFilesystems           []string            `json:"special_filesystems,omitempty"`

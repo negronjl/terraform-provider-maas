@@ -16,27 +16,27 @@ import (
 	"github.com/roblox/terraform-provider-maas/test/helper"
 )
 
-func TestNewInterfaces(t *testing.T) {
-	NewInterfaces(client)
+func TestNewNetworkInterfaces(t *testing.T) {
+	NewNetworkInterfaces(client)
 }
 
-func TestInterfaces(t *testing.T) {
+func TestNetworkInterfaces(t *testing.T) {
 	// Ensure the type implements the interface
-	var _ api.Interfaces = (*Interfaces)(nil)
+	var _ api.NetworkInterfaces = (*NetworkInterfaces)(nil)
 
 	// Create a new interfaces client to be used in the tests
-	interfacesClient := NewInterfaces(client)
+	interfacesClient := NewNetworkInterfaces(client)
 
 	// Register HTTPMock responders
 	sid200, sid404 := "1234", "2345"
 	url200 := fmt.Sprintf("/MAAS/api/2.0/nodes/%s/interfaces/", sid200)
 	url404 := fmt.Sprintf("/MAAS/api/2.0/nodes/%s/interfaces/", sid404)
 
-	var wants []entity.Interface
+	var wants []entity.NetworkInterface
 	if err := helper.TestdataFromJSON("maas/interfaces.json", &wants); err != nil {
 		t.Fatal(err)
 	}
-	want := new(entity.Interface)
+	want := new(entity.NetworkInterface)
 	if err := helper.TestdataFromJSON("maas/interface.json", want); err != nil {
 		t.Fatal(err)
 	}
@@ -63,7 +63,7 @@ func TestInterfaces(t *testing.T) {
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
 			got, err := interfacesClient.Get(sid404)
-			if diff := cmp.Diff(([]entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			if diff := cmp.Diff(([]entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {
@@ -75,7 +75,7 @@ func TestInterfaces(t *testing.T) {
 	t.Run("CreateBond", func(t *testing.T) {
 		t.Run("200", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfacesClient.CreateBond(sid200, &params.InterfaceBond{})
+			got, err := interfacesClient.CreateBond(sid200, &params.NetworkInterfaceBond{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -85,8 +85,8 @@ func TestInterfaces(t *testing.T) {
 		})
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfacesClient.CreateBond(sid404, &params.InterfaceBond{})
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			got, err := interfacesClient.CreateBond(sid404, &params.NetworkInterfaceBond{})
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {
@@ -98,7 +98,7 @@ func TestInterfaces(t *testing.T) {
 	t.Run("CreateBridge", func(t *testing.T) {
 		t.Run("200", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfacesClient.CreateBridge(sid200, &params.InterfaceBridge{})
+			got, err := interfacesClient.CreateBridge(sid200, &params.NetworkInterfaceBridge{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -108,8 +108,8 @@ func TestInterfaces(t *testing.T) {
 		})
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfacesClient.CreateBridge(sid404, &params.InterfaceBridge{})
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			got, err := interfacesClient.CreateBridge(sid404, &params.NetworkInterfaceBridge{})
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {
@@ -121,7 +121,7 @@ func TestInterfaces(t *testing.T) {
 	t.Run("CreatePhysical", func(t *testing.T) {
 		t.Run("200", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfacesClient.CreatePhysical(sid200, &params.InterfacePhysical{})
+			got, err := interfacesClient.CreatePhysical(sid200, &params.NetworkInterfacePhysical{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -131,8 +131,8 @@ func TestInterfaces(t *testing.T) {
 		})
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfacesClient.CreatePhysical(sid404, &params.InterfacePhysical{})
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			got, err := interfacesClient.CreatePhysical(sid404, &params.NetworkInterfacePhysical{})
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {
@@ -144,7 +144,7 @@ func TestInterfaces(t *testing.T) {
 	t.Run("CreateVLAN", func(t *testing.T) {
 		t.Run("200", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfacesClient.CreateVLAN(sid200, &params.InterfaceVLAN{})
+			got, err := interfacesClient.CreateVLAN(sid200, &params.NetworkInterfaceVLAN{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -154,8 +154,8 @@ func TestInterfaces(t *testing.T) {
 		})
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfacesClient.CreateVLAN(sid404, &params.InterfaceVLAN{})
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			got, err := interfacesClient.CreateVLAN(sid404, &params.NetworkInterfaceVLAN{})
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {

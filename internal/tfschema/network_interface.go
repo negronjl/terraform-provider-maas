@@ -9,8 +9,8 @@ import (
 	"github.com/roblox/terraform-provider-maas/pkg/api/params"
 )
 
-// InterfacePhysical represents a maas_interface_physical
-type InterfacePhysical struct {
+// NetworkInterfacePhysical represents a maas_interface_physical
+type NetworkInterfacePhysical struct {
 	InterfaceID int
 	SystemID    string
 	Name        string
@@ -22,9 +22,9 @@ type InterfacePhysical struct {
 	Autoconf    bool
 }
 
-// NewInterfacePhysical creates an InterfacePhysical from the Terraform state.
-func NewInterfacePhysical(d *schema.ResourceData) *InterfacePhysical {
-	var i InterfacePhysical
+// NewNetworkInterfacePhysical creates an NetworkInterfacePhysical from the Terraform state.
+func NewNetworkInterfacePhysical(d *schema.ResourceData) *NetworkInterfacePhysical {
+	var i NetworkInterfacePhysical
 	if i.SystemID = d.Get("system_id").(string); i.SystemID == "" {
 		id := d.Id()
 		idx := strings.Index(id, ":")
@@ -47,8 +47,8 @@ func NewInterfacePhysical(d *schema.ResourceData) *InterfacePhysical {
 }
 
 // Params returns a type that can be used to create and update a MaaS Interface.
-func (i *InterfacePhysical) Params() *params.InterfacePhysical {
-	return &params.InterfacePhysical{
+func (i *NetworkInterfacePhysical) Params() *params.NetworkInterfacePhysical {
+	return &params.NetworkInterfacePhysical{
 		Name:       i.Name,
 		MACAddress: i.MACAddress,
 		Tags:       i.Tags,
@@ -60,7 +60,7 @@ func (i *InterfacePhysical) Params() *params.InterfacePhysical {
 }
 
 // UpdateResource updates the Terraform state to reflect the state of the struct.
-func (i *InterfacePhysical) UpdateResource(d *schema.ResourceData) (err error) {
+func (i *NetworkInterfacePhysical) UpdateResource(d *schema.ResourceData) (err error) {
 	if err = d.Set("name", i.Name); err != nil {
 		return
 	}
@@ -81,7 +81,7 @@ func (i *InterfacePhysical) UpdateResource(d *schema.ResourceData) (err error) {
 }
 
 // GetID returns "<SystemID>:<InterfaceID>" to be used as the Terraform resource ID.
-func (i *InterfacePhysical) GetID() (string, error) {
+func (i *NetworkInterfacePhysical) GetID() (string, error) {
 	if i.SystemID == "" {
 		return "", fmt.Errorf("SystemID is empty")
 	}

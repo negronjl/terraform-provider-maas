@@ -9,11 +9,11 @@ import (
 	"github.com/roblox/terraform-provider-maas/internal/tfschema"
 )
 
-func ResourceInterfaceLink() *schema.Resource {
+func ResourceNetworkInterfaceLink() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceInterfaceLinkCreate,
-		Read:   resourceInterfaceLinkRead,
-		Delete: resourceInterfaceLinkDelete,
+		Create: resourceNetworkInterfaceLinkCreate,
+		Read:   resourceNetworkInterfaceLinkRead,
+		Delete: resourceNetworkInterfaceLinkDelete,
 
 		Schema: map[string]*schema.Schema{
 			"system_id": &schema.Schema{
@@ -80,9 +80,9 @@ func ResourceInterfaceLink() *schema.Resource {
 	}
 }
 
-func resourceInterfaceLinkCreate(d *schema.ResourceData, m interface{}) (err error) {
-	ifc := bridge.NewInterface(m)
-	sch := tfschema.NewInterfaceLink(d)
+func resourceNetworkInterfaceLinkCreate(d *schema.ResourceData, m interface{}) (err error) {
+	ifc := bridge.NewNetworkInterface(m)
+	sch := tfschema.NewNetworkInterfaceLink(d)
 	if err = ifc.LinkSubnet(sch); err != nil {
 		return
 	}
@@ -92,18 +92,18 @@ func resourceInterfaceLinkCreate(d *schema.ResourceData, m interface{}) (err err
 	return
 }
 
-func resourceInterfaceLinkRead(d *schema.ResourceData, m interface{}) (err error) {
-	ifc := bridge.NewInterface(m)
-	sch := tfschema.NewInterfaceLink(d)
+func resourceNetworkInterfaceLinkRead(d *schema.ResourceData, m interface{}) (err error) {
+	ifc := bridge.NewNetworkInterface(m)
+	sch := tfschema.NewNetworkInterfaceLink(d)
 	if err = ifc.ReadLink(sch); err == nil {
 		err = sch.UpdateResource(d)
 	}
 	return err
 }
 
-func resourceInterfaceLinkDelete(d *schema.ResourceData, m interface{}) (err error) {
-	ifc := bridge.NewInterface(m)
-	sch := tfschema.NewInterfaceLink(d)
+func resourceNetworkInterfaceLinkDelete(d *schema.ResourceData, m interface{}) (err error) {
+	ifc := bridge.NewNetworkInterface(m)
+	sch := tfschema.NewNetworkInterfaceLink(d)
 	if err = ifc.UnlinkSubnet(sch); err == nil {
 		d.SetId("")
 	}

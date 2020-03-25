@@ -20,19 +20,19 @@ import (
 	"github.com/roblox/terraform-provider-maas/test/helper"
 )
 
-func TestNewInterface(t *testing.T) {
-	NewInterface(client)
+func TestNewNetworkInterface(t *testing.T) {
+	NewNetworkInterface(client)
 }
 
-func TestInterface(t *testing.T) {
+func TestNetworkInterface(t *testing.T) {
 	// Ensure the type implements the interface
-	var _ api.Interface = (*Interface)(nil)
+	var _ api.NetworkInterface = (*NetworkInterface)(nil)
 
 	// Create a new interfaces client to be used in the tests
-	interfaceClient := NewInterface(client)
+	interfaceClient := NewNetworkInterface(client)
 
 	// Load test data
-	want := new(entity.Interface)
+	want := new(entity.NetworkInterface)
 	if err := helper.TestdataFromJSON("maas/interface.json", want); err != nil {
 		t.Fatal(err)
 	}
@@ -97,7 +97,7 @@ func TestInterface(t *testing.T) {
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
 			got, err := interfaceClient.Get(sid, ifc404)
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {
@@ -120,7 +120,7 @@ func TestInterface(t *testing.T) {
 		t.Run("403", func(t *testing.T) {
 			t.Parallel()
 			got, err := interfaceClient.AddTag(sid, ifc403, "some_tag")
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 403 (Forbidden)" {
@@ -130,7 +130,7 @@ func TestInterface(t *testing.T) {
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
 			got, err := interfaceClient.AddTag(sid, ifc404, "some_tag")
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {
@@ -153,7 +153,7 @@ func TestInterface(t *testing.T) {
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
 			got, err := interfaceClient.Disconnect(sid, ifc404)
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {
@@ -165,7 +165,7 @@ func TestInterface(t *testing.T) {
 	t.Run("LinkSubnet", func(t *testing.T) {
 		t.Run("200", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfaceClient.LinkSubnet(sid, ifc200, &params.InterfaceLink{})
+			got, err := interfaceClient.LinkSubnet(sid, ifc200, &params.NetworkInterfaceLink{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -175,8 +175,8 @@ func TestInterface(t *testing.T) {
 		})
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfaceClient.LinkSubnet(sid, ifc404, &params.InterfaceLink{})
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			got, err := interfaceClient.LinkSubnet(sid, ifc404, &params.NetworkInterfaceLink{})
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {
@@ -199,7 +199,7 @@ func TestInterface(t *testing.T) {
 		t.Run("403", func(t *testing.T) {
 			t.Parallel()
 			got, err := interfaceClient.RemoveTag(sid, ifc403, "some_tag")
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 403 (Forbidden)" {
@@ -209,7 +209,7 @@ func TestInterface(t *testing.T) {
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
 			got, err := interfaceClient.RemoveTag(sid, ifc404, "some_tag")
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {
@@ -232,7 +232,7 @@ func TestInterface(t *testing.T) {
 		t.Run("400", func(t *testing.T) {
 			t.Parallel()
 			got, err := interfaceClient.SetDefaultGateway(sid, ifc400, 13)
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 400 (Bad Request)" {
@@ -242,7 +242,7 @@ func TestInterface(t *testing.T) {
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
 			got, err := interfaceClient.SetDefaultGateway(sid, ifc404, 14)
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {
@@ -265,7 +265,7 @@ func TestInterface(t *testing.T) {
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
 			got, err := interfaceClient.UnlinkSubnet(sid, ifc404, 3)
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {
@@ -277,7 +277,7 @@ func TestInterface(t *testing.T) {
 	t.Run("Put", func(t *testing.T) {
 		t.Run("200", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfaceClient.Put(sid, ifc200, &params.InterfacePhysical{})
+			got, err := interfaceClient.Put(sid, ifc200, &params.NetworkInterfacePhysical{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -287,8 +287,8 @@ func TestInterface(t *testing.T) {
 		})
 		t.Run("404", func(t *testing.T) {
 			t.Parallel()
-			got, err := interfaceClient.Put(sid, ifc404, &params.InterfacePhysical{})
-			if diff := cmp.Diff((&entity.Interface{}), got, cmpopts.EquateEmpty()); diff != "" {
+			got, err := interfaceClient.Put(sid, ifc404, &params.NetworkInterfacePhysical{})
+			if diff := cmp.Diff((&entity.NetworkInterface{}), got, cmpopts.EquateEmpty()); diff != "" {
 				t.Fatalf("json.Decode() mismatch (-want +got):\n%s", diff)
 			}
 			if err.Error() != "ServerError: 404 (Not Found)" {

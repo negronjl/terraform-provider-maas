@@ -10,8 +10,8 @@ import (
 	"github.com/roblox/terraform-provider-maas/pkg/api/params"
 )
 
-// InterfaceLink represents a maas_interface_link
-type InterfaceLink struct {
+// NetworkInterfaceLink represents a maas_interface_link
+type NetworkInterfaceLink struct {
 	SystemID       string
 	InterfaceID    int
 	SubnetID       int
@@ -21,9 +21,9 @@ type InterfaceLink struct {
 	DefaultGateway net.IP
 }
 
-// NewInterfaceLink creates an InterfaceLink from the Terraform state.
-func NewInterfaceLink(d *schema.ResourceData) *InterfaceLink {
-	var i InterfaceLink
+// NewNetworkInterfaceLink creates an NetworkInterfaceLink from the Terraform state.
+func NewNetworkInterfaceLink(d *schema.ResourceData) *NetworkInterfaceLink {
+	var i NetworkInterfaceLink
 	if i.SystemID = d.Get("system_id").(string); i.SystemID == "" {
 		id := strings.Split(d.Id(), ":")
 		i.SystemID = id[0]
@@ -41,8 +41,8 @@ func NewInterfaceLink(d *schema.ResourceData) *InterfaceLink {
 }
 
 // Params returns a type that can be used to create and delete a MaaS Interface.
-func (i *InterfaceLink) Params() *params.InterfaceLink {
-	return &params.InterfaceLink{
+func (i *NetworkInterfaceLink) Params() *params.NetworkInterfaceLink {
+	return &params.NetworkInterfaceLink{
 		Subnet:         i.SubnetID,
 		Mode:           i.Mode,
 		IPAddress:      i.IPAddress,
@@ -52,7 +52,7 @@ func (i *InterfaceLink) Params() *params.InterfaceLink {
 }
 
 // GetID returns "<SystemID>:<InterfaceID>:<SubnetID>" to be used as the Terraform resource ID.
-func (i *InterfaceLink) GetID() (string, error) {
+func (i *NetworkInterfaceLink) GetID() (string, error) {
 	if i.SystemID == "" {
 		return "", fmt.Errorf("SystemID is empty")
 	}
@@ -66,7 +66,7 @@ func (i *InterfaceLink) GetID() (string, error) {
 }
 
 // UpdateResource updates the Terraform state to reflect the state of the struct.
-func (i *InterfaceLink) UpdateResource(d *schema.ResourceData) (err error) {
+func (i *NetworkInterfaceLink) UpdateResource(d *schema.ResourceData) (err error) {
 	if err = d.Set("mode", i.Mode); err != nil {
 		return
 	}

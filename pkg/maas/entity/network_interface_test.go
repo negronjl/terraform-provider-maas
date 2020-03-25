@@ -10,13 +10,13 @@ import (
 	"github.com/roblox/terraform-provider-maas/test/helper"
 )
 
-var sampleInterface Interface = Interface{
+var sampleNetworkInterface NetworkInterface = NetworkInterface{
 	Name: "eth0",
 	Children: []string{
 		"newbond",
 	},
 	MACAddress:      "00:01:02:03:04:55",
-	Links:           []InterfaceLink{},
+	Links:           []NetworkInterfaceLink{},
 	Product:         "",
 	Parents:         []string{},
 	Enabled:         true,
@@ -33,8 +33,8 @@ var sampleInterface Interface = Interface{
 	ResourceURI:     "/MAAS/api/2.0/nodes/thr3am/interfaces/138/",
 }
 
-var sampleInterfaces []Interface = []Interface{
-	Interface{
+var sampleNetworkInterfaces []NetworkInterface = []NetworkInterface{
+	NetworkInterface{
 		Name:    "eth-lKRYAa",
 		Parents: []string{},
 		Product: "",
@@ -67,8 +67,8 @@ var sampleInterfaces []Interface = []Interface{
 		},
 		Discovered: "",
 		ID:         37,
-		Links: []InterfaceLink{
-			InterfaceLink{
+		Links: []NetworkInterfaceLink{
+			NetworkInterfaceLink{
 				ID:   14,
 				Mode: "auto",
 				Subnet: Subnet{
@@ -145,8 +145,8 @@ var sampleInterfaces []Interface = []Interface{
 		},
 		Discovered: "",
 		ID:         38,
-		Links: []InterfaceLink{
-			InterfaceLink{
+		Links: []NetworkInterfaceLink{
+			NetworkInterfaceLink{
 				ID:   15,
 				Mode: "auto",
 				Subnet: Subnet{
@@ -223,8 +223,8 @@ var sampleInterfaces []Interface = []Interface{
 		},
 		Discovered: "",
 		ID:         39,
-		Links: []InterfaceLink{
-			InterfaceLink{
+		Links: []NetworkInterfaceLink{
+			NetworkInterfaceLink{
 				ID:   16,
 				Mode: "auto",
 				Subnet: Subnet{
@@ -303,8 +303,8 @@ var sampleInterfaces []Interface = []Interface{
 		},
 		Discovered: "",
 		ID:         40,
-		Links: []InterfaceLink{
-			InterfaceLink{
+		Links: []NetworkInterfaceLink{
+			NetworkInterfaceLink{
 				ID:   17,
 				Mode: "auto",
 				Subnet: Subnet{
@@ -380,8 +380,8 @@ var sampleInterfaces []Interface = []Interface{
 		},
 		Discovered: "",
 		ID:         41,
-		Links: []InterfaceLink{
-			InterfaceLink{
+		Links: []NetworkInterfaceLink{
+			NetworkInterfaceLink{
 				ID:        18,
 				Mode:      "static",
 				IPAddress: net.ParseIP("2001:db8:42:0:6556:13fa:7452:70da"),
@@ -458,8 +458,8 @@ var sampleInterfaces []Interface = []Interface{
 		},
 		Discovered: "",
 		ID:         42,
-		Links: []InterfaceLink{
-			InterfaceLink{
+		Links: []NetworkInterfaceLink{
+			NetworkInterfaceLink{
 				ID:        19,
 				Mode:      "static",
 				IPAddress: net.ParseIP("2001:db8:42:0:cf29:e368:ba5b:9977"),
@@ -503,9 +503,9 @@ var sampleInterfaces []Interface = []Interface{
 	},
 }
 
-func TestInterface(t *testing.T) {
-	ifc := new(Interface)
-	ifcs := new([]Interface)
+func TestNetworkInterface(t *testing.T) {
+	ifc := new(NetworkInterface)
+	ifcs := new([]NetworkInterface)
 
 	// Unmarshal sample data into the types
 	if err := helper.TestdataFromJSON("maas/interface.json", ifc); err != nil {
@@ -516,10 +516,10 @@ func TestInterface(t *testing.T) {
 	}
 
 	// Verify the values are correct
-	if diff := cmp.Diff(&sampleInterface, ifc); diff != "" {
-		t.Fatalf("json.Decode(Interface) mismatch (-want +got):\n%s", diff)
+	if diff := cmp.Diff(&sampleNetworkInterface, ifc); diff != "" {
+		t.Fatalf("json.Decode(NetworkInterface) mismatch (-want +got):\n%s", diff)
 	}
-	if diff := cmp.Diff(&sampleInterfaces, ifcs); diff != "" {
-		t.Fatalf("json.Decode([]Interface) mismatch (-want +got):\n%s", diff)
+	if diff := cmp.Diff(&sampleNetworkInterfaces, ifcs); diff != "" {
+		t.Fatalf("json.Decode([]NetworkInterface) mismatch (-want +got):\n%s", diff)
 	}
 }
