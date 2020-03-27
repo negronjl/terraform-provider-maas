@@ -68,7 +68,7 @@ jobs:
           at: ./build
       - run:
           name: "Publish Release on GitHub"
-          command: ghr -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./build/
+          command: ghr -u "${CIRCLE_PROJECT_USERNAME}" -r "${CIRCLE_PROJECT_REPONAME}" -c "${CIRCLE_SHA1}" -t "${GITHUB_PAT}" -delete "${CIRCLE_TAG}" ./build/
 
 workflows:
   version: 2
