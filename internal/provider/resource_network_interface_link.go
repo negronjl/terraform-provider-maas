@@ -9,6 +9,7 @@ import (
 	"github.com/roblox/terraform-provider-maas/internal/tfschema"
 )
 
+// ResourceNetworkInterfaceLink provides a resource that can be used to manage links between interfaces
 func ResourceNetworkInterfaceLink() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceNetworkInterfaceLinkCreate,

@@ -135,7 +135,3 @@ func ToQSP(t interface{}) url.Values {
 	}
 	return qsp
 }
-
-func ToSnakeCase(s string) string {
-	return s
-}

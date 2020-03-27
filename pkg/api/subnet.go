@@ -6,6 +6,7 @@ import (
 	"github.com/roblox/terraform-provider-maas/pkg/maas/entity/subnet"
 )
 
+// Subnet represents the MaaS Subnet endpoint
 type Subnet interface {
 	Delete(id int) error
 	Get(id int) (*entity.Subnet, error)

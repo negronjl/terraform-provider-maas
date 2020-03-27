@@ -9,6 +9,7 @@ import (
 	"github.com/roblox/terraform-provider-maas/pkg/gmaw"
 )
 
+// DataRackController provides a lookup for MaaS Rack Controllers
 func DataRackController() *schema.Resource {
 	return &schema.Resource{
 		Read: dataRackControllerRead,

@@ -7,6 +7,7 @@ import (
 	"github.com/roblox/terraform-provider-maas/pkg/maas"
 )
 
+// resourceInstance provides a resource that correlates to the MaaS Machine endpoint
 func resourceInstance() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceInstanceCreate,

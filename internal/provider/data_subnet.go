@@ -9,6 +9,7 @@ import (
 	"github.com/roblox/terraform-provider-maas/pkg/maas/entity"
 )
 
+// DataSubnet provides a lookup for a MaaS Subnet
 func DataSubnet() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSubnetRead,

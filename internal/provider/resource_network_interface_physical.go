@@ -6,6 +6,7 @@ import (
 	"github.com/roblox/terraform-provider-maas/internal/tfschema"
 )
 
+// ResourceNetworkInterfacePhysical provides a resource to manage physical interfaces
 func ResourceNetworkInterfacePhysical() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceNetworkInterfacePhysicalCreate,

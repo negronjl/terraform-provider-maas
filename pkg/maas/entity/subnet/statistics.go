@@ -2,6 +2,7 @@ package subnet
 
 import "net"
 
+// Statistics represents a Subnet's GetStatistics()
 type Statistics struct {
 	NumAvailable     int     `json:"num_available,omitempty"`
 	LargestAvailable int     `json:"largest_available,omitempty"`

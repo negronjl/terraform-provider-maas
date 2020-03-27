@@ -4,6 +4,7 @@ import (
 	"net"
 )
 
+// IPAddress represents an IP address from a Subnet's GetIPAddresses()
 type IPAddress struct {
 	IP          net.IP      `json:"ip,omitempty"`
 	AllocType   int         `json:"alloc_type,omitempty"`
@@ -13,6 +14,8 @@ type IPAddress struct {
 	User        string      `json:"user,omitempty"`
 }
 
+// NodeSummary represents the optional node_summary from GetIPAddresses().
+// This type should not be used directly.
 type NodeSummary struct {
 	SystemID    string `json:"system_id,omitempty"`
 	NodeType    int    `json:"node_type,omitempty"`
