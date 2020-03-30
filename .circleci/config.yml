@@ -95,7 +95,7 @@ workflows:
               only:
                 - master
             tags:
-              only: /^v.*/
+              ignore: /.*/
       - release:
           requires:
             - build
