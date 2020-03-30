@@ -32,7 +32,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - build/
+            - build
   tagging:
     docker:
       - image: ubuntu:latest
@@ -65,10 +65,10 @@ jobs:
       - image: cibuilds/github:0.10
     steps:
       - attach_workspace:
-          at: ./build
+          at: /tmp/workspace
       - run:
           name: "Publish Release on GitHub"
-          command: ghr -u "${CIRCLE_PROJECT_USERNAME}" -r "${CIRCLE_PROJECT_REPONAME}" -c "${CIRCLE_SHA1}" -t "${GITHUB_PAT}" -delete "${CIRCLE_TAG}" ./build/
+          command: ghr -u "${CIRCLE_PROJECT_USERNAME}" -r "${CIRCLE_PROJECT_REPONAME}" -c "${CIRCLE_SHA1}" -t "${GITHUB_PAT}" -delete "${CIRCLE_TAG}" /tmp/workspace/build
 
 workflows:
   version: 2
