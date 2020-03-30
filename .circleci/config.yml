@@ -8,7 +8,6 @@ make_run: &make_run
         name: Packer Run
         command: |
           set -e
-          go build
           make $MAKE_COMMAND
 jobs:
   lint:
@@ -23,6 +22,17 @@ jobs:
     <<: *make_run
     environment:
       MAKE_COMMAND: ""
+    steps:
+      - checkout
+      - run:
+          name: Run default Make target
+          command: make
+      - store_artifacts:
+          path: ./build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build/
   tagging:
     docker:
       - image: ubuntu:latest
@@ -50,18 +60,47 @@ jobs:
             NEW_TAG="$VNUM1.$VNUM2.$VNUM3"
             git tag $NEW_TAG
             git push --tags
+  release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: ./build
+      - run:
+          name: "Publish Release on GitHub"
+          command: ghr -u "${CIRCLE_PROJECT_USERNAME}" -r "${CIRCLE_PROJECT_REPONAME}" -c "${CIRCLE_SHA1}" -t "${GITHUB_PAT}" -delete "${CIRCLE_TAG}" ./build/
+
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - lint
-      - test
+      - lint:
+          filters:
+            tags:
+              only: /^v.*/
+      - test:
+          filters:
+            tags:
+              only: /^v.*/
       - build:
           requires:
             - lint
             - test
+          filters:
+            tags:
+              only: /^v.*/
       - tagging:
           filters:
             branches:
               only:
                 - master
+            tags:
+              only: /^v.*/
+      - release:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
