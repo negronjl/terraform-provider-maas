@@ -7,7 +7,7 @@ GOBIN ?= $(go env GOPATH)/bin
 
 # Build (default target)
 GOBUILD ?= gox
-BUILD_OPTIONS ?= -mod=readonly -output="build/terraform-provider-maas_v${CIRCLE_TAG:=}_{{.OS}}_{{.Arch}}"
+BUILD_OPTIONS ?= -mod=readonly -output="build/terraform-provider-maas_${CIRCLE_TAG:=}_{{.OS}}_{{.Arch}}"
 build: install_gox
 	$(GOBUILD) $(BUILD_OPTIONS)
 .PHONY: build
