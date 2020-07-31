@@ -7,7 +7,7 @@ GOBIN ?= $(go env GOPATH)/bin
 
 # Build (default target)
 GOBUILD ?= gox
-BUILD_OPTIONS ?= -mod=readonly -output="build/terraform-provider-maas_v${CIRCLE_TAG:=}_{{.OS}}_{{.Arch}}"
+BUILD_OPTIONS ?= -mod=readonly -output="build/terraform-provider-maas_${CIRCLE_TAG:=}_{{.OS}}_{{.Arch}}"
 build: install_gox
 	$(GOBUILD) $(BUILD_OPTIONS)
 .PHONY: build
@@ -20,7 +20,7 @@ install_gox:
 # Lint (https://github.com/golangci/golangci-lint)
 LINTER_OPTIONS ?= run# Arguments to golangci-lint
 LINTER_BINARY ?= golangci-lint# Name of the binary of golangci-lint
-LINTER_VERSION ?= 1.23.3# Version of golangci-lint to use in CI
+LINTER_VERSION ?= 1.29.0# Version of golangci-lint to use in CI
 
 lint: install_lint
 	$(LINTER_BINARY) $(LINTER_OPTIONS)
