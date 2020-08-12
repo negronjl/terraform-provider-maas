@@ -51,7 +51,6 @@ jobs:
             EOF
             chmod 0600 ~/.ssh/known_hosts
             apt-get update && apt-get -y install git
-            # VERSION=$(git ls-remote -qt --refs --sort='-v:refname' | sed -ne '1 s|.*tags/v*||p')
             VERSION=$(git tag -l --sort='-v:refname' | sed -ne '1 s|^v*\([0-9\.]*\).*|\1|p')
             echo "Found version ${VERSION}"
             IFS=$'.' read MAJOR MINOR REV <<<$VERSION
