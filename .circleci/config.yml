@@ -50,7 +50,15 @@ jobs:
             github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
             EOF
             chmod 0600 ~/.ssh/known_hosts
+            
+            # Installing Git 
             apt-get update && apt-get -y install git
+            
+            # Setting up git
+            git config --global user.email "circleci@roblox.com"
+            git config --global user.name "circlei terraform-provider-maas"
+            
+            # Figuring out the versioning
             VERSION=$(git tag -l --sort='-v:refname' | sed -ne '1 s|^v*\([0-9\.]*\).*|\1|p')
             echo "Found version ${VERSION}"
             IFS=$'.' read MAJOR MINOR REV <<<$VERSION
@@ -65,6 +73,8 @@ jobs:
               VERSION="${MAJOR:-0}.${MINOR:-0}.$((${REV}+1))"
               echo "Incremented revision to 'v${VERSION}'"
             fi
+            
+            # Pushing to github
             git tag -am "Release version ${VERSION}" "v${VERSION}"
             git push --tags
   release:
