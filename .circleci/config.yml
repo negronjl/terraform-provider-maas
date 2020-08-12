@@ -50,15 +50,23 @@ jobs:
             github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
             EOF
             chmod 0600 ~/.ssh/known_hosts
-            apt update -y && apt install git -y
-            VERSION=$(git describe --abbrev=0 --tags)
-            VERSION_BITS=(${VERSION//./ })
-            VNUM1=${VERSION_BITS[0]}
-            VNUM2=${VERSION_BITS[1]}
-            VNUM3=${VERSION_BITS[2]+0}
-            VNUM3=$((VNUM3+1))
-            NEW_TAG="$VNUM1.$VNUM2.$VNUM3"
-            git tag $NEW_TAG
+            apt-get update && apt-get -y install git
+            # VERSION=$(git ls-remote -qt --refs --sort='-v:refname' | sed -ne '1 s|.*tags/v*||p')
+            VERSION=$(git tag -l --sort='-v:refname' | sed -ne '1 s|^v*\([0-9\.]*\).*|\1|p')
+            echo "Found version ${VERSION}"
+            IFS=$'.' read MAJOR MINOR REV <<<$VERSION
+            echo "Read major: '${MAJOR}', minor: '${MINOR}', rev: '${REV}'"
+            if git log -1 --pretty=%B | grep -q '\[MAJOR\]'; then
+              VERSION="$((${MAJOR}+1)).0.0"
+              echo "Incremented major version to 'v${VERSION}'"
+            elif git log -1 --pretty=%B | grep -q '\[MINOR\]'; then
+              VERSION="${MAJOR:-0}.$((${MINOR}+1)).0"
+              echo "Incremented minor version to 'v${VERSION}'"
+            else
+              VERSION="${MAJOR:-0}.${MINOR:-0}.$((${REV}+1))"
+              echo "Incremented revision to 'v${VERSION}'"
+            fi
+            git tag -am "Release version ${VERSION}" "v${VERSION}"
             git push --tags
   release:
     docker:
