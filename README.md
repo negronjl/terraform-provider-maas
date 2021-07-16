@@ -322,7 +322,7 @@ resource "maas_instance" "maas_single_random_node" {
 ## Erasing disks on node release
 
 Maas provides an option to erase the node's disk when releasing the system. By default it will not alter the disk.
-This provides a very quick method do release the system back into the pool of nodes. It isn't ideal to leave data on a disk
+This provides a very quick method to release the system back into the pool of nodes. It isn't ideal to leave data on a disk
 as this may lead to data loss or even booting a system that may cause a service outage. With this in mind the
 Terraform provider is set to erase the disk on release. This ensures that the machine will be released into the pool with a clean state.
 
