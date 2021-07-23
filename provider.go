@@ -17,6 +17,7 @@ func Provider() terraform.ResourceProvider {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The api key for API operations",
+				DefaultFunc: schema.EnvDefaultFunc("MAAS_API_KEY", ""),
 			},
 			"api_url": {
 				Type:        schema.TypeString,
