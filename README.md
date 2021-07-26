@@ -16,7 +16,8 @@ A simple Terraform provider for MAAS.  This is a work in progress and by no mean
 The provider requires some variables to be configured in order to gain access to the MAAS server:
 
 - **api_version**:  This is optional and probably only works with 2.0. The defaults to 2.0.
-- **api_key**: [MAAS API Key](https://maas.ubuntu.com/docs/maascli.html#logging-in), specify with the `MAAS_API_KEY` environment variable
+- **api_key**: [MAAS API Key](https://maas.ubuntu.com/docs/maascli.html#logging-in) to authenticate
+    requests. Can also be specified with `MAAS_API_KEY` as an environment variable.
 - **api_url**: URI for your MAAS API server (eg <http://127.0.0.1:80/MAAS>)
 
 #### `maas`
