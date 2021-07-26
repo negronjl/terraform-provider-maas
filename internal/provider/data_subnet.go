@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/juju/gomaasapi"
@@ -75,7 +76,7 @@ func dataSubnetRead(d *schema.ResourceData, m interface{}) error {
 		if err := d.Set("dns_servers", res[idx].DNSServers); err != nil {
 			return err
 		}
-		d.SetId(string(res[idx].ID))
+		d.SetId(strconv.Itoa(res[idx].ID))
 		return nil
 	}
 	return fmt.Errorf("could not find matching subnet")

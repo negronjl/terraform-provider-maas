@@ -3,7 +3,7 @@
 OS ?= $(shell uname -s)
 GO ?= go
 GOGET ?= $(GO) get -u
-GOBIN ?= $(go env GOPATH)/bin
+GOBIN ?= $(shell $(GO) env GOPATH)/bin
 
 # Build (default target)
 GOBUILD ?= gox
