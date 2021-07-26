@@ -1,0 +1,123 @@
+version: 2
+make_run: &make_run
+  docker:
+    - image: golang:1.13.7
+  steps:
+    - checkout
+    - run:
+        name: Packer Run
+        command: |
+          set -e
+          make $MAKE_COMMAND
+jobs:
+  lint:
+    <<: *make_run
+    environment:
+      MAKE_COMMAND: "lint"
+  test:
+    <<: *make_run
+    environment:
+      MAKE_COMMAND: "test"
+  build:
+    <<: *make_run
+    environment:
+      MAKE_COMMAND: ""
+    steps:
+      - checkout
+      - run:
+          name: Run default Make target
+          command: make
+      - store_artifacts:
+          path: ./build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+  tagging:
+    docker:
+      - image: ubuntu:latest
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "81:40:b2:e4:a9:f6:c6:73:fd:b0:39:95:c3:77:42:c8"
+      - run:
+          name: Update Tag
+          command: |
+            set -eu
+            [ ! -d ~/.ssh ] && mkdir ~/.ssh && chmod 0700 ~/.ssh
+            cat > ~/.ssh/known_hosts <<EOF
+            github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+            EOF
+            chmod 0600 ~/.ssh/known_hosts
+            
+            # Installing Git 
+            apt-get update && apt-get -y install git
+            
+            # Setting up git
+            git config --global user.email "circleci@roblox.com"
+            git config --global user.name "circlei terraform-provider-maas"
+            
+            # Figuring out the versioning
+            VERSION=$(git tag -l --sort='-v:refname' | sed -ne '1 s|^v*\([0-9\.]*\).*|\1|p')
+            echo "Found version ${VERSION}"
+            IFS=$'.' read MAJOR MINOR REV <<<$VERSION
+            echo "Read major: '${MAJOR}', minor: '${MINOR}', rev: '${REV}'"
+            if git log -1 --pretty=%B | grep -q '\[MAJOR\]'; then
+              VERSION="$((${MAJOR}+1)).0.0"
+              echo "Incremented major version to 'v${VERSION}'"
+            elif git log -1 --pretty=%B | grep -q '\[MINOR\]'; then
+              VERSION="${MAJOR:-0}.$((${MINOR}+1)).0"
+              echo "Incremented minor version to 'v${VERSION}'"
+            else
+              VERSION="${MAJOR:-0}.${MINOR:-0}.$((${REV}+1))"
+              echo "Incremented revision to 'v${VERSION}'"
+            fi
+            
+            # Pushing to github
+            git tag -am "Release version ${VERSION}" "v${VERSION}"
+            git push --tags
+  release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: "Publish Release on GitHub"
+          command: ghr -u "${CIRCLE_PROJECT_USERNAME}" -r "${CIRCLE_PROJECT_REPONAME}" -c "${CIRCLE_SHA1}" -t "${GITHUB_PAT}" -delete "${CIRCLE_TAG}" /tmp/workspace/build
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - lint:
+          filters:
+            tags:
+              only: /^v.*/
+      - test:
+          filters:
+            tags:
+              only: /^v.*/
+      - build:
+          requires:
+            - lint
+            - test
+          filters:
+            tags:
+              only: /^v.*/
+      - tagging:
+          filters:
+            branches:
+              only:
+                - master
+            tags:
+              ignore: /.*/
+      - release:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

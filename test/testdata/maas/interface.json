@@ -1,0 +1,22 @@
+{
+    "name": "eth0",
+    "children": [
+        "newbond"
+    ],
+    "mac_address": "00:01:02:03:04:55",
+    "links": [],
+    "product": null,
+    "parents": [],
+    "enabled": true,
+    "vlan": null,
+    "firmware_version": null,
+    "system_id": "thr3am",
+    "tags": [],
+    "params": {},
+    "type": "physical",
+    "discovered": null,
+    "effective_mtu": 1500,
+    "vendor": null,
+    "id": 138,
+    "resource_uri": "/MAAS/api/2.0/nodes/thr3am/interfaces/138/"
+}

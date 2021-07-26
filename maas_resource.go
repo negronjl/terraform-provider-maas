@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crypto/sha1"
+	"crypto/sha1" // nolint: gosec
 	"encoding/hex"
 	"log"
 
@@ -9,7 +9,7 @@ import (
 )
 
 // resourceMAASInstance creates a new terraform schema resource
-func resourceMAASInstance() *schema.Resource {
+func resourceMAASInstance() *schema.Resource { // nolint: funlen
 	log.Println("[DEBUG] [resourceMAASInstance] Initializing data structure")
 	return &schema.Resource{
 		Create: resourceMAASInstanceCreate,
@@ -17,7 +17,7 @@ func resourceMAASInstance() *schema.Resource {
 		Update: resourceMAASInstanceUpdate,
 		Delete: resourceMAASInstanceDelete,
 
-		SchemaVersion: 1,
+		SchemaVersion: 1, // nolint: gomnd
 
 		Schema: map[string]*schema.Schema{
 			"architecture": {
@@ -90,6 +90,20 @@ func resourceMAASInstance() *schema.Resource {
 			},
 
 			"release_erase_quick": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: false,
+				Default:  false,
+			},
+
+			"install_kvm": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: false,
+				Default:  false,
+			},
+
+			"install_rackd": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: false,
@@ -286,9 +300,9 @@ func resourceMAASInstance() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 				StateFunc: func(v interface{}) string {
-					switch v.(type) {
+					switch val := v.(type) {
 					case string:
-						hash := sha1.Sum([]byte(v.(string)))
+						hash := sha1.Sum([]byte(val)) // nolint: gosec
 						return hex.EncodeToString(hash[:])
 					default:
 						return ""

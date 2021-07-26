@@ -1,0 +1,6 @@
+{
+    "name": "default",
+    "description": "",
+    "id": 1,
+    "resource_uri": "/MAAS/api/2.0/zones/default/"
+}

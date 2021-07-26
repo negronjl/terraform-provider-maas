@@ -24,5 +24,10 @@ func TestProvider(t *testing.T) {
 }
 
 func TestProvider_impl(t *testing.T) {
+	defer func() {
+		if err := recover(); err != nil {
+			t.Error(err)
+		}
+	}()
 	var _ terraform.ResourceProvider = Provider()
 }

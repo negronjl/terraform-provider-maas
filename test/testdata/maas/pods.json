@@ -1,0 +1,80 @@
+[
+    {
+        "id": 3,
+        "architectures": [],
+        "available": {
+            "cores": 6,
+            "memory": 4096,
+            "local_storage": 89994823853
+        },
+        "memory_over_commit_ratio": 1.0,
+        "host": {
+            "system_id": null,
+            "__incomplete__": true
+        },
+        "capabilities": [
+            "dynamic_local_storage",
+            "composable"
+        ],
+        "default_macvlan_mode": null,
+        "zone": {
+            "name": "default",
+            "description": "",
+            "id": 1,
+            "resource_uri": "/MAAS/api/2.0/zones/default/"
+        },
+        "total": {
+            "cores": 17,
+            "memory": 17408,
+            "local_storage": 102193675437
+        },
+        "pool": {
+            "name": "default",
+            "description": "Default pool",
+            "id": 0,
+            "resource_uri": "/MAAS/api/2.0/resourcepool/0/"
+        },
+        "name": "proud-cat",
+        "cpu_over_commit_ratio": 1.0,
+        "tags": [],
+        "used": {
+            "cores": 11,
+            "memory": 13312,
+            "local_storage": 12198851584
+        },
+        "storage_pools": [
+            {
+                "id": "pool_id-UuYjRR",
+                "name": "name-Xa03eb",
+                "type": "lvm",
+                "path": "/var/lib/name-Xa03eb",
+                "total": 55908000766,
+                "used": 0,
+                "available": 55908000766,
+                "default": true
+            },
+            {
+                "id": "pool_id-FkgXoP",
+                "name": "name-MBAlmH",
+                "type": "lvm",
+                "path": "/var/lib/name-MBAlmH",
+                "total": 30058152477,
+                "used": 7636928512,
+                "available": 22421223965,
+                "default": false
+            },
+            {
+                "id": "pool_id-YDEeSq",
+                "name": "name-TaXcCd",
+                "type": "dir",
+                "path": "/var/lib/name-TaXcCd",
+                "total": 16227522194,
+                "used": 4561923072,
+                "available": 11665599122,
+                "default": false
+            }
+        ],
+        "type": "virsh",
+        "resource_uri": "/MAAS/api/2.0/pods/3/"
+    }
+]

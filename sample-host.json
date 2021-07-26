@@ -1,0 +1,579 @@
+[
+    {
+        "blockdevice_set": [
+            {
+                "id_path": "/dev/disk/by-id/wwn-0x500a07511aee0940",
+                "size": 256060514304,
+                "block_size": 4096,
+                "tags": [
+                    "ssd",
+                    "sata"
+                ],
+                "path": "/dev/disk/by-dname/sda",
+                "name": "sda",
+                "system_id": "axpnhq",
+                "model": "MTFDDAK256TBN",
+                "serial": "18021AEE0940",
+                "partitions": [
+                    {
+                        "uuid": "ea843803-6f6e-449d-a577-c4311c1e8224",
+                        "size": 256053870592,
+                        "bootable": false,
+                        "tags": [],
+                        "path": "/dev/disk/by-dname/sda-part1",
+                        "system_id": "axpnhq",
+                        "used_for": "ext4 formatted filesystem mounted at /",
+                        "filesystem": {
+                            "fstype": "ext4",
+                            "label": "root",
+                            "uuid": "92d49f8d-eef8-4cbb-9ae0-2c91ac450264",
+                            "mount_point": "/",
+                            "mount_options": null
+                        },
+                        "type": "partition",
+                        "id": 361,
+                        "device_id": 25,
+                        "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/blockdevices/25/partition/361"
+                    }
+                ],
+                "used_for": "MBR partitioned with 1 partition",
+                "available_size": 0,
+                "used_size": 256059113472,
+                "partition_table_type": "MBR",
+                "storage_pool": null,
+                "uuid": null,
+                "type": "physical",
+                "id": 25,
+                "filesystem": null,
+                "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/blockdevices/25/"
+            }
+        ],
+        "status_action": "",
+        "status_name": "Deployed",
+        "testing_status_name": "Passed",
+        "cpu_count": 40,
+        "zone": {
+            "name": "default",
+            "description": "",
+            "id": 1,
+            "resource_uri": "/MAAS/api/2.0/zones/default/"
+        },
+        "current_testing_result_id": 1756,
+        "special_filesystems": [],
+        "hostname": "gs1-ac08-sjc1",
+        "hwe_kernel": "hwe-18.04",
+        "testing_status": 2,
+        "owner_data": {},
+        "architecture": "amd64/generic",
+        "disable_ipv4": false,
+        "distro_series": "bionic",
+        "commissioning_status": 2,
+        "cpu_test_status": -1,
+        "other_test_status": -1,
+        "locked": false,
+        "domain": {
+            "authoritative": true,
+            "ttl": null,
+            "name": "sjc1.roblox.local",
+            "is_default": true,
+            "resource_record_count": 142,
+            "id": 0,
+            "resource_uri": "/MAAS/api/2.0/domains/0/"
+        },
+        "status": 6,
+        "memory_test_status": -1,
+        "fqdn": "gs1-ac08-sjc1.sjc1.roblox.local",
+        "node_type_name": "Machine",
+        "memory_test_status_name": "Unknown",
+        "raids": [],
+        "pool": {
+            "name": "default",
+            "description": "Default pool",
+            "id": 0,
+            "resource_uri": "/MAAS/api/2.0/resourcepool/0/"
+        },
+        "storage_test_status_name": "Passed",
+        "tag_names": [],
+        "other_test_status_name": "Unknown",
+        "status_message": "Power state queried: on",
+        "storage_test_status": 2,
+        "hardware_info": {
+            "system_vendor": "Unknown",
+            "system_product": "Unknown",
+            "system_version": "Unknown",
+            "system_serial": "Unknown",
+            "cpu_model": "Unknown",
+            "mainboard_vendor": "Unknown",
+            "mainboard_product": "Unknown",
+            "mainboard_firmware_version": "Unknown",
+            "mainboard_firmware_date": "Unknown"
+        },
+        "address_ttl": null,
+        "interface_set": [
+            {
+                "discovered": [
+                    {
+                        "subnet": {
+                            "name": "ac08-sjc1 public",
+                            "vlan": {
+                                "vid": 0,
+                                "mtu": 1500,
+                                "dhcp_on": true,
+                                "external_dhcp": null,
+                                "relay_vlan": null,
+                                "space": "undefined",
+                                "name": "untagged",
+                                "secondary_rack": null,
+                                "fabric_id": 4,
+                                "fabric": "ac08-sjc1",
+                                "id": 5005,
+                                "primary_rack": "qbd6s7",
+                                "resource_uri": "/MAAS/api/2.0/vlans/5005/"
+                            },
+                            "cidr": "209.206.42.0/26",
+                            "rdns_mode": 2,
+                            "gateway_ip": "209.206.42.1",
+                            "dns_servers": [
+                                "10.164.0.48",
+                                "10.164.0.176",
+                                "10.164.0.112",
+                                "10.164.0.251",
+                                "10.164.1.60",
+                                "10.164.1.125"
+                            ],
+                            "allow_dns": true,
+                            "allow_proxy": true,
+                            "active_discovery": false,
+                            "managed": true,
+                            "id": 16,
+                            "space": "undefined",
+                            "resource_uri": "/MAAS/api/2.0/subnets/16/"
+                        },
+                        "ip_address": "209.206.42.11"
+                    }
+                ],
+                "parents": [],
+                "name": "enp5s0f0",
+                "system_id": "axpnhq",
+                "effective_mtu": 1500,
+                "tags": [],
+                "firmware_version": null,
+                "enabled": true,
+                "vlan": {
+                    "vid": 0,
+                    "mtu": 1500,
+                    "dhcp_on": true,
+                    "external_dhcp": null,
+                    "relay_vlan": null,
+                    "space": "undefined",
+                    "name": "untagged",
+                    "secondary_rack": null,
+                    "fabric_id": 4,
+                    "fabric": "ac08-sjc1",
+                    "id": 5005,
+                    "primary_rack": "qbd6s7",
+                    "resource_uri": "/MAAS/api/2.0/vlans/5005/"
+                },
+                "children": [],
+                "params": {},
+                "vendor": null,
+                "links": [
+                    {
+                        "id": 1299,
+                        "mode": "dhcp",
+                        "ip_address": "209.206.42.11",
+                        "subnet": {
+                            "name": "ac08-sjc1 public",
+                            "vlan": {
+                                "vid": 0,
+                                "mtu": 1500,
+                                "dhcp_on": true,
+                                "external_dhcp": null,
+                                "relay_vlan": null,
+                                "space": "undefined",
+                                "name": "untagged",
+                                "secondary_rack": null,
+                                "fabric_id": 4,
+                                "fabric": "ac08-sjc1",
+                                "id": 5005,
+                                "primary_rack": "qbd6s7",
+                                "resource_uri": "/MAAS/api/2.0/vlans/5005/"
+                            },
+                            "cidr": "209.206.42.0/26",
+                            "rdns_mode": 2,
+                            "gateway_ip": "209.206.42.1",
+                            "dns_servers": [
+                                "10.164.0.48",
+                                "10.164.0.176",
+                                "10.164.0.112",
+                                "10.164.0.251",
+                                "10.164.1.60",
+                                "10.164.1.125"
+                            ],
+                            "allow_dns": true,
+                            "allow_proxy": true,
+                            "active_discovery": false,
+                            "managed": true,
+                            "id": 16,
+                            "space": "undefined",
+                            "resource_uri": "/MAAS/api/2.0/subnets/16/"
+                        }
+                    }
+                ],
+                "product": null,
+                "type": "physical",
+                "id": 338,
+                "mac_address": "f4:e9:d4:bf:fb:50",
+                "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/interfaces/338/"
+            },
+            {
+                "discovered": null,
+                "parents": [],
+                "name": "eno2",
+                "system_id": "axpnhq",
+                "effective_mtu": 1500,
+                "tags": [],
+                "firmware_version": null,
+                "enabled": true,
+                "vlan": null,
+                "children": [],
+                "params": "",
+                "vendor": null,
+                "links": [],
+                "product": null,
+                "type": "physical",
+                "id": 385,
+                "mac_address": "d0:94:66:3b:7b:2b",
+                "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/interfaces/385/"
+            },
+            {
+                "discovered": null,
+                "parents": [],
+                "name": "eno1",
+                "system_id": "axpnhq",
+                "effective_mtu": 1500,
+                "tags": [],
+                "firmware_version": null,
+                "enabled": true,
+                "vlan": null,
+                "children": [],
+                "params": "",
+                "vendor": null,
+                "links": [],
+                "product": null,
+                "type": "physical",
+                "id": 384,
+                "mac_address": "d0:94:66:3b:7b:2a",
+                "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/interfaces/384/"
+            },
+            {
+                "discovered": null,
+                "parents": [],
+                "name": "eno4",
+                "system_id": "axpnhq",
+                "effective_mtu": 1500,
+                "tags": [],
+                "firmware_version": null,
+                "enabled": true,
+                "vlan": null,
+                "children": [],
+                "params": "",
+                "vendor": null,
+                "links": [],
+                "product": null,
+                "type": "physical",
+                "id": 383,
+                "mac_address": "d0:94:66:3b:7b:2d",
+                "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/interfaces/383/"
+            },
+            {
+                "discovered": null,
+                "parents": [],
+                "name": "enp5s0f1",
+                "system_id": "axpnhq",
+                "effective_mtu": 1500,
+                "tags": [],
+                "firmware_version": null,
+                "enabled": true,
+                "vlan": null,
+                "children": [],
+                "params": "",
+                "vendor": null,
+                "links": [],
+                "product": null,
+                "type": "physical",
+                "id": 382,
+                "mac_address": "f4:e9:d4:bf:fb:52",
+                "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/interfaces/382/"
+            },
+            {
+                "discovered": null,
+                "parents": [],
+                "name": "eno3",
+                "system_id": "axpnhq",
+                "effective_mtu": 1500,
+                "tags": [],
+                "firmware_version": null,
+                "enabled": true,
+                "vlan": null,
+                "children": [],
+                "params": "",
+                "vendor": null,
+                "links": [],
+                "product": null,
+                "type": "physical",
+                "id": 381,
+                "mac_address": "d0:94:66:3b:7b:2c",
+                "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/interfaces/381/"
+            }
+        ],
+        "commissioning_status_name": "Passed",
+        "current_commissioning_result_id": 1751,
+        "cpu_test_status_name": "Unknown",
+        "physicalblockdevice_set": [
+            {
+                "firmware_version": "Unknown",
+                "path": "/dev/disk/by-dname/sda",
+                "name": "sda",
+                "system_id": "axpnhq",
+                "model": "MTFDDAK256TBN",
+                "tags": [
+                    "ssd",
+                    "sata"
+                ],
+                "serial": "18021AEE0940",
+                "block_size": 4096,
+                "partitions": [
+                    {
+                        "uuid": "ea843803-6f6e-449d-a577-c4311c1e8224",
+                        "size": 256053870592,
+                        "bootable": false,
+                        "tags": [],
+                        "path": "/dev/disk/by-dname/sda-part1",
+                        "system_id": "axpnhq",
+                        "used_for": "ext4 formatted filesystem mounted at /",
+                        "filesystem": {
+                            "fstype": "ext4",
+                            "label": "root",
+                            "uuid": "92d49f8d-eef8-4cbb-9ae0-2c91ac450264",
+                            "mount_point": "/",
+                            "mount_options": null
+                        },
+                        "type": "partition",
+                        "id": 361,
+                        "device_id": 25,
+                        "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/blockdevices/25/partition/361"
+                    }
+                ],
+                "used_for": "MBR partitioned with 1 partition",
+                "id_path": "/dev/disk/by-id/wwn-0x500a07511aee0940",
+                "available_size": 0,
+                "used_size": 256059113472,
+                "partition_table_type": "MBR",
+                "storage_pool": null,
+                "uuid": null,
+                "size": 256060514304,
+                "type": "physical",
+                "id": 25,
+                "filesystem": null,
+                "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/blockdevices/25/"
+            }
+        ],
+        "default_gateways": {
+            "ipv4": {
+                "gateway_ip": null,
+                "link_id": null
+            },
+            "ipv6": {
+                "gateway_ip": null,
+                "link_id": null
+            }
+        },
+        "memory": 131068,
+        "cpu_speed": 0,
+        "power_type": "ipmi",
+        "swap_size": null,
+        "virtualblockdevice_set": [],
+        "storage": 256060.51430399998,
+        "owner": "roblox",
+        "cache_sets": [],
+        "ip_addresses": [
+            "209.206.42.11"
+        ],
+        "system_id": "axpnhq",
+        "min_hwe_kernel": "",
+        "power_state": "on",
+        "volume_groups": [],
+        "current_installation_result_id": 14253,
+        "osystem": "ubuntu",
+        "node_type": 0,
+        "boot_interface": {
+            "discovered": [
+                {
+                    "subnet": {
+                        "name": "ac08-sjc1 public",
+                        "vlan": {
+                            "vid": 0,
+                            "mtu": 1500,
+                            "dhcp_on": true,
+                            "external_dhcp": null,
+                            "relay_vlan": null,
+                            "space": "undefined",
+                            "name": "untagged",
+                            "secondary_rack": null,
+                            "fabric_id": 4,
+                            "fabric": "ac08-sjc1",
+                            "id": 5005,
+                            "primary_rack": "qbd6s7",
+                            "resource_uri": "/MAAS/api/2.0/vlans/5005/"
+                        },
+                        "cidr": "209.206.42.0/26",
+                        "rdns_mode": 2,
+                        "gateway_ip": "209.206.42.1",
+                        "dns_servers": [
+                            "10.164.0.48",
+                            "10.164.0.176",
+                            "10.164.0.112",
+                            "10.164.0.251",
+                            "10.164.1.60",
+                            "10.164.1.125"
+                        ],
+                        "allow_dns": true,
+                        "allow_proxy": true,
+                        "active_discovery": false,
+                        "managed": true,
+                        "id": 16,
+                        "space": "undefined",
+                        "resource_uri": "/MAAS/api/2.0/subnets/16/"
+                    },
+                    "ip_address": "209.206.42.11"
+                }
+            ],
+            "parents": [],
+            "name": "enp5s0f0",
+            "system_id": "axpnhq",
+            "effective_mtu": 1500,
+            "tags": [],
+            "firmware_version": null,
+            "enabled": true,
+            "vlan": {
+                "vid": 0,
+                "mtu": 1500,
+                "dhcp_on": true,
+                "external_dhcp": null,
+                "relay_vlan": null,
+                "space": "undefined",
+                "name": "untagged",
+                "secondary_rack": null,
+                "fabric_id": 4,
+                "fabric": "ac08-sjc1",
+                "id": 5005,
+                "primary_rack": "qbd6s7",
+                "resource_uri": "/MAAS/api/2.0/vlans/5005/"
+            },
+            "children": [],
+            "params": {},
+            "vendor": null,
+            "links": [
+                {
+                    "id": 1299,
+                    "mode": "dhcp",
+                    "ip_address": "209.206.42.11",
+                    "subnet": {
+                        "name": "ac08-sjc1 public",
+                        "vlan": {
+                            "vid": 0,
+                            "mtu": 1500,
+                            "dhcp_on": true,
+                            "external_dhcp": null,
+                            "relay_vlan": null,
+                            "space": "undefined",
+                            "name": "untagged",
+                            "secondary_rack": null,
+                            "fabric_id": 4,
+                            "fabric": "ac08-sjc1",
+                            "id": 5005,
+                            "primary_rack": "qbd6s7",
+                            "resource_uri": "/MAAS/api/2.0/vlans/5005/"
+                        },
+                        "cidr": "209.206.42.0/26",
+                        "rdns_mode": 2,
+                        "gateway_ip": "209.206.42.1",
+                        "dns_servers": [
+                            "10.164.0.48",
+                            "10.164.0.176",
+                            "10.164.0.112",
+                            "10.164.0.251",
+                            "10.164.1.60",
+                            "10.164.1.125"
+                        ],
+                        "allow_dns": true,
+                        "allow_proxy": true,
+                        "active_discovery": false,
+                        "managed": true,
+                        "id": 16,
+                        "space": "undefined",
+                        "resource_uri": "/MAAS/api/2.0/subnets/16/"
+                    }
+                }
+            ],
+            "product": null,
+            "type": "physical",
+            "id": 338,
+            "mac_address": "f4:e9:d4:bf:fb:50",
+            "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/interfaces/338/"
+        },
+        "netboot": false,
+        "boot_disk": {
+            "firmware_version": "Unknown",
+            "path": "/dev/disk/by-dname/sda",
+            "name": "sda",
+            "system_id": "axpnhq",
+            "model": "MTFDDAK256TBN",
+            "tags": [
+                "ssd",
+                "sata"
+            ],
+            "serial": "18021AEE0940",
+            "block_size": 4096,
+            "partitions": [
+                {
+                    "uuid": "ea843803-6f6e-449d-a577-c4311c1e8224",
+                    "size": 256053870592,
+                    "bootable": false,
+                    "tags": [],
+                    "path": "/dev/disk/by-dname/sda-part1",
+                    "system_id": "axpnhq",
+                    "used_for": "ext4 formatted filesystem mounted at /",
+                    "filesystem": {
+                        "fstype": "ext4",
+                        "label": "root",
+                        "uuid": "92d49f8d-eef8-4cbb-9ae0-2c91ac450264",
+                        "mount_point": "/",
+                        "mount_options": null
+                    },
+                    "type": "partition",
+                    "id": 361,
+                    "device_id": 25,
+                    "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/blockdevices/25/partition/361"
+                }
+            ],
+            "used_for": "MBR partitioned with 1 partition",
+            "id_path": "/dev/disk/by-id/wwn-0x500a07511aee0940",
+            "available_size": 0,
+            "used_size": 256059113472,
+            "partition_table_type": "MBR",
+            "storage_pool": null,
+            "uuid": null,
+            "size": 256060514304,
+            "type": "physical",
+            "id": 25,
+            "filesystem": null,
+            "resource_uri": "/MAAS/api/2.0/nodes/axpnhq/blockdevices/25/"
+        },
+        "iscsiblockdevice_set": [],
+        "pod": null,
+        "bcaches": [],
+        "resource_uri": "/MAAS/api/2.0/machines/axpnhq/"
+    }
+]

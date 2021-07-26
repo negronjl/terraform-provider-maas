@@ -1,0 +1,282 @@
+[
+    {
+        "commissioning_status": 2,
+        "version": "2.5.0~beta3-7325-g1425f6d4c-0ubuntu1~18.04.1",
+        "node_type_name": "Region and rack controller",
+        "ip_addresses": [
+            "10.55.32.135",
+            "192.168.122.1"
+        ],
+        "storage_test_status": -1,
+        "cpu_count": 4,
+        "hostname": "mymaas",
+        "description": "Optional description for the node.",
+        "domain": {
+            "authoritative": true,
+            "ttl": null,
+            "id": 0,
+            "name": "maas",
+            "resource_record_count": 23,
+            "is_default": true,
+            "resource_uri": "/MAAS/api/2.0/domains/0/"
+        },
+        "swap_size": null,
+        "power_type": "",
+        "memory": 8192,
+        "current_testing_result_id": null,
+        "osystem": "ubuntu",
+        "node_type": 4,
+        "service_set": [
+            {
+                "name": "proxy",
+                "status": "running",
+                "status_info": ""
+            },
+            {
+                "name": "bind9",
+                "status": "running",
+                "status_info": ""
+            },
+            {
+                "name": "ntp_region",
+                "status": "running",
+                "status_info": ""
+            },
+            {
+                "name": "regiond",
+                "status": "running",
+                "status_info": ""
+            },
+            {
+                "name": "syslog_region",
+                "status": "running",
+                "status_info": ""
+            },
+            {
+                "name": "ntp_rack",
+                "status": "unknown",
+                "status_info": "managed by the region"
+            },
+            {
+                "name": "dhcpd",
+                "status": "running",
+                "status_info": ""
+            },
+            {
+                "name": "tftp",
+                "status": "running",
+                "status_info": ""
+            },
+            {
+                "name": "dns_rack",
+                "status": "unknown",
+                "status_info": "managed by the region"
+            },
+            {
+                "name": "http",
+                "status": "running",
+                "status_info": ""
+            },
+            {
+                "name": "proxy_rack",
+                "status": "unknown",
+                "status_info": "managed by the region"
+            },
+            {
+                "name": "syslog_rack",
+                "status": "unknown",
+                "status_info": "managed by the region"
+            },
+            {
+                "name": "dhcpd6",
+                "status": "off",
+                "status_info": ""
+            },
+            {
+                "name": "rackd",
+                "status": "running",
+                "status_info": ""
+            }
+        ],
+        "other_test_status": -1,
+        "testing_status": -1,
+        "zone": {
+            "name": "default",
+            "description": "",
+            "id": 1,
+            "resource_uri": "/MAAS/api/2.0/zones/default/"
+        },
+        "status_action": "",
+        "commissioning_status_name": "Passed",
+        "interface_set": [
+            {
+                "vlan": {
+                    "vid": 0,
+                    "mtu": 1500,
+                    "dhcp_on": true,
+                    "external_dhcp": null,
+                    "relay_vlan": null,
+                    "id": 5001,
+                    "name": "untagged",
+                    "fabric_id": 0,
+                    "secondary_rack": null,
+                    "space": "undefined",
+                    "fabric": "fabric-0",
+                    "primary_rack": "6gsym8",
+                    "resource_uri": "/MAAS/api/2.0/vlans/5001/"
+                },
+                "mac_address": "fa:16:3e:b8:af:ff",
+                "tags": [],
+                "params": "",
+                "id": 1,
+                "discovered": null,
+                "product": "OpenStack Nova",
+                "parents": [],
+                "type": "physical",
+                "name": "ens3",
+                "enabled": true,
+                "effective_mtu": 1500,
+                "vendor": "OpenStack Foundation",
+                "system_id": "6gsym8",
+                "children": [],
+                "firmware_version": null,
+                "links": [
+                    {
+                        "id": 1,
+                        "mode": "static",
+                        "ip_address": "10.55.32.135",
+                        "subnet": {
+                            "name": "10.55.32.0/20",
+                            "vlan": {
+                                "vid": 0,
+                                "mtu": 1500,
+                                "dhcp_on": true,
+                                "external_dhcp": null,
+                                "relay_vlan": null,
+                                "id": 5001,
+                                "name": "untagged",
+                                "fabric_id": 0,
+                                "secondary_rack": null,
+                                "space": "undefined",
+                                "fabric": "fabric-0",
+                                "primary_rack": "6gsym8",
+                                "resource_uri": "/MAAS/api/2.0/vlans/5001/"
+                            },
+                            "cidr": "10.55.32.0/20",
+                            "rdns_mode": 2,
+                            "gateway_ip": "10.55.32.1",
+                            "dns_servers": [],
+                            "allow_dns": true,
+                            "allow_proxy": true,
+                            "active_discovery": false,
+                            "managed": true,
+                            "id": 1,
+                            "space": "undefined",
+                            "resource_uri": "/MAAS/api/2.0/subnets/1/"
+                        }
+                    }
+                ],
+                "resource_uri": "/MAAS/api/2.0/nodes/6gsym8/interfaces/1/"
+            },
+            {
+                "vlan": {
+                    "vid": 0,
+                    "mtu": 1500,
+                    "dhcp_on": false,
+                    "external_dhcp": null,
+                    "relay_vlan": null,
+                    "id": 5002,
+                    "name": "untagged",
+                    "fabric_id": 1,
+                    "secondary_rack": null,
+                    "space": "undefined",
+                    "fabric": "fabric-1",
+                    "primary_rack": null,
+                    "resource_uri": "/MAAS/api/2.0/vlans/5002/"
+                },
+                "mac_address": "52:54:00:09:88:41",
+                "tags": [],
+                "params": "",
+                "id": 17,
+                "discovered": null,
+                "product": null,
+                "parents": [],
+                "type": "bridge",
+                "name": "virbr0",
+                "enabled": true,
+                "effective_mtu": 1500,
+                "vendor": null,
+                "system_id": "6gsym8",
+                "children": [],
+                "firmware_version": null,
+                "links": [
+                    {
+                        "id": 17,
+                        "mode": "static",
+                        "ip_address": "192.168.122.1",
+                        "subnet": {
+                            "name": "192.168.122.0/24",
+                            "vlan": {
+                                "vid": 0,
+                                "mtu": 1500,
+                                "dhcp_on": false,
+                                "external_dhcp": null,
+                                "relay_vlan": null,
+                                "id": 5002,
+                                "name": "untagged",
+                                "fabric_id": 1,
+                                "secondary_rack": null,
+                                "space": "undefined",
+                                "fabric": "fabric-1",
+                                "primary_rack": null,
+                                "resource_uri": "/MAAS/api/2.0/vlans/5002/"
+                            },
+                            "cidr": "192.168.122.0/24",
+                            "rdns_mode": 2,
+                            "gateway_ip": null,
+                            "dns_servers": [],
+                            "allow_dns": true,
+                            "allow_proxy": true,
+                            "active_discovery": false,
+                            "managed": true,
+                            "id": 2,
+                            "space": "undefined",
+                            "resource_uri": "/MAAS/api/2.0/subnets/2/"
+                        }
+                    }
+                ],
+                "resource_uri": "/MAAS/api/2.0/nodes/6gsym8/interfaces/17/"
+            }
+        ],
+        "cpu_speed": 2400,
+        "testing_status_name": "Unknown",
+        "tag_names": [
+            "virtual"
+        ],
+        "current_commissioning_result_id": 1,
+        "system_id": "6gsym8",
+        "distro_series": "bionic",
+        "cpu_test_status": -1,
+        "memory_test_status_name": "Unknown",
+        "hardware_info": {
+            "system_vendor": "OpenStack Foundation",
+            "system_product": "OpenStack Nova",
+            "system_version": "2013.2.3",
+            "system_serial": "33313934-3432-5a43-4339-343532355a35",
+            "cpu_model": "Intel Core i7 9xx (Nehalem Class Core i7)",
+            "mainboard_vendor": "Unknown",
+            "mainboard_product": "Unknown",
+            "mainboard_firmware_version": "Bochs",
+            "mainboard_firmware_date": "01/01/2011"
+        },
+        "other_test_status_name": "Unknown",
+        "fqdn": "mymaas.maas",
+        "power_state": "unknown",
+        "memory_test_status": -1,
+        "current_installation_result_id": null,
+        "storage_test_status_name": "Unknown",
+        "architecture": "amd64/generic",
+        "cpu_test_status_name": "Unknown",
+        "resource_uri": "/MAAS/api/2.0/rackcontrollers/6gsym8/"
+    }
+]
