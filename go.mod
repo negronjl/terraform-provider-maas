@@ -19,6 +19,7 @@ require (
 	github.com/juju/testing v0.0.0-20190613124551-e81189438503 // indirect
 	github.com/juju/utils v0.0.0-20170607092057-61a75f1933a5 // indirect
 	github.com/juju/version v0.0.0-20161031051906-1f41e27e54f2 // indirect
+	github.com/mitchellh/gox v1.0.1 // indirect
 	github.com/mitchellh/reflectwalk v1.0.1 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528 // indirect
 )

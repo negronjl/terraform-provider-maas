@@ -75,7 +75,7 @@ func dataSubnetRead(d *schema.ResourceData, m interface{}) error {
 		if err := d.Set("dns_servers", res[idx].DNSServers); err != nil {
 			return err
 		}
-		d.SetId(string(res[idx].ID))
+		d.SetId(fmt.Sprintf("%d", res[idx].ID))
 		return nil
 	}
 	return fmt.Errorf("could not find matching subnet")
