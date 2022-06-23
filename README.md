@@ -1,5 +1,9 @@
 # terraform-provider-maas
 
+## DEPRECATED!
+
+This project has deferred future progress toward the community-maintained https://github.com/maas/terraform-provider-maas. Please use that for future updates and support!
+
 ## Description
 
 A simple Terraform provider for MAAS.  This is a work in progress and by no means should be considered production quality work.  The current version supports the allocation, power up, power down and release of nodes already registered with MAAS.  I think this is the main usage for MAAS and will cover the majority of use cases out there.  I'll look into adding more functionality in the future.
